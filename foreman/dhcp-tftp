@@ -1,0 +1,22 @@
+#!/bin/bash
+# Configura smart-proxy como dhcp e tftp
+# Deve-se alterar foreman-proxy-dhcp-interface, ips e dominios
+foreman-installer \
+  --no-enable-foreman \
+  --no-enable-foreman-cli \
+  --no-enable-foreman-plugin-bootdisk \
+  --no-enable-foreman-plugin-setup \
+  --no-enable-puppet \
+  --enable-foreman-proxy \
+  --foreman-proxy-puppetca=false \
+  --foreman-proxy-puppetrun=false \
+  --foreman-proxy-tftp=true \
+  --foreman-proxy-dhcp=true \
+  --foreman-proxy-dhcp-interface=eth1 \
+  --foreman-proxy-dhcp-gateway=172.16.1.1 \
+  --foreman-proxy-dhcp-range="172.16.1.10 172.16.1.200" \
+  --foreman-proxy-dhcp-nameservers="192.168.111.254,8.8.8.8" \
+  --foreman-proxy-foreman-base-url=https://foreman.conteiner \
+  --foreman-proxy-trusted-hosts=foreman.conteiner \
+  --foreman-proxy-oauth-consumer-key=52adTMvNhiDbwghoVxQ8oCn8xUvJEKnT \
+  --foreman-proxy-oauth-consumer-secret=YduQRzHSCuKH8X5kA84XNFKBx47yBaFJ
