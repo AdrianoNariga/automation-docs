@@ -1,6 +1,7 @@
 #!/bin/bash
 # Reconverte todos arquivos .mp3 para 128kbps
 # Os arquivos sao salvos dentro de uma pasta mp3
+mkdir mp3
 for f in *.mp3
 do
 	lame -b 128 "$f" mp3/"${f%.*}".mp3
