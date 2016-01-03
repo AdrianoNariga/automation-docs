@@ -1,0 +1,8 @@
+#!/bin/bash
+# Cria um diretorio mp3 e converter todos arquivos .flac para mp3
+# Os arquivos sao salvos dentro do diretorio mp3 em 128 kbps
+mkdir mp3
+for f in *.flac
+do
+	flac -cd "$f" | lame -b 128 - "${f%.*}".mp3
+done
