@@ -1,0 +1,14 @@
+1) localizar um loop disponível, normalmente o /dev/loop0
+losetup -f
+
+2) Mapear o disco da instancia
+losetup /dev/loop0 disk
+
+3) Mapear as partições
+kpartx -a /dev/loop0
+
+4) Rodar o fsck
+fsck -y /dev/mapper/loop0p1
+
+5) Remover o mapeamento de partições
+kpartx -d /dev/loop0
