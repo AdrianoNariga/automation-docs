@@ -12,3 +12,6 @@ fsck -y /dev/mapper/loop0p1
 
 5) Remover o mapeamento de partições
 kpartx -d /dev/loop0
+
+6) Remover o loop
+losetup -d /dev/loop0
