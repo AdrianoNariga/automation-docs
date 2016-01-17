@@ -1,0 +1,41 @@
+#!/bin/bash
+EASY_RSA_PATH='/home/nariga/easy-rsa'
+CERTS_OPENVPN_PATH='/home/nariga/certs'
+
+source $EASY_RSA_PATH/vars
+export hostname=$2
+
+gen_certificadora(){
+	$EASY_RSA_PATH/clean-all
+	$EASY_RSA_PATH/build-ca
+	$EASY_RSA_PATH/build-dh
+	cp $EASY_RSA_PATH/keys/ca.crt $CERTS_OPENVPN_PATH
+	cp $EASY_RSA_PATH/keys/dh2048.pem $CERTS_OPENVPN_PATH
+}
+
+server_cert(){
+	echo "$EASY_RSA_PATH/build-key-server $hostname"
+	$EASY_RSA_PATH/build-key-server $hostname
+	cp $EASY_RSA_PATH/keys/"$hostname".crt $CERTS_OPENVPN_PATH
+	cp $EASY_RSA_PATH/keys/"$hostname".key $CERTS_OPENVPN_PATH
+}
+
+client_cert(){
+	$EASY_RSA_PATH/build-key $hostname
+}
+
+mensagem(){
+	echo -e "\n        gerencia de certificados openvpn"
+	echo "-s hostname.domain cria o certificado do servidor"
+	echo "-c hostneme.domain cria o certificado do cliente"
+	echo "-b cria unidade certificadora"
+	echo -e "\n             ..... Exemplo ....."
+	echo -e "        $0 -c cliente1.domain\n"
+}
+
+case $1 in
+	'-s') server_cert ;;
+	'-c') client_cert ;;
+	'-b') gen_certificadora ;;
+	*) mensagem ;;
+esac
