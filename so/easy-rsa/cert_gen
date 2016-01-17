@@ -1,6 +1,6 @@
 #!/bin/bash
-EASY_RSA_PATH='/home/nariga/easy-rsa'
-CERTS_OPENVPN_PATH='/home/nariga/certs'
+EASY_RSA_PATH='.'
+CERTS_OPENVPN_PATH='certs'
 
 source $EASY_RSA_PATH/vars
 export hostname=$2
@@ -22,6 +22,9 @@ server_cert(){
 
 client_cert(){
 	$EASY_RSA_PATH/build-key $hostname
+	cp $EASY_RSA_PATH/keys/"$hostname".crt $CERTS_OPENVPN_PATH
+	cp $EASY_RSA_PATH/keys/"$hostname".key $CERTS_OPENVPN_PATH
+	
 }
 
 mensagem(){
