@@ -20,6 +20,8 @@ cat > /usr/share/lightdm/lightdm.conf.d/51-synergy.conf << EOF
 [SeatDefaults]
 greeter-setup-script=/usr/bin/synergyc 192.168.111.215
 EOF
+	## remove icon from desktop user
+	gsettings set org.gnome.desktop.background show-desktop-icons false
 }
 
 server_pkgs(){
