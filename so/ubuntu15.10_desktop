@@ -5,12 +5,26 @@ echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/source
 apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
 apt-get update
-apt-get install screen aptitude vim openvpn openssh-server qemu-kvm libvirt-bin \
-	virtinst bridge-utils libguestfs-tools virt-top build-essential \
-	linux-image-extra-$(uname -r) docker-engine ubuntu-restricted-extras \
-	skype skype-bin google-chrome-stable puppet synergy vlc htop unity-tweak-tool -y
+
+media_pkgs(){
+	apt-get -y install vlc smplayer audacious qmmp mixxx xbmc \
+                   handbrake openshot ffmpeg gstreamer0.10-plugins-bad \
+		   lame libavcodec-extra
+}
+
+desktop_pkgs(){
+	apt-get -y ubuntu-restricted-extras skype skype-bin google-chrome-stable \
+		   unity-tweak-tool synergy
 
 cat > /usr/share/lightdm/lightdm.conf.d/51-synergy.conf << EOF
 [SeatDefaults]
 greeter-setup-script=/usr/bin/synergyc 192.168.111.215
 EOF
+}
+
+server_pkgs(){
+	apt-get -y screen aptitude vim openvpn openssh-server qemu-kvm \
+		   libvirt-bin virtinst bridge-utils libguestfs-tools \
+		   virt-top build-essential linux-image-extra-$(uname -r) \
+		   docker-engine puppet htop
+}
