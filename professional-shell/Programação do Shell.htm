@@ -1,0 +1,1346 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="cursos.css" />
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+<title>Programação do Shell</title>
+</head>
+
+<body>
+
+<h1 align="center">Programação do Shell</h1>
+
+<h2>Introdução</h2>
+
+<ul>
+  <li>Por que programação shell?<ul>
+      <li>Permite que administradores criem pequenos programas para automatizar a administração
+        do sistema</li>
+      <li>Permite configurar melhor o sistema<ul>
+          <li>Por exemplo, toda a configuração da sequência de boot do UNIX envolve scripts shell</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>O que é programação shell<ul>
+      <li>Criação de um arquivo de texto contendo comandos do UNIX e comandos especiais do shell
+        para:<ul>
+          <li>Variáveis</li>
+          <li>Testes</li>
+          <li>Laços</li>
+          <li>Funções</li>
+          <li>Comentários</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Como executar?<ul>
+      <li>Interpretação do arquivo de script por um shell</li>
+      <li>Interpretação pode ser lenta?<ul>
+          <li>Sim! E lembre que cada comando que o script chama dispara um processo</li>
+          <li>Uma alternativa mais rápida: programar em C ou Java</li>
+          <li>Uma alternativa boa entre os dois extremos: perl</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2>Scripts Shell</h2>
+
+<ul>
+  <li>O primeiro programa<ul>
+      <li>O texto abaixo está no arquivo &quot;alo&quot;</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# Este programa diz alo
+echo &quot;Alo $LOGNAME, tenha um bom dia!&quot;</pre>
+
+<hr>
+
+<ul>
+  <li>Execute o programa:</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ ./alo
+bash: ./alo: Permission denied
+$ bash alo
+Alo  jacques, tenha um bom dia!
+$ chmod a+x alo
+$ ./alo
+Alo  jacques, tenha um bom dia!
+$ PATH=$PATH:.
+$ alo
+Alo  jacques, tenha um bom dia!</pre>
+
+<hr>
+
+<h2>Variáveis e Parâmetros</h2>
+
+<h3>Algumas variáveis pré-definidas</h3>
+
+<ul>
+  <li>$LOGNAME, $HOSTNAME, $TERM, ...</li>
+  <li>$$ (o process id do processo corrente - o shell)</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">tempfile=/tmp/temp.$$
+algum comando &gt; $tempfile
+.
+.
+comandos que usam a informação em $tempfile
+.
+.
+rm $tempfile</pre>
+
+<hr>
+
+<ul>
+  <li>$? (o status de saída do último comando)<ul>
+      <li>0 significa ok</li>
+      <li>não 0 significa que houve erro</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Substituição avançada de variáveis</h3>
+
+<p align="center">&nbsp;</p>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="536">
+<COLGROUP>
+<COL width="181">
+<COL width="345">
+<TBODY>
+  <tr vAlign="top">
+    <td width="181"><p align="center" style="MARGIN-LEFT: 0in"><b>Construção</b></td>
+    <td width="345"><p align="center" style="MARGIN-LEFT: 0in"><b>Propósito</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="181"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">${<i>variavel</i>:-<i>valor</i>}</font>
+    </td>
+    <td width="345"><p style="MARGIN-LEFT: 0in">o valor da construção é o valor a
+    variável, se houver, ou &quot;valor&quot; caso contrário. O valor da variável não muda
+    </td>
+  </tr>
+  <tr vAlign="top">
+    <td width="181"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">${<i>variavel</i>:=<i>valor</i>}</font>
+    </td>
+    <td width="345"><p style="MARGIN-LEFT: 0in">como acima, mas se variável não tiver valor,
+    ela recebe &quot;valor&quot;</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="181"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">${<i>variavel</i>:?<i>mensagem</i>}</font>
+    </td>
+    <td width="345"><p style="MARGIN-LEFT: 0in">se variavel não tiver valor exibe a mensagem
+    de erro </td>
+  </tr>
+  <tr vAlign="top">
+    <td width="181"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">${<i>variavel</i>:+<i>valor</i>}</font>
+    </td>
+    <td width="345"><p style="MARGIN-LEFT: 0in">se variavel tiver valor, substitua com
+    &quot;valor&quot;, caso contrário, faça nada</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<h3>Parâmetros</h3>
+
+<ul>
+  <li>Quando um script é chamado, pode receber parâmetros na linha de comando</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ cat soma
+#!/bin/bash
+val=`expr ${1:-0} + ${2:-0} + ${3:-0}`
+echo A soma eh $val
+$ soma 2 3 5
+A soma eh 10
+$ soma 2 3
+A soma eh 5
+$ soma
+A soma eh 0</pre>
+
+<hr>
+
+<ul>
+  <li>Isso é equivalente:</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash 
+echo A soma eh `expr ${1:-0} + ${2:-0} + ${3:-0}`</pre>
+
+<hr>
+
+<ul>
+  <li>Tratamento de parâmetros</li>
+</ul>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="435">
+<COLGROUP>
+<COL width="99">
+<COL width="326">
+<TBODY>
+  <tr vAlign="top">
+    <td width="99"><p align="center" style="MARGIN-LEFT: 0in"><b>Variável</b></td>
+    <td width="326"><p align="center" style="MARGIN-LEFT: 0in"><b>Propósito</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="99"><p align="center" style="MARGIN-LEFT: 0in">$0</td>
+    <td width="326"><p style="MARGIN-LEFT: 0in">O nome do programa shell</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="99"><p align="center" style="MARGIN-LEFT: 0in">$1 até $9</td>
+    <td width="326"><p style="MARGIN-LEFT: 0in">Os primeiros 9 parâmetros</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="99"><p align="center" style="MARGIN-LEFT: 0in">$#</td>
+    <td width="326"><p style="MARGIN-LEFT: 0in">O número de parâmetros</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="99"><p align="center" style="MARGIN-LEFT: 0in">$*</td>
+    <td width="326"><p style="MARGIN-LEFT: 0in">Todos os parâmetros do programa</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<ul>
+  <li>Observe que $10 não é o parâmetro 10, é $1 concatenado com &quot;0&quot;<ul>
+      <li>Isso não significa que só podemos ter 9 parâmetros: não há limite (quase)</li>
+      <li>Veremos como acessar os demais parâmetros depois</li>
+    </ul>
+  </li>
+  <li>Exemplo</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ cat l
+#!/bin/bash 
+ls -l $*</pre>
+
+<hr>
+
+<ul>
+  <li>Como formar parâmetros<ul>
+      <li>Os exemplos abaixo parecem iguais mas o primeiro tem 4 parâmetros, o segundo tem 1
+        parâmetro e o terceiro tem 3 parâmetros</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ echo a b c d
+a b c d
+$ echo &quot;a b c d&quot;
+a b c d
+$ echo &quot;a b&quot; c d
+a b c d</pre>
+
+<hr>
+
+<h2>Entrada-Saída Básica</h2>
+
+<ul>
+  <li>A saída é feita basicamente a saída de outros comandos que estão no script</li>
+  <li>Se precisar de um &quot;print&quot;, usae-se o comando echo</li>
+  <li>A leitura de informação da entrada padrão é feita com o comando do shell
+    &quot;read&quot;</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ cat testaread
+#!/bin/bash
+read x
+echo Voce falou $x</pre>
+
+<hr>
+
+<hr>
+
+<pre class="clsCode">$ cat lenome
+#!/bin/bash
+echo -n &quot;Favor digitar seu nome: &quot;
+read nome
+echo &quot;Seu nome eh $nome&quot;</pre>
+
+<hr>
+
+<h2>Testes</h2>
+
+<h3>Um problema a resolver</h3>
+
+<ul>
+  <li>Você acabou de ser nomeado administrador de sistema numa empresa. O administrador
+    anterior saiu correndo quando descobriu que um servidor principal da empresa estava sendo
+    usado para guardar pornografia,&nbsp; warez (software pirata) e instruções para a
+    fabricação de bombas caseiras.</li>
+  <li>Suspeita-se que várias pessoas da empresa, além do ex-administrador de sistema,
+    estavam envolvidas com a captação dessa informação. Pediu-se que você fizesse um
+    programa para identificar pessoas que acessam sites &quot;indesejáveis&quot; e avisá-los
+    da política de empresa acerca do uso apropriado da Internet com recursos da empresa.
+    Idealmente, você deve produzir um relatório informando quem acesso quais sites restritos
+    e quantas visitas foram feitas.</li>
+  <li>A informação a ser analizada está num arquivo &quot;netwatch&quot; que contém uma
+    lista das pessoas e dos acessos que elas fizeram<ul>
+      <li>Um exemplo do arquivo segue abaixo</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">ARQUIVO: netwatch
+
+jamiesob mucus.slime.com
+tonsloye xboys.funnet.com.fr
+tonsloye sweet.dreams.com
+root sniffer.gov.au
+jamiesob marvin.ls.tc.hk
+jamiesob never.land.nz
+jamiesob guppy.pond.cqu.edu.au
+tonsloye xboys.funnet.com.fr
+tonsloye www.sony.com
+janesk horseland.org.uk
+root www.nasa.gov
+tonsloye warez.under.gr
+tonsloye mucus.slime.com
+root ftp.ns.gov.au
+tonsloye xboys.funnet.com.fr
+root linx.fare.com
+root crackz.city.bmr.au
+janesk smurf.city.gov.au
+jamiesob mucus.slime.com
+jamiesob mucus.slime.com</pre>
+
+<hr>
+
+<ul>
+  <li>Os sites proibidos estão contidos num arquivo &quot;netproib&quot;:</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">ARQUIVO: netproib
+
+mucus.slime.com
+xboys.funnet.com.fr
+warez.under.gr
+crackz.city.bmr.au
+www.hotwarez.com.br</pre>
+
+<hr>
+
+<ul>
+  <li>Desenvolva um script que satisfaça os requisitos<ul>
+      <li>Você pode ignorar qualquer consideração de ética, privacidade e censura :-)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Comandos de testes no shell</h3>
+
+<hr>
+
+<pre class="clsCode">if comando
+then
+  comandos executados se &quot;comando&quot; retornar status &quot;ok&quot; (0)
+else
+  comandos executados se &quot;comando&quot; retornar status &quot;não ok&quot; (diferente de 0)
+fi</pre>
+
+<hr>
+
+<pre class="clsCode">if comando1
+then
+  comandos executados se &quot;comando1&quot; retornar status &quot;ok&quot; (0)
+elif comando2
+  comandos executados se &quot;comando2&quot; retornar status &quot;ok&quot; (0)
+else
+  comandos executados se não entrar nos &quot;if&quot; acima
+fi</pre>
+
+<hr>
+
+<pre class="clsCode">comando1 &amp;&amp; comando2
+# construção acima eh equivalente a:
+if comando1
+then
+  comando2
+fi</pre>
+
+<hr>
+
+<pre class="clsCode">comando1 || comando2
+# construção acima eh equivalente a:
+if comando1
+then
+  :
+else
+  comando2
+fi</pre>
+
+<hr>
+
+<h3>Início do script scan</h3>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: scan
+if ls netwatch &amp;&amp; ls netproib
+then
+  echo &quot;Achei netwatch e netproib&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi</pre>
+
+<hr>
+
+<ul>
+  <li>O comando exit encerra o shell e retorna um status para o processo &quot;pai&quot;</li>
+</ul>
+
+<h3>Testes com [ ... ]</h3>
+
+<ul>
+  <li>O comando &quot;test&quot; e a construção [ ... ] são equivalentes e permitem testar
+    condições envolvendo strings e arquivos</li>
+  <li>Exemplo: o último script poderia ser:</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: scan
+if [ -r netwatch ] &amp;&amp; [ -r netproib ]
+then
+  echo &quot;Achei netwatch e netproib&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi</pre>
+
+<hr>
+
+<ul>
+  <li>As opções de [ ... ] seguem:</li>
+</ul>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="514">
+<COLGROUP>
+<COL width="184">
+<COL width="320">
+<TBODY>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><b>Expressão</b></td>
+    <td width="320"><p align="center" style="MARGIN-LEFT: 0in"><b>Verdeiro se</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">-z
+    string</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">tamanho de string é 0</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">-n
+    string</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">tamanho de string não é 0</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">string1
+    = string2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">dois strings são iguais</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">string
+    != string2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">dois strings não são iguais</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p style="MARGIN-LEFT: 0in"><font size="2" face="Courier New, monospace">string</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">string não é nulo</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<p align="center">Testes de strings<br>
+</p>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="514">
+<COLGROUP>
+<COL width="184">
+<COL width="320">
+<TBODY>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><b>Expressão</b></td>
+    <td width="320"><p align="center" style="MARGIN-LEFT: 0in"><b>Verdeiro se</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -eq int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is equal to second</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -ne int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is not equal to second</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -gt int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is greater than second</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -ge int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is greater than or equal to second</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -lt int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is less than second</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">int1 -le int2</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">first int is less than or equal to second</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<p align="center" style="PAGE-BREAK-BEFORE: always">Testes numéricos</p>
+
+<p align="center" style="PAGE-BREAK-BEFORE: always">&nbsp;</p>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="514">
+<COLGROUP>
+<COL width="184">
+<COL width="320">
+<TBODY>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><b>Expressão</b></td>
+    <td width="320"><p align="center" style="MARGIN-LEFT: 0in"><b>Verdeiro se</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-r file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é pode ser lido</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-w file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é pode ser gravado</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-x file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é pode ser executado</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-f file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é normal (regular)</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-d file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é diretório</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-h file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é link simbólico</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-c file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é dispositivo especial a
+    caractere</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-b file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é dispositivo especial a bloco</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-p file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e é pipe</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-u file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e tem bit setuid ligado</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-g file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e tem bit setgid ligado</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-k file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e tem bit sticky ligado</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-s file</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">file existe e tem tamanho diferente de zero</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<p align="center">Testes de arquivos</p>
+
+<p align="center">&nbsp;</p>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="514">
+<COLGROUP>
+<COL width="184">
+<COL width="320">
+<TBODY>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><b>Expressão</b></td>
+    <td width="320"><p align="center" style="MARGIN-LEFT: 0in"><b>Propósito</b></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">!</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">inverte expressão lógica</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-a</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">operador AND</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">-o</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">operador OR</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="184"><p align="center" style="MARGIN-LEFT: 0in"><font size="2"
+    face="Courier New, monospace">( expr )</font></td>
+    <td width="320"><p style="MARGIN-LEFT: 0in">agrupar expressões</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<p align="center">Operadores adicionais</p>
+
+<h3>A construção case</h3>
+
+<hr>
+
+<pre class="clsCode">echo -n &quot;Sua reposta: &quot;
+read resp
+case &quot;$resp&quot; in
+Y* | y*)
+  resp=&quot;sim&quot;
+  ;;
+N* | n*)
+  resp=&quot;nao&quot;
+  ;;
+*)
+  resp=&quot;talvez&quot;
+  ;;
+esac
+echo $resp</pre>
+
+<hr>
+
+<ul>
+  <li>Observe o casamento de expressões regulares, acima</li>
+</ul>
+
+<h2>Laços</h2>
+
+<h3>O comando while</h3>
+
+<hr>
+
+<pre class="clsCode">while comando
+do
+  comandos executados enquanto &quot;comando&quot; retornar status &quot;ok&quot;
+done</pre>
+
+<hr>
+
+<ul>
+  <li>O que o seguinte programa faz?</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: list
+#
+numLinha=1
+while read linha
+do
+  echo &quot;$numLinha $linha&quot;
+  numLinha=`expr $numLinha + 1`
+done &lt; $1</pre>
+
+<hr>
+
+<ul>
+  <li>O que o seguinte programa faz?</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">while read linha
+do
+  usuario=`echo $linha | cut -d&quot; &quot; -f1`
+  site=`echo $linha | cut -d&quot; &quot; -f2`
+  if [ &quot;$usuario&quot; = &quot;$1&quot; ]
+  then
+    echo &quot;$usuario visitou $site&quot;
+  fi
+done &lt; netwatch</pre>
+
+<hr>
+
+<h3>O comando for</h3>
+
+<hr>
+
+<pre class="clsCode">for var in lista_de_palavras
+do
+  no corpo do loop, temos $var = a próxima palavra da lista
+done</pre>
+
+<hr>
+
+<ul>
+  <li>O que o seguinte programa faz?</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">for verifUsuario in $*
+do
+  while read linha
+  do
+    while read verifSite
+    do
+      usuario=`echo $linha | cut -d&quot; &quot; -f1`
+      site=`echo $linha | cut -d&quot; &quot; -f2`
+      if [ &quot;$usuario&quot; = &quot;$verifUsuario&quot; -a &quot;$site&quot; = &quot;$verifSite&quot; ]
+      then
+        echo &quot;$usuario visitou o site proibido $site&quot;
+      fi
+    done &lt; netproib
+  done &lt; netwatch 
+done</pre>
+
+<hr>
+
+<h2>Funções</h2>
+
+<ul>
+  <li>Uma nova versão do nosso trabalho</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: scan
+#
+
+verificaArquivos() {
+  if [ -r netwatch -a -r netproib ]
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Programa principal
+
+if verificaArquivos
+then
+  echo &quot;Arquivos de dados achados&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi
+
+# o resto do trabalho</pre>
+
+<hr>
+
+<ul>
+  <li>Outra versão</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: scan
+#
+
+verificaArquivos() {
+  [ -r netwatch -a -r netproib ]
+  return $?
+}
+
+# Programa principal
+
+if verificaArquivos
+then
+  echo &quot;Arquivos de dados achados&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi
+
+# o resto do trabalho</pre>
+
+<hr>
+
+<h2>Sinais e Traps</h2>
+
+<ul>
+  <li>Sinais são enviados para processos de várias formas<ul>
+      <li>Pelo kernel, quando um processo faz besteira</li>
+      <li>Pelo usuário, usando o teclado (^C, ^\, encerrando a sessão)</li>
+      <li>Usando o comando kill</li>
+    </ul>
+  </li>
+  <li>Ação normal: o processo morre<ul>
+      <li>Porém, um processo pode ignorar os sinais ...</li>
+      <li>... ou captura-los para fazer algo</li>
+    </ul>
+  </li>
+  <li>Quais são os sinais?<ul>
+      <li>Os sinais em negrito merecem discussão aqui, pois o administrador deve entendê-los</li>
+    </ul>
+  </li>
+</ul>
+<div align="center"><center>
+
+<table border="1" borderColor="#000000" cellPadding="2" cellSpacing="0" width="275">
+<COLGROUP>
+<COL width="71">
+<COL width="195">
+<TBODY>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in"><b>Sinal</b></td>
+    <td width="195"><p align="center" style="MARGIN-LEFT: 0in"><b>Significado</b></td>
+  </tr>
+  <tr>
+    <td width="71"><p align="center">0</td>
+    <td width="195"><strong>Fim do shell</strong></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">1</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Hangup</strong></td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">2</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Interrupt</strong><br>
+    (^C)</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">3</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Quit</strong><br>
+    (^\)</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">4</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">Illegal Instruction</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">5</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">Trace trap</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">6</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">IOT instruction</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">7</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">EMT instruction</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">8</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Floating point exception</strong><br>
+    (bug de programa)</td>
+  </tr>
+  <tr>
+    <td width="71"><p align="center">9</td>
+    <td width="195"><strong>Morte certa</strong> (kill -9)</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">10</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Bus error</strong><br>
+    (bug de programa)</td>
+  </tr>
+  <tr>
+    <td width="71"><p align="center">11</td>
+    <td width="195"><strong>Violação de segmentação</strong><br>
+    (bug de programa)</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">12</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">Bad argument</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">13</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">Pipe write error</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">14</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in">Alarm</td>
+  </tr>
+  <tr vAlign="top">
+    <td width="71"><p align="center" style="MARGIN-LEFT: 0in">15</td>
+    <td width="195"><p style="MARGIN-LEFT: 0in"><strong>Software termination signal</strong>
+    (kill sem argumentos)</td>
+  </tr>
+</TBODY>
+</table>
+</center></div>
+
+<ul>
+  <li>Sintaxe de captura de sinais</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">trap &quot;comandos&quot; sinais ...</pre>
+
+<ul>
+  <li>Exemplo simples de captura de sinais</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+tempfile=/tmp/temp.$$
+trap &quot;rm -f $tempfile&quot; 0 1 2
+algum comando &gt; $tempfile
+.
+.
+comandos que usam a informação em $tempfile
+.
+.
+# nao precisa remover temp no fim: o trap se encarrega disso</pre>
+
+<hr>
+
+<h2>Depuração</h2>
+
+<ul>
+  <li>O comando &quot;set -x&quot; liga o rastreamento da execução de comandos</li>
+  <li>O comando &quot;set +x&quot; desliga o rastreamento</li>
+</ul>
+
+<h2>Técnicas Avançadas</h2>
+
+<ul>
+  <li>Por enquanto, nosso código de &quot;scan&quot; é o seguinte</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+# ARQUIVO: scan
+#
+
+verificaArquivos() {
+  [ -r netwatch -a -r netproib ]
+  return $?
+}
+
+# Programa principal
+
+if verificaArquivos
+then
+  echo &quot;Arquivos de dados achados&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi
+
+for verifUsuario in $*
+do
+  while read linha
+  do
+    while read verifSite
+    do
+      usuario=`echo $linha | cut -d&quot; &quot; -f1`
+      site=`echo $linha | cut -d&quot; &quot; -f2`
+      if [ &quot;$usuario&quot; = &quot;$verifUsuario&quot; -a &quot;$site&quot; = &quot;$verifSite&quot; ]
+      then
+        echo &quot;$usuario visitou o site proibido $site&quot;
+      fi
+    done &lt; netproib
+  done &lt; netwatch 
+done</pre>
+
+<hr>
+
+<ul>
+  <li>Ainda não satisfizemos todos os requisitos, pois falta a contagem do número de visitas
+    ...</li>
+</ul>
+
+<h3>eval</h3>
+
+<ul>
+  <li>Passa duas vezes numa linha de comando<ul>
+      <li>Só executa depois da segunda passagem</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ pipe=\|
+$ eval ls $pipe more</pre>
+
+<hr>
+
+<h3>Voltando ao programa scan</h3>
+
+<ul>
+  <li>Como fazer a contagem de visitas?</li>
+  <li>Se um usuário jacques visitar www.hotwarez.com.br, teremos a contagem de visitas feita
+    na variável $jacqueswwwhotwarezcombr</li>
+  <li>Segue o programa final</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">#!/bin/bash
+logFile=netwatch
+proibFile=netproib
+passwdFile=$passwdFile
+
+processaLogFile() {
+  # Varre o arquivo $logFile e salva combinacoes usuario/site
+  # para sites que estao na lista de sites proibidos
+
+  while read linha
+  do
+    nomeUsuario=`echo $linha | cut -d&quot; &quot; -f1`
+    site=`echo $linha | cut -d&quot; &quot; -f2 | sed s/\\\.//g`
+    while read verifSite
+    do
+      verifSite=`echo $verifSite | sed s/\\\.//g`
+      # echo $verifSite $site
+      if [ &quot;$site&quot; = &quot;$verifSite&quot; ]
+      then
+        usuarioSite=&quot;$nomeUsuario$verifSite&quot;
+        if eval [ \$$usuarioSite ]
+        then
+          eval $usuarioSite=\`expr \$$usuarioSite + 1\`
+        else 
+          eval $usuarioSite=1
+        fi
+      fi
+    done &lt; $proibFile
+  done &lt; $logFile
+}
+
+relatorio() {
+  # Ve todas as combinações de usuários e sites restritos
+  # Se uma variavel de visitas existir, inclua no relatório
+  for usuario in $*
+  do
+    while read siteVisitado
+    do
+      verifSite=`echo $siteVisitado | sed s/\\\.//g`
+      usuarioSite=&quot;$usuario$verifSite&quot;
+      if eval [ \$$usuarioSite ] 
+      then
+        eval echo &quot;$usuario: $siteVisitado \$$usuarioSite&quot;
+        numUsuarios = `expr $numUsuarios + 1`
+      fi 
+    done &lt; $proibFile
+  done 
+}
+
+usuariosEmPasswd() {
+  # cria uma lista de usuarios a partir do arquivo de passwd
+  cut -d&quot;:&quot; -f1 &lt; $passwdFile
+}
+
+verificaArquivos() {
+  [ -r netwatch -a -r netproib ]
+  return $?
+}
+
+# Programa principal
+# remover comentario na linha seguinte para depurar
+#set -x
+
+
+if verificaArquivos
+then
+  echo &quot;Arquivos de dados achados&quot;
+else
+  echo &quot;Nao pode achar um dos arquivos de dados - caindo fora&quot;
+  exit 1
+fi
+
+numUsuarios=0
+
+if [ $# -gt 0 ]
+then
+  listaUsuarios=$* 
+else
+  listaUsuarios=`usuariosEmPasswd`
+fi
+
+echo
+echo &quot;*** Relatorio de Acesso a Sites Proibidos ***&quot; 
+echo
+echo &quot;
+
+Segue uma lista de usuarios que visitaram sites proibidos,
+o site visitado e o numero de visitas
+
+&quot;
+processaLogFile
+relatorio $listaUsuarios
+
+echo
+
+if [ $numUsuarios -eq 0 ]
+then
+  echo &quot;Nao houve acesso a sites proibidos&quot;
+else
+  echo &quot;$numUsuarios combinacoes de usuario/site descobertas&quot;
+fi</pre>
+
+<hr>
+
+<ul>
+  <li>Na realidade, este programa seria mais simples usando perl<ul>
+      <li>O truque do &quot;eval&quot; é muito feio!</li>
+    </ul>
+  </li>
+  <li>Aqui, serviu para mostrar construções avançadas do shell</li>
+  <li>Poderíamos ainda tratar uma opção do programa &quot;-d&quot; para ligar o debug</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">...
+# Programa principal
+if [ &quot;$1&quot; = &quot;-d&quot; ]
+then
+  set -x
+  shift
+}
+...</pre>
+
+<hr>
+
+<h2>Um Exemplo Final</h2>
+
+<h3>Definição do Problema</h3>
+
+<ul>
+  <li>Seu servidor FTP provê acesso a arquivos na área /pub do sistema de arquivos</li>
+  <li>Você desconfia que poucas pessoas estão usando o serviço FTP (devido à WWW) e você
+    gostaria de examinar o log FTP usando uma ferramenta útil</li>
+  <li>Você quer um programa que examine o log FP e produza estatísticas de uso sobre um
+    certo tópico. As estatísticas devem incluir:<ul>
+      <li>O número de acessos por usuário</li>
+      <li>O número de bytes transferidos</li>
+      <li>O número de hosts que acessaram o serviço</li>
+    </ul>
+  </li>
+  <li>O script deve aceitar uma palavra chave (o tópico de interesse) e um comando dizendo
+    qual é a estatística desejada<ul>
+      <li>O comando pode ser: &quot;users&quot;, &quot;bytes&quot; ou &quot;hosts&quot;</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Informação adicional necessária</h3>
+
+<ul>
+  <li>Suponha que o arquivo de log tenha o seguinte conteúdo, um acesso por linha<ul>
+      <li>nomeUsuário poderá ser uma identificação fornecida se o FTP for anônimo</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">hostRemoto tamanhoEmBytes nomeDoArquivo nomeUsuário</pre>
+
+<hr>
+
+<ul>
+  <li>Exemplo do arquivo de log /var/log/ftp.log</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">aardvark.com 2345 /pub/85349/lectures.tar.gz flipper@aardvark.com
+138.77.8.8 112 /pub/81120/cpu.gif sloth@topaz.cqu.edu.au</pre>
+
+<hr>
+
+<ul>
+  <li>Podemos supor que o nome do arquivo sempre iniciará com /pub</li>
+  <li>Exemplos de interação com o programa</li>
+</ul>
+
+<hr>
+
+<pre class="clsCode">$ scanlog 85321 users
+jamiesob@jasper.cqu.edu.au 1
+b.spice@sworld.cqu.edu.au 22
+jonesd 56
+
+$ scanlog 85321 bytes
+2322323
+
+$ scanlog 85321 hosts
+5
+
+$ scanlog 85321 bytes users
+2322323
+jamiesob@jasper.cqu.edu.au 1
+b.spice@sworld.cqu.edu.au 22
+jonesd 56</pre>
+
+<hr>
+
+<ul>
+  <li>O programa segue:</li>
+</ul>
+
+<pre class="clsCode">#!/bin/sh
+
+LOGFILE=&quot;ftp.log&quot;
+TEMPFILE=&quot;/tmp/scanlog.$$&quot;
+trap &quot;rm $TEMPFILE&quot; 0 1 2
+# funcoes
+
+
+#----------------------------------------
+# printNumHosts
+# - mostra o numero de maquinas unicas que acessaram o topico
+
+printNumHosts() {
+  cut -f1 $TEMPFILE | uniq | wc -l
+}
+
+#-------------------------------------------------------
+# printUsers
+# - mostra os usuarios que acessaram o topico
+
+printUsers() {
+  for user in `cut -f4 $TEMPFILE | sort | uniq`
+  do
+    echo $user `grep $user $TEMPFILE | wc -l`
+  done
+}
+
+#-------------------------------------------------------
+# printBytes
+# - mostra o numero de bytes transferidos
+
+printBytes() {
+  # se a entrada for 2 3 4 (em 3 linhas), queremos fazer 2 + 3 + 4
+  numstr=`cut -f2 $TEMPFILE | sed &quot;s/$/ + /g&quot;`
+  expr $numstr 0
+}
+
+
+#------------------------------------------------------
+# processaAcao
+#
+
+processaAcao() {
+  # traduzir para minusculas
+  acao=`echo $1 | tr [a-z] [A-Z]`
+  case &quot;$acao&quot; in
+    bytes) printBytes ;;
+    users) printUsers ;;
+    hosts) printNumHosts ;;
+    *) echo &quot;Comando desconhecido: $acao&quot; ;;
+  esac
+}
+
+
+#---- Programa principal
+
+if [ $# -lt 2 ]
+then
+  echo &quot;Sintaxe: $0 topico [users|bytes|hosts]&quot; &gt;&amp;2
+  exit 1
+fi
+
+topico=$1
+shift
+grep &quot;/pub/$topíco&quot; $LOGFILE &gt; $TEMPFILE
+
+for aAcao in $*
+do
+  processaAcao &quot;$aAcao&quot;
+done</pre>
+
+<ul>
+  <li>Como exercício, refaça o comando acima usando as opções -u, -b e -h em vez do
+    comando &quot;users&quot;, &quot;bytes&quot; e &quot;hosts&quot;<ul>
+      <li>Aceite qualquer combinação de opções:<ul>
+          <li>-u</li>
+          <li>-u -b</li>
+          <li>-ub</li>
+          <li>-bu</li>
+          <li>etc.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2>Coisas que falta incluir</h2>
+<ul>
+  <li>Comando &quot;.&quot;</li>
+  <li>sub-shells com ()</li>
+  <li>(cd ...; tar ...) | (cd ...; tar ...)</li>
+  <li>export</li>
+</ul>
+<p class="botref"><a href="index.htm">programa</a> <a href="shellbasico.htm">anterior</a></p>
+</body>
+</html>

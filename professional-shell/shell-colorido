@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo -e '\033[31m MENSAGEM IMPORTANTE!!! \033[m'
+echo -e '\033[31:1m MENSAGEM IMPORTANTE!!! \033[m'
+echo -e '\033[44;31;1;5m MENSAGEM IMPORTANTE!!! \033[m'

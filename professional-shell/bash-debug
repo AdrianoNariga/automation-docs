@@ -1,0 +1,30 @@
+#!/bin/bash
+# bash -x script (exibe execucao em tempo real adicionando + no inicio para indicar os subshell criados duarande a execucao)
+# bash -v script (exibe a linha de codigo que o script passou durante a execucao sendo menos eficiente que o -x)
+# bash -xv script (para usar as duas formas em apenas um debug)
+
+# Debug sentorizado
+# set -x (dentro do script para ligar o debug de execucao em apenas um trexo)
+# set +x (desliga o debug no meio do script)
+# set -v (pode ser usado tbm 'set -xv' para ligar os dois)
+# set +v (para desligar 'set +xv')
+
+# Execucao passo a passo
+# trap read DEBUG (liga a execucao passo a passo dentro do script)
+# trap "" DEBUG (desliga obs: ligar o 'set -x' antes para melhorar)
+
+# Funcao Debug
+DEBUG=1
+Debug(){
+	[ "$DEBUG" = 1 ] && echo "--------{ $*"
+}
+
+TXT="gritaria"
+TXT="     $TXT     "
+
+Debug "TXT com espacos    :[$TXT]"
+TXT=$(echo $TXT | tr '' '!')
+Debug "TXT com exclamacoes    :[$TXT]"
+
+TXT=$(echo $TXT | tr a-z A-Z)
+echo "$TXT"

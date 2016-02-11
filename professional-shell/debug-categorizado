@@ -1,0 +1,46 @@
+#!/bin/bash
+# 1 generica (estou aki!!!)
+# 2 localizacao (entrei no loop!!!)
+# 3 conteudo de variaveis
+# 4 variaveis secundarias
+# http://aurelio.net/shell/canivete/
+
+# ${1:-0} se caso a variavel $1 nao for definida
+# o valor sera 0
+
+## Bloco para entendimento de DEBUG=${1:-0}
+echo "Valor de \$1 ------> $1"
+echo "Valor de \$DEBUG ------> $DEBUG"
+echo
+
+DEBUG=${1:-0}
+
+echo "Valor de \$1 ------> $1"
+echo "Valor de \$DEBUG ------> $DEBUG"
+echo
+## Bloco para entendimento de DEBUG=${1:-0}
+
+Debug(){
+	# $1(da funcao) <= $DEBUG(passado em command)
+	# nao entendo pq nao executa quando executa sem parametro 
+	[ $1 -le $DEBUG ] && echo "--- DEBUG $*"
+}
+
+Debug 1 "Inicio do programa"
+
+i=0
+max=5
+echo "Contando ate $max"
+
+Debug 2 "Vou entrar no WHILE"
+while [ $i -ne $max ]
+do
+	Debug 3 "Valor de $i antes de incrementar"
+	let i=$i+1
+	Debug 3 "Valor de $i depois de incrementar"
+	echo "$i..."
+done
+Debug 2 "Sai do WHILE"
+
+echo "Terminei!!!"
+Debug 1 "Fim do programa"

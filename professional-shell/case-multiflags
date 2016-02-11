@@ -1,0 +1,33 @@
+#!/bin/bash
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -d --debug
+\n -f --force
+\n -v --version
+\n -h --help
+"
+
+# entra no loop se o valor de $1 nao for nulo
+while test -n "$1"
+do
+	# escolhe a opcao conforme valor de $1
+	case $1 in
+		-f | --force) echo "flag -f ou --force" ;;
+		-d | --debug)
+		# -d ou --debug deve ser usado com valor
+		# shift processa o valor de -d transformando em $1
+		# caso valor de -d for nulo sera usado o proximo parametro
+		# com isso havera erro
+			shift
+			echo "flag -d $1 ou --debug $1"
+		;;
+		-v | --version) echo "flag -v ou --version" ;;
+		-h | --help) echo "flag -h ou --help" ;;
+		*) echo -e $msg_padrao
+	esac
+
+	# limpa o valor de $1 ja processado
+	# atribui proximo valor a $1
+	shift
+done

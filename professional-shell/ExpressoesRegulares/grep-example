@@ -1,0 +1,53 @@
+#!/bin/bash
+echo "procura por root"
+grep root passwd
+
+echo "procura pelo que comeca com root"
+grep ^root passwd
+echo "#####################################"
+echo
+
+echo "procura pelo final bash"
+grep bash$ passwd
+echo "procura linhas vazias"
+grep "^$" passwd # pode ser usado entre '' ou ""
+echo "#####################################"
+echo
+
+echo "carlos ou Carlos"
+grep '[Cc]arlos' passwd
+echo "#####################################"
+echo
+
+echo "tudo que comeca com uma dessa letras aeiou"
+grep ^[aeiou] passwd
+
+echo "#####################################"
+echo
+echo "tamanho exato de caracteres"
+grep ^....................................$ passwd
+egrep ^.{36}$ passwd
+grep '^.\{36\}$' passwd
+
+echo "#####################################"
+echo
+echo "entre 20 a 40 caracteres"
+egrep '^.{20,40}$' passwd
+echo "#####################################"
+echo
+egrep '^.{85,}$' passwd # mais de 85 caracteres
+
+echo "#####################################"
+echo
+echo "numeros com 4 ou mais digitos"
+egrep '[0-9]{4,}' passwd
+
+echo "#####################################"
+echo
+echo "comeca com vogais e termina com bash"
+egrep '^[aeiou].*bash$' passwd
+
+echo "#####################################"
+echo
+echo "root ou sync"
+egrep '^(root|sync)' passwd

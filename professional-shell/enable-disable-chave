@@ -1,0 +1,14 @@
+#!/bin/bash
+
+chave=0
+test $chave -eq 1 && echo LIGADA
+test $chave -eq 0 && echo DESLIGADA
+
+
+chave=
+# valor nulo retorno erro no teste
+# quando comparado com -eq com numero
+test $chave -eq 1 && echo LIGADA
+# usar varialvel entre chaves
+# usar comapracao de strings com =
+test "$chave" = 1 && echo LIGADA

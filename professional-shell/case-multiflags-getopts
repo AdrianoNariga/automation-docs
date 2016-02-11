@@ -1,0 +1,29 @@
+#!/bin/bash
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -d --debug
+\n -f --force
+\n -v --version
+\n -h --help
+"
+
+# lista de opcoes entre "" onde : inicio nao mostra erros
+# while percorre todas opcoes apos : do inicio
+# variavel $opcao recebe cada opcao procurando dentro do case
+# : apos o d inidica que ele tem um argumento
+while getopts ":fd:vh" opcao
+do
+	case $opcao in
+		f) echo "flag -f ou --force" ;;
+		# $OPTARG quarda o valor do argumento
+		d) echo "flag -d $OPTARG ou --debug $OPTARG" ;;
+		# caso o argumento de -d for nulo usado por ultimo
+		# : sera executado para tratamento
+		:) echo "faltou algum argumento para $OPTARG" ;;
+		v) echo "flag -v ou --version" ;;
+		h) echo "flag -h ou --help" ;;
+		# para opcao nao registrada
+		\?) echo -e $msg_padrao ;;
+	esac
+done
