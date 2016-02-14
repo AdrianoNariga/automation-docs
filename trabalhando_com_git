@@ -1,3 +1,37 @@
+##### ignorando arquivos
+vim .gitignore
+file.txt
+directory
+
+git add .gitignore ; git commit -m "arquivos ignorados"
+
+##### rastreando e commitando
+git add . ; git commit -m "comentario"
+git commit -a -m "adicionando e comitando"
+
+##### logs de commit
+git log # todos os comits
+git log -n 2 # os 2 ultimos commits
+git log --oneline # exibe id do commit
+git log -n 2 --oneline
+git log --stat # exibe arquivos modificados
+
+##### diff
+git diff # diff entre modificados e ultimo commit
+git diff --staged # entre adicionados e ultimo commit
+git diff <ID> # entre modificados e commit do ID
+git diff <ID>..<ID> # entre os dois IDS
+git diff <ID>~2 # entre o ID e dois commits antes
+
+##### voltando alteracoes
+git checkout -- file.txt # volta ao estado do ultimo commit
+git reset -- file.txt # remove da area de stage
+git reset --hard # volta todos arquivos ao ultimo commit
+git revert --no-edit <ID> # volta ao estado do commit
+git reset --hard <ID>
+## alteracoes de revert e reset deve ser feito o push
+
+##### trabalhando com branch
 git branch (exibe branch em uso)
 git branch -a (exibe branch disponiveis)
 git checkout openstack-kilo (alterna para o branch openstack-kilo)
