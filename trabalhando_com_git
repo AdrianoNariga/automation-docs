@@ -1,0 +1,17 @@
+git branch (exibe branch em uso)
+git branch -a (exibe branch disponiveis)
+git checkout openstack-kilo (alterna para o branch openstack-kilo)
+git pull
+
+git checkout master (alterna para o branch master)
+git checkout -b icehouse (cria branch icehouse apartir do master)
+git push --all (aplica todas alteracoes locais no repositorio remoto)
+git fetch --all (sincroniza todos os branch disponiveis)
+
+Alterando master apartir do dev
+git checkout openstack-kilo
+git push origin openstack-kilo (aplicando mudancas no branch)
+
+git checkout master (alterna para o branch master)
+git merge openstack-kilo (aplica alteracoes do dev)
+git push (envia alteracoes para repositorio remoto)
