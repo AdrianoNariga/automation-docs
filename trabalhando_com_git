@@ -33,19 +33,33 @@ git reset --hard <ID>
 
 ##### trabalhando com branch
 git branch (exibe branch em uso)
-git branch -a (exibe branch disponiveis)
+git branch -a (exibe branchs remotas e locais)
+
+Alternando entre branch remotas e locais
+git checkout -b openstack-kilo origin/openstack-kilo (caso nao branch local)
+git checkout -t origin/openstack-kilo (resmo resultado comando anterior)
+git clone -b openstack-kilo <link> (para fazer clone somente da branch)
 git checkout openstack-kilo (alterna para o branch openstack-kilo)
+
 git pull
 
 git checkout master (alterna para o branch master)
 git checkout -b icehouse (cria branch icehouse apartir do master)
 git push --all (aplica todas alteracoes locais no repositorio remoto)
-git fetch --all (sincroniza todos os branch disponiveis)
+git fetch --all (sincroniza commits)
 
 Alterando master apartir do dev
 git checkout openstack-kilo
 git push origin openstack-kilo (aplicando mudancas no branch)
 
 git checkout master (alterna para o branch master)
+git branch --no-merged (exibe quais branch disponiveis para merge)
 git merge openstack-kilo (aplica alteracoes do dev)
+git rebase openstack-kilo (faz merge com melhor organizacao nos commits)
+git branch --no-merged
+git branch --merged (exibe quais branch ja estam mescladas)
 git push (envia alteracoes para repositorio remoto)
+
+git branch -d name_branch (deleta branch, deve-se estar fora)
+git branch -D name_branch (deleta branch descartando alteracao)
+git push origin :name_branch (deleta a branch remota)
