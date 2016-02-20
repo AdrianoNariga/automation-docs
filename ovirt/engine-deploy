@@ -10,6 +10,8 @@ basic(){
 }
 
 engine(){
+	echo "Deploy de ovirt engine"
+	basic
 	yum -y install ovirt-engine screen
 	systemctl start nfs-server
 	systemctl enable nfs-server
@@ -18,6 +20,7 @@ engine(){
 }
 
 hosted(){
+	echo "Deploy de ovirt host"
 	basic
 	yum install -y ovirt-hosted-engine-setup
 
@@ -34,8 +37,8 @@ msg_padrao="
 while test -n "$1"
 do
 	case $1 in
-		-e | --engine) echo "flag -f ou --force" ;;
-		-h | --hosted) ;;
+		-e | --engine) engine ;;
+		-h | --hosted) hosted ;;
 		-v | --version) echo "0.1" ;;
 		*) echo -e $msg_padrao
 	esac
