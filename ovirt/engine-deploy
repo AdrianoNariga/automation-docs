@@ -1,0 +1,6 @@
+#!/bin/bash
+yum -y install http://resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+yum -y install ovirt-engine
+systemctl start rpcbind nfs-server
+systemctl enable rpcbind nfs-server
+# engine-setup # rodar em modo silencioso
