@@ -34,6 +34,15 @@ hosted(){
 	# hosted-engine --deploy # rodar em modo silencioso
 }
 
+host_vm(){
+	# fake_kvm_support = true >> /etc/vdsm/vdsm.conf   [vars]
+	echo "options kvm-intel nested=1" > /etc/modprobe.d/kvm-intel.conf
+	# echo "GRUB_CMDLINE_LINUX kvm-intel.nested=1" >> /etc/systemctl/grub
+	grub2-mkconfig -o /boot/grub2/grub.cfg
+	yum install vdsm-hook-faqemu vdsm-hook-nestedvt -y
+	systemctl restart vdsmd.service
+}
+
 msg_padrao="
 \nflag padrao, valores aceitaveis:
 \n -e --engine  -> deploy de server engine
