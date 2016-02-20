@@ -12,6 +12,14 @@ basic(){
 engine(){
 	echo "Deploy de ovirt engine"
 	basic
+	mkdir -p /var/lib/exports/data
+	mkdir -p /var/lib/exports/iso
+
+cat > /etc/exports.d/ovirt-engine.exports << EOF
+/var/lib/exports/iso    192.168.111.0/24(rw,no_root_squash)
+/var/lib/exports/data   192.168.111.0/24(rw,no_root_squash)
+EOF
+
 	yum -y install ovirt-engine screen
 	systemctl start nfs-server
 	systemctl enable nfs-server
