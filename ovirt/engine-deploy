@@ -1,6 +1,43 @@
 #!/bin/bash
-yum -y install http://resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
-yum -y install ovirt-engine
-systemctl start rpcbind nfs-server
-systemctl enable rpcbind nfs-server
-# engine-setup # rodar em modo silencioso
+
+basic(){
+	yum -y install http://resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+	yum -y install nfs-utils ntp
+	timedatectl set-timezone America/Sao_Paulo
+	default_services="ntpd rpcbind"
+	systemctl enable $default_services
+	systemctl start $default_services
+}
+
+engine(){
+	yum -y install ovirt-engine screen
+	systemctl start nfs-server
+	systemctl enable nfs-server
+
+	# engine-setup # rodar em modo silencioso
+}
+
+hosted(){
+	basic
+	yum install -y ovirt-hosted-engine-setup
+
+	# hosted-engine --deploy # rodar em modo silencioso
+}
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -e --engine  -> deploy de server engine
+\n -h --hosted  -> deploy do client hosted
+\n -v --version -> exibe versao deste script
+\n -h --help    -> exibe essa mensagem
+"
+while test -n "$1"
+do
+	case $1 in
+		-e | --engine) echo "flag -f ou --force" ;;
+		-h | --hosted) ;;
+		-v | --version) echo "0.1" ;;
+		*) echo -e $msg_padrao
+	esac
+	shift
+done
