@@ -16,7 +16,6 @@ engine(){
 	mkdir -p /var/lib/exports/iso
 
 cat > /etc/exports.d/ovirt-engine.exports << EOF
-/var/lib/exports/iso    192.168.111.0/24(rw,no_root_squash)
 /var/lib/exports/data   192.168.111.0/24(rw,no_root_squash)
 EOF
 
