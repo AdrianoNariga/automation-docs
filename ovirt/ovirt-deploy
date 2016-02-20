@@ -35,6 +35,7 @@ hosted(){
 }
 
 host_vm(){
+	# http://www.ovirt.org/develop/developer-guide/vdsm/developers/
 	# fake_kvm_support = true >> /etc/vdsm/vdsm.conf   [vars]
 	echo "options kvm-intel nested=1" > /etc/modprobe.d/kvm-intel.conf
 	# echo "GRUB_CMDLINE_LINUX kvm-intel.nested=1" >> /etc/systemctl/grub
