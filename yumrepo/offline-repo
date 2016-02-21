@@ -1,0 +1,71 @@
+#!/bin/bash
+mount -a
+CONFIG="offline-repo.conf"
+
+install_repo(){
+tee /etc/yum.repos.d/docker.repo <<-'EOF'
+[dockerrepo]
+name=Docker Repository
+baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
+enabled=1
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
+	wget -P /etc/yum.repos.d http://download.gluster.org/pub/gluster/glusterfs/LATEST/CentOS/glusterfs-epel.repo
+	yum -y install http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+	yum -y install http://repo.zabbix.com/zabbix/2.4/rhel/7/SRPMS/zabbix-release-2.4-1.el7.src.rpm
+	yum -y install https://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo.rpm
+	yum -y install http://resources.ovirt.org/pub/yum-repo/ovirt-release36.rpm
+	yum -y install yum-utils createrepo
+}
+
+create_repo(){
+	while read LINHA
+	do
+		[ "$(echo $LINHA | cut -c1)" = '#' ] && continue
+		[ "$LINHA" ] || continue
+		set - $LINHA
+		chave=$(echo $1 | tr A-Z a-z)
+		shift
+		valor=$*
+
+		case "$chave" in
+			basedir) BASEDIR=$valor ;;
+			*) repositorios=$(echo "$chave $repositorios $valor")
+		esac
+	done < "$CONFIG"
+	[ ! -d $BASEDIR ] && mkdir -p $BASEDIR
+
+	for repos in `echo $repositorios`
+	do
+		echo -e "\n---------> Criando repositorio $repos"
+		cd $BASEDIR
+		reposync -n -l -r $repos
+		repomanage -o -c $repos | xargs rm -fv
+
+		if [ ! -f $BASEDIR/$repos/repodata/repomd.xml ]
+		then
+			echo "----> $BASEDIR/$repos/repodata/repomd.xml sendo CRIADO"
+			rm -rf $BASEDIR/$repos/repodata
+			rm -rf $BASEDIR/$repos/.repodata
+			echo "-----> Criando grupos de pacotes para $repos"
+			createrepo $repos -g comps.xml &> /dev/null
+			[ ! $? = "0" ] && {
+				echo "-----> Criacao de grupos de pacotes FALHOU... criando sem grupo"
+				createrepo $repos
+			}
+		else
+			echo "----> $BASEDIR/$repos/repodata/repomd.xml sendo ATUALIZADO"
+			echo "----->Atualizando grupos de pacotes para $repos"
+			createrepo --update $repos -g comps.xml &> /dev/null
+			[ ! $? = "0" ] && {
+				echo "-----> Atualizacao de grupos de pacotes FALHOU... atualizando sem grupos"
+				createrepo --update $repos
+			}
+		fi
+	done
+}
+create_repo
+echo "-----> Atualizando repomd.xml de $BASEDIR"
+createrepo --update $BASEDIR
+rm -rf /var/tmp/createrepo* -v
