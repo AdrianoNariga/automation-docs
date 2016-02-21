@@ -1,0 +1,57 @@
+#!/bin/bash
+CONFIG="mensagem.conf"
+
+USAR_CORES=0
+COR_LETRA=
+COR_FUNDO=
+MENSAGEM="Mensagem do script"
+
+## o while le (read) linha a linha a cada interacao do loop
+## o conteudo da linha fica armazenado na variavel LINHA 
+while read LINHA
+do
+	# ignora toda linha se for marcado como comentario (#)
+	[ "$(echo $LINHA | cut -c1)" = '#' ] && continue
+
+	# ignora linhas vazias
+	[ "$LINHA" ] || continue
+
+	# trasforma cara palavra da linha em variaveis sequenciais
+	# ex: "Suzy eh metaleira" $1=Suzy $2=eh $3=metaleira
+	set - $LINHA
+
+	# transforma primeira palavra da linha na chave
+	# chave sempre ser em minusculo para usar no case
+	chave=$(echo $1 | tr A-Z a-z)
+	shift
+
+	# transforma resto da linha em valor
+	valor=$*
+	#echo "+++ $chave --> $valor"
+
+	# relaciona cada chave com as variaveis
+	# atribui a cada variavel o valor definido na chave
+	case "$chave" in
+	# transforma valor on em 1 ou true
+	usarcores) [ "$(echo $valor | tr A-Z a-z)" = 'on' ] && USAR_CORES=1;;
+	# nessas chaves seram aceitos apenas valores numericos
+	# tenta pegar valor definido como cor34
+	corfundo) COR_FUNDO=$(echo $valor | tr -d -c 0-9 );;
+	corletra) COR_LETRA=$(echo $valor | tr -d -c 0-9 );;
+	# se for definida como nulo usar o valor da variavel local
+	mensagem) [ "$valor" ] && MENSAGEM=$valor;;
+	*)
+		echo "Erro no arquivo de configuracao"
+		echo "Opcao desconhecida $chave"
+		exit 1
+	esac
+done < "$CONFIG"
+
+### exibe mensagem
+# variavel USAR_COR for ligada deve usar cores
+if [ $USAR_CORES -eq 1 ]
+then
+	echo -e "\033[$COR_FUNDO;${COR_LETRA}m$MENSAGEM\033[m"
+else
+	echo "$MENSAGEM"
+fi

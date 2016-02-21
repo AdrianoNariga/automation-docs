@@ -1,0 +1,25 @@
+#!/bin/bash
+config=$1
+
+if [ -z "$config" ]
+then
+	echo Configuracao: $config nao existe
+	exit 1
+elif [ ! -r "$config" ]
+then
+	echo Erro: $config nao legivel
+	echo Verifique permissoes
+	exit 1
+fi
+
+while read linha
+do
+	[ "$(echo $linha | cut -c1)" = '#' ] && continue
+	[ "$linha" ] || continue
+	set - $linha
+	chave=$(echo $1 | tr a-z A-Z)
+	shift
+	valor=$*
+
+	echo "Conf_$chave=\"$valor\""
+done < "$config"
