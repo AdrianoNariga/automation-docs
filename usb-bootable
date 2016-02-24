@@ -1,0 +1,4 @@
+#!/bin/bash
+# https://www.youtube.com/watch?v=EnepPp7Xl8Y
+[ -d /sys/firmware/efi/ ] && echo UEFI || echo LEGACY
+dd if=archlinux.iso | pv | dd of=/dev/sdb
