@@ -1,0 +1,47 @@
+    1  pacman -Sc
+    2  pacman -Rs cups
+   19  pacman --help
+   20  man pacman
+   21  pacman -Q
+   22  pacman -U
+   23  pacman -Ss guake
+   24  pacman -Ss guak
+   25  pacman -Ss gua
+   26  pacman -Ss gua
+   27  pacman -Ss office
+   28  pacman -Ss office
+   34  pacman -Ss ack
+   35  pacman -Ss ^ack
+   39  pacman -Qs linux
+   41  pacman -Qs linux
+   42  pacman -Q linux
+   43  pacman -Qs linux
+   44  pacman -Qs linux
+   48  pacman -Qs linux
+   49  pacman -Q linux
+   50  pacman -Qi linux
+   51  pacman -Si linux
+   52  pacman -Si guake
+   53  pacman -Qi guake
+   54  pacman -Ql guake
+   55  pacman -Ql vim
+   56  pacman -Qlq vim
+   57  pacman -Ql vim
+   59  pacman -Si pacsysclean
+   60  pacman -Si guake
+   61  pacman -Ss pacsysclean
+   62  pacman -S pacsysclean
+   63  pacman -S pacgraph
+   64  pacman -S guake
+   66  pacman -S pacgraph
+   74  pacman -Qu
+   75  pacman -Syu
+   76  pacman -Qu
+   78  pacman -S vlc
+   80  pacman -S skype
+   97  pacman -Rs libreoffice-fresh
+  188  pacman -S gpasted
+  189  pacman -S gparted
+  250  pacman -S virt-manager
+  252  pacman -S sshpass
+  442  history 90000 | grep pacman
