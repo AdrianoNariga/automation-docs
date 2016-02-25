@@ -1,0 +1,56 @@
+#!/bin/bash
+banco=base.db
+[ "$1" ] || {
+    echo "Uso: [ lista | adiciona | remove ]"
+    exit 0
+}
+source sgdb_lib || {
+    echo "$banco nao encontrado"
+    exit 1
+}
+
+case "$1" in
+    # exibe primeiro campo deletando a linha 1 (sed 1d)
+    lista) pega_campo 1 | sed 1d ;;
+    adiciona)
+        echo -n "Login do novo usuario: "
+        read login
+        [ $login ] || {
+            echo "login nao pode ser vazio"
+            exit 1
+        }
+
+        # quando o retorno ja for booleano
+        # nao se coloca entre [ ] (test)
+        tem_chave "$login" && {
+            echo "$login ja existe"
+            exit 1
+        }
+
+        echo -n "Digite o nome completo: "
+        read nome
+        echo -n "Digite a idade: "
+        read idade
+        echo -n "Masculino ou Feminino [MF]: "
+        read sexo
+
+        nome=$(echo $nome | mascara)
+        insere_registro "$login:$nome:$idade:$sexo"
+    ;;
+    remove)
+        echo "Lista de usuarios cadastrados"
+        # troca quebra de linha por linha com espaco
+        pega_campo 1 | sed 1d | tr \\n ' '
+        echo ; echo
+        echo -n "Usuario a ser removido: "
+        read login
+
+        if tem_chave "$login"
+        then
+            apaga_registro "$login"
+        else
+            echo "Usuario ja nao existente na base" ; echo
+        fi
+    ;;
+    *) echo "Opcao invalida: $1" ; exit 1 ;;
+esac

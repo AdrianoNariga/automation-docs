@@ -1,0 +1,64 @@
+#!/bin/bash
+banco=base.db
+source sgdb_lib || {
+    echo "$banco nao encontrado"
+    exit 1
+}
+
+# loop infinito
+while :
+do
+    # uma janela mostrando uma lista (menu) com dois campos
+    # 1º campo sera a string de retorno armazenada em $acao
+    # 2º campo descricao indicado entre " "
+    # acao usado para determinar o case a seguir
+    acao=$(dialog --stdout --title " app dialog amigavel " \
+        --menu "" 0 0 0 lista "Lista usuarios" \
+        adiciona "Adiciona usuario" remove "Remove usuario")
+    [ $? -ne 0 ] && exit
+
+    case "$acao" in
+        lista)
+            temp=(mktemp -t lixo)
+            pega_campo 1 | sed 1d > "$temp"
+            dialog --title "Usuarios" --textbox "$temp" 13 30
+            rm $temp
+        ;;
+        adiciona)
+            login=$(dialog --stdout --inputbox "Loogin: " 0 0)
+            [ $? -ne 0 ] && continue
+            [ $login ] || continue
+
+            tem_chave "$login" && {
+                msg="Usuario '$login' ja foi cadastrado"
+                dialog --msgbox "$msg" 6 40
+                continue
+            }
+
+            nome=$(dialog --stdout --inputbox "Nome completo: " 0 0)
+            [ $? -ne 0 ] && continue
+            idade=$(dialog --stdout --inputbox "Idade: " 0 0)
+            [ $? -ne 0 ] && continue
+            sexo=$(dialog --stdout --radiolist "Sexo: " 0 0 3 \
+                Feminino "" on Masculino "" off)
+            [ $? -ne 0 ] && continue
+            sexo=$(echo $sexo | cut -c1)
+
+            nome=$(echo $nome | mascara)
+            msg=$(insere_registro "$login:$nome:$idade:$sexo")
+            dialog --title "Resultado" --msgbox "$msg" 6 40
+        ;;
+        remove)
+            usuarios=$(pega_campo 1,2 | sed 1d)
+            usuarios=$(echo "$usuarios" | sed 's/:/ "/;s/$/"/')
+
+            login=$(eval dialog --stdout \
+                --menu \"Escolha o usuario a remover\" \
+                0 0 0 $usuarios)
+            [ $? -ne 0 ] && continue
+
+            msg=$(apaga_registro "$login")
+            dialog --title "Resultado" --msgbox "$msg" 6 40
+        ;;
+    esac
+done

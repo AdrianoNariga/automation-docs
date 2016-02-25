@@ -1,6 +1,8 @@
 #!/bin/bash
+# caractere separador de campos no arquivo
 sep=:
 mascara=§
+# cria um arquivo temporario o nome de temp.PID
 temp=temp.$$
 
 [ "$banco" ] || {
@@ -8,23 +10,35 @@ temp=temp.$$
 	return 1
 }
 
+# verefica permissoes do arquivo
+# -r = leitura, -w = escrita
+# -a = and logico (-r file and -w file)
 [ -r "$banco" -a -w "$banco" ] || {
 	echo "Base travada em: $banco, confira as permissoes"
 	return 1
 }
 
+# funcoes para exibir ou nao exibir caractere separador
 mascara(){ tr $sep $mascara ; }
 desmascara(){ tr $mascara $sep ; }
 
+# procura registro no banco
+# retorna true ou false usando o grep silencioso -q
 tem_chave(){
 	grep -i -q "^$1$sep" "$banco"
 }
 
+# exibe campos da tabela
+# troca separaro pro quebra de linha
 campos(){
 	head -n 1 "$banco" | tr $sep \\n
 }
 
 apaga_registro(){
+    # testa se tem o registro
+    # se nao tiver retorna para a funcao tem_chave
+    # voltando para a funcao encerra a execucao
+    # o valor de retorno fica sendo o do grep
 	tem_chave "$1" || return
 	grep -i -v "^$1$sep" "$banco" > "$temp"
 	mv "$temp" "$banco"
@@ -32,7 +46,8 @@ apaga_registro(){
 }
 
 insere_registro(){
-	local chave$(echo "$1" | cut -d $sep -f1)
+    # cria variavel local somente valida dentro da funcao
+	local chave=$(echo "$1" | cut -d $sep -f1)
 	if tem_chave $chave
 	then
 		echo "A chave '$chave' ja esta cadastrada no banco"
@@ -47,11 +62,14 @@ insere_registro(){
 mostra_registro(){
 	local dados=$(grep -i "^$1$sep" "$banco")
 	local i=0
+    # esse return funciona para encerrar a execucao
 	[ "$dados" ] || return
 	campos | while read campo
 	do
 		i=$((i+1))
 		echo -n "$campo: "
+        # exibe registro do numero do campo
+        # aceita campos como 2,4
 		echo "$dados" | cut -d $sep -f $i | desmascara
 	done
 }
