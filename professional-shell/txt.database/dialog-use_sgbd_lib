@@ -15,23 +15,32 @@ do
     acao=$(dialog --stdout --title " app dialog amigavel " \
         --menu "" 0 0 0 lista "Lista usuarios" \
         adiciona "Adiciona usuario" remove "Remove usuario")
+    # ESC ou Cancel not equal a zero encerra programa
     [ $? -ne 0 ] && exit
 
     case "$acao" in
         lista)
-            temp=(mktemp -t lixo)
+            # cria arquivo temporario na mesma pasta
+            temp=lixo
             pega_campo 1 | sed 1d > "$temp"
+            # cria uma caixa de texto com o conteudo do temp_file
             dialog --title "Usuarios" --textbox "$temp" 13 30
             rm $temp
         ;;
         adiciona)
+            # uma janela esperando uma string
+            # conteudo de login sera a string digitada
             login=$(dialog --stdout --inputbox "Loogin: " 0 0)
+            # ESC ou Cancel not equal a zero volta ao menu
             [ $? -ne 0 ] && continue
+            # login vazio volta ao menu
             [ $login ] || continue
 
             tem_chave "$login" && {
                 msg="Usuario '$login' ja foi cadastrado"
+                # exibe mensagem caso usuario ja exista
                 dialog --msgbox "$msg" 6 40
+                # volta ao menu
                 continue
             }
 
@@ -39,24 +48,38 @@ do
             [ $? -ne 0 ] && continue
             idade=$(dialog --stdout --inputbox "Idade: " 0 0)
             [ $? -ne 0 ] && continue
+            # caixa de selecao selecionando por padrao Feminino
+            # retorna a string selecionada
             sexo=$(dialog --stdout --radiolist "Sexo: " 0 0 3 \
                 Feminino "" on Masculino "" off)
             [ $? -ne 0 ] && continue
+            # pega a primeira letra da string retornada F ou M
             sexo=$(echo $sexo | cut -c1)
 
+            # insere registro e armazena retorno em msg
             nome=$(echo $nome | mascara)
             msg=$(insere_registro "$login:$nome:$idade:$sexo")
+            # usa variavel msg para mostrar string de retorno
             dialog --title "Resultado" --msgbox "$msg" 6 40
         ;;
         remove)
+            # pega campo 1 e 2 recurso do grep dentro da funcao
             usuarios=$(pega_campo 1,2 | sed 1d)
+            # troca :(dois pontos) por  "(espaco e aspas)
+            # formata a saida em dois campos contendo strings
+            # ex: "jose" "Jose Severino"
             usuarios=$(echo "$usuarios" | sed 's/:/ "/;s/$/"/')
 
+            # executa dialog com eval para tratar campos
+            # sao esperados duas strings sem espaco para os campos
+            # o eval forca o que esta entre aspas ser considerado
+            # como uma string
             login=$(eval dialog --stdout \
                 --menu \"Escolha o usuario a remover\" \
                 0 0 0 $usuarios)
             [ $? -ne 0 ] && continue
 
+            # login recebe a string do primeiro campo
             msg=$(apaga_registro "$login")
             dialog --title "Resultado" --msgbox "$msg" 6 40
         ;;
