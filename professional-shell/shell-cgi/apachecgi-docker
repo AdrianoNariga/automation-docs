@@ -1,0 +1,2 @@
+#!/bin/bash
+docker run -ti -v `pwd`/html:/var/www/html -v `pwd`/cgi:/usr/lib/cgi-bin -p 80:80 nariga/ubt-apachecgi:0.3 /root/start
