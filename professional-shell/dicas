@@ -1,0 +1,30 @@
+#!/bin/bash
+# ls algumas vezes nao sao precisos
+# envez de $(ls /*) use somente /*
+for dir in /* ; do echo "---- $dir" ; done
+
+echo ; echo
+# comand tr exige ser usado com cat file | tr a-z A-Z
+# para economizar recurso use tr a-z A-Z < file
+tr a-z A-Z < /etc/passwd
+
+echo ; echo
+# variaveis sao perdidas dentro do while
+cat /etc/passwd | while read linha
+do
+    i=$((i+1))
+done ; echo "total $i"
+# dessa forma a variave existe somente detro do loop
+# use o recurso de redirecionar o conteudo do arquivo
+while read linha
+do
+    i=$((i+1))
+done < /etc/passwd ; echo "total $i"
+
+echo ; echo
+# mude caractere de separacao de uma lista no for com IFS
+IFS=:
+lista="valor1:valor2:valor3"
+for i in $lista ; do echo $i ; done
+# tome cuidado para voltar o valor padrao do IFS
+unset IFS
