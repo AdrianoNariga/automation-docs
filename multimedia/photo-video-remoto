@@ -5,7 +5,7 @@ src_local_scpt="~/automation-all/multimedia/photo-video-remoto"
 origem(){
 	brilho="$1%"
 	killall vlc
-
+	sleep 2
 	fswebcam --set brightness=$brilho -r 640x480 \
 	--jpeg 100 -D 1 $src_local_jpg &
 	sleep 2
