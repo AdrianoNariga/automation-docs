@@ -8,7 +8,7 @@ origem(){
 	sleep 2
 	fswebcam --set brightness=$brilho -r 640x480 \
 	--jpeg 100 -D 1 $src_local_jpg &
-	sleep 2
+	sleep 5
 	killall fswebcam
 
 	cvlc v4l2:///dev/video0 \
