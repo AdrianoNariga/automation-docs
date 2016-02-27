@@ -19,10 +19,10 @@ origem(){
 destino(){
 	brilho="$1"
 
-	remoto="bash $src_local_scpt $brilho"
+	remoto="bash $src_local_scpt -o $brilho"
 
 	ssh lenovo "$remoto"
-	scp lenovo:AquaPicture/web-cam-shot.jpg /home/nariga/web-cam-shot.jpg
+	scp lenovo:$src_local_jpg /home/nariga/web-cam-shot.jpg
 	ssh lenovo 'rm /home/nariga/AquaPicture/web-cam-shot.jpg'
 
 	eog /home/nariga/web-cam-shot.jpg
