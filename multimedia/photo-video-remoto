@@ -1,0 +1,50 @@
+#!/bin/bash
+src_local_jpg="~/AquaPicture/web-cam-shot.jpg"
+src_local_scpt="~/automation-all/multimedia/photo-video-remoto"
+
+origem(){
+	brilho="$1%"
+	killall vlc
+
+	fswebcam --set brightness=$brilho -r 640x480 \
+	--jpeg 100 -D 1 $src_local_jpg
+
+	cvlc v4l2:///dev/video0 \
+	:v4l2-standard= \
+	:input-slave=alsa://hw:0,0 \
+	:live-caching=300 \
+	:sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2,samplerate=44100}:http{dst=:8080/stream.wmv}" &
+}
+
+destino(){
+	brilho="$1"
+
+	remoto="bash $src_local_scpt $brilho"
+
+	ssh lenovo "$remoto"
+	scp lenovo:AquaPicture/web-cam-shot.jpg /home/nariga/web-cam-shot.jpg
+	ssh lenovo 'rm /home/nariga/AquaPicture/web-cam-shot.jpg'
+
+	eog /home/nariga/web-cam-shot.jpg
+	rm /home/nariga/web-cam-shot.jpg
+}
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -o origem 80
+\n -d destino 80
+\n -v --version
+\n -h --help
+"
+while test -n "$1"
+do
+        # escolhe a opcao conforme valor de $1
+        case $1 in
+                -o | origem) shift ; origem $1 ;;
+                -d | destino) shift ; destino $1 ;;
+                -v | --version) echo "flag -v ou --version" ;;
+                -h | --help) echo "flag -h ou --help" ;;
+                *) echo -e $msg_padrao
+        esac
+        shift
+done
