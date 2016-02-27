@@ -2,6 +2,26 @@
 src_local_jpg="/home/nariga/AquaPicture/web-cam-shot.jpg"
 src_local_scpt="~/automation-all/multimedia/photo-video-remoto"
 
+photo(){
+	brilho="$1%"
+        killall cvlc
+        killall vlc
+        sleep 2
+        fswebcam --set brightness=$brilho -r 640x480 \
+        --jpeg 100 -D 1 $src_local_jpg
+
+	echo "foto salva em $src_local_jpg"
+}
+
+video(){
+	echo "abrindo streaming de video.... "
+        cvlc v4l2:///dev/video0 \
+	:v4l2-standard= \
+	:input-slave=alsa://hw:0,0 \
+	:live-caching=300 \
+	:sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2,samplerate=44100}:http{dst=:8080/stream.wmv}" &
+}
+
 origem(){
 	brilho="$1%"
 	killall cvlc
@@ -30,10 +50,14 @@ destino(){
 
 msg_padrao="
 \nflag padrao, valores aceitaveis:
-\n -o origem 80
-\n -d destino 80
-\n -v --version
+\n -o origem 80 tira foto na origem e levanta o streaming
+\n -d destino 80 tira foto remoto exibindo local
+\n -p photo 80 apenas tira foto na origem
+\n -v video apenas levanta o streaming
 \n -h --help
+\n ex: foto remota ---->
+\n$0 -d 90
+\n
 "
 while test -n "$1"
 do
@@ -41,7 +65,8 @@ do
         case $1 in
                 -o | origem) shift ; origem $1 ;;
                 -d | destino) shift ; destino $1 ;;
-                -v | --version) echo "flag -v ou --version" ;;
+                -p | photo) shift ; photo $1 ;;
+                -v | video) video ;;
                 -h | --help) echo "flag -h ou --help" ;;
                 *) echo -e $msg_padrao
         esac
