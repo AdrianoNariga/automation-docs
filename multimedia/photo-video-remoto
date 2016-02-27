@@ -10,17 +10,14 @@ origem(){
 	--jpeg 100 -D 1 $src_local_jpg &
 	sleep 5
 
-	cvlc v4l2:///dev/video0 \
-	:v4l2-standard= \
-	:input-slave=alsa://hw:0,0 \
-	:live-caching=300 \
-	:sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2,samplerate=44100}:http{dst=:8080/stream.wmv}" &
+	echo "abrindo streaming de video.... "
+	cvlc v4l2:///dev/video0 :v4l2-standard= :input-slave=alsa://hw:0,0 :live-caching=300 :sout="#transcode{vcodec=WMV2,vb=800,scale=1,acodec=wma2,ab=128,channels=2,samplerate=44100}:http{dst=:8080/stream.wmv}" &
 }
 
 destino(){
 	brilho="$1"
 
-	remoto="bash $src_local_scpt -o $brilho"
+	remoto="bash -x $src_local_scpt -o $brilho"
 
 	ssh -t lenovo "$remoto"
 	scp lenovo:$src_local_jpg /home/nariga/web-cam-shot.jpg
