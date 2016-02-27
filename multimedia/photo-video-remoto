@@ -7,7 +7,7 @@ origem(){
 	killall vlc
 	sleep 2
 	fswebcam --set brightness=$brilho -r 640x480 \
-	--jpeg 100 -D 1 $src_local_jpg &
+	--jpeg 100 -D 1 $src_local_jpg
 	sleep 5
 
 	echo "abrindo streaming de video.... "
