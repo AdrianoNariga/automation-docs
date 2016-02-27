@@ -1,5 +1,5 @@
 #!/bin/bash
-src_local_jpg="~/AquaPicture/web-cam-shot.jpg"
+src_local_jpg="/home/nariga/AquaPicture/web-cam-shot.jpg"
 src_local_scpt="~/automation-all/multimedia/photo-video-remoto"
 
 origem(){
