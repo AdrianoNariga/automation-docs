@@ -9,7 +9,6 @@ origem(){
 	fswebcam --set brightness=$brilho -r 640x480 \
 	--jpeg 100 -D 1 $src_local_jpg &
 	sleep 5
-	killall fswebcam
 
 	cvlc v4l2:///dev/video0 \
 	:v4l2-standard= \
@@ -23,7 +22,7 @@ destino(){
 
 	remoto="bash $src_local_scpt -o $brilho"
 
-	ssh lenovo "$remoto"
+	ssh -t lenovo "$remoto"
 	scp lenovo:$src_local_jpg /home/nariga/web-cam-shot.jpg
 	ssh lenovo 'rm /home/nariga/AquaPicture/web-cam-shot.jpg'
 
