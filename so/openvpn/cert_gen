@@ -1,29 +1,31 @@
 #!/bin/bash
-EASY_RSA_PATH='easy-rsa/'
-CERTS_OPENVPN_PATH='certs'
+EASY_RSA_PATH='/etc/openvpn/easy-rsa/'
+CERTS_OPENVPN_PATH='/etc/openvpn/certs'
 
-source $EASY_RSA_PATH/vars
+cd $EASY_RSA_PATH
+source vars
 export hostname=$2
+[ ! -d keys ] && mkdir -p keys
 
 gen_certificadora(){
-	$EASY_RSA_PATH/clean-all
-	$EASY_RSA_PATH/build-ca
-	$EASY_RSA_PATH/build-dh
-	cp $EASY_RSA_PATH/keys/ca.crt $CERTS_OPENVPN_PATH
-	cp $EASY_RSA_PATH/keys/dh2048.pem $CERTS_OPENVPN_PATH
+	./clean-all
+	./build-ca
+	./build-dh
+	cp keys/ca.crt $CERTS_OPENVPN_PATH
+	cp keys/dh2048.pem $CERTS_OPENVPN_PATH
 }
 
 server_cert(){
 	echo "$EASY_RSA_PATH/build-key-server $hostname"
-	$EASY_RSA_PATH/build-key-server $hostname
-	cp $EASY_RSA_PATH/keys/"$hostname".crt $CERTS_OPENVPN_PATH
-	cp $EASY_RSA_PATH/keys/"$hostname".key $CERTS_OPENVPN_PATH
+	./build-key-server $hostname
+	cp keys/"$hostname".crt $CERTS_OPENVPN_PATH
+	cp keys/"$hostname".key $CERTS_OPENVPN_PATH
 }
 
 client_cert(){
-	$EASY_RSA_PATH/build-key $hostname
-	cp $EASY_RSA_PATH/keys/"$hostname".crt $CERTS_OPENVPN_PATH
-	cp $EASY_RSA_PATH/keys/"$hostname".key $CERTS_OPENVPN_PATH
+	./build-key $hostname
+	cp keys/"$hostname".crt $CERTS_OPENVPN_PATH
+	cp keys/"$hostname".key $CERTS_OPENVPN_PATH
 	
 }
 
