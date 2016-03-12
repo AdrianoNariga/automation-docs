@@ -1,0 +1,6 @@
+#!/bin/bash
+sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/ssh/sshd_config
+systemctl disable firewalld.service
+systemctl stop firewalld.service
+iptables --flush
