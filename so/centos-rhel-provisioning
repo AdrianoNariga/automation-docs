@@ -9,7 +9,7 @@ pref_so(){
 }
 
 gen_screenrc(){
-cat << EOF > $HOME/.screenrc
+cat > $HOME/.screenrc << EOF
 msgwait 3
 sorendition 05 29
 #hardstatus alwayslastline " %c | %d/%m/%Y | %w"
@@ -50,3 +50,4 @@ hostname_manager(){
 }
 pref_so
 hostname_manager
+gen_screenrc
