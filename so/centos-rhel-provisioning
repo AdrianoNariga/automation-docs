@@ -27,22 +27,11 @@ hostname_manager(){
 
 	echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`" >> /etc/hosts
 
-#	[ grep \\. /etc/hostname ] && [ hostname `cat /etc/hostname` ] ||
-#	[ hostname | grep \\. && [ hostname > /etc/hostname ] ||
-#	[
-#		echo "nao foi encontrado dominio, entre com o dominio"
-#		read dominio
-#		hostname "`hostname`.$dominio"
-#		echo "`hostname`.$dominio" > /etc/hostname
-#	
-#		echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.$dominio" >> /etc/hosts
-#	]
-
 	if [ -f /etc/cloud/cloud.cfg ]
 	then
 		cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg
 		mv /tmp/cloud.cfg /etc/cloud/
 	fi
 }
-
+pref_so
 hostname_manager
