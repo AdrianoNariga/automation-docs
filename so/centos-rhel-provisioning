@@ -1,6 +1,48 @@
 #!/bin/bash
-sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
-sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/ssh/sshd_config
-systemctl disable firewalld.service
-systemctl stop firewalld.service
-iptables --flush
+pref_so(){
+	setenforce permissive
+	sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+	sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+	systemctl disable firewalld.service
+	systemctl stop firewalld.service
+	iptables --flush
+}
+
+hostname_manager(){
+	dominio=""
+	if grep -q \\. /etc/hostname
+	then
+		dominio=`cat /etc/hostname | cut -d . -f2`
+		hostname `cat /etc/hostname`
+	elif hostname | grep -q \\.
+	then
+		dominio=`hostname | cut -d . -f2`
+		hostname > /etc/hostname
+	else
+		echo "nao foi encontrado dominio, entre com o dominio"
+                read dominio
+                hostname "`hostname`.$dominio"
+                echo `hostname` > /etc/hostname
+	fi
+
+	echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`" >> /etc/hosts
+
+#	[ grep \\. /etc/hostname ] && [ hostname `cat /etc/hostname` ] ||
+#	[ hostname | grep \\. && [ hostname > /etc/hostname ] ||
+#	[
+#		echo "nao foi encontrado dominio, entre com o dominio"
+#		read dominio
+#		hostname "`hostname`.$dominio"
+#		echo "`hostname`.$dominio" > /etc/hostname
+#	
+#		echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.$dominio" >> /etc/hosts
+#	]
+
+	if [ -f /etc/cloud/cloud.cfg ]
+	then
+		cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg
+		mv /tmp/cloud.cfg /etc/cloud/
+	fi
+}
+
+hostname_manager
