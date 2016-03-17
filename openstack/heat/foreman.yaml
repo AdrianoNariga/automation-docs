@@ -1,0 +1,77 @@
+heat_template_version: 2013-05-23
+
+description: Template simples para deploy de uma instancia
+
+parameters:
+  hostname:
+    type: string
+    description: hostname do servidor foreman
+  chave:
+    type: string
+    description: nome da chave publica ssh
+  flavor:
+    type: string
+    description: escolha de flavor
+    constraints:
+      - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB ]
+  admin_password:
+    type: string
+    description: senha de admin para acesso web
+    default: admin
+    hidden: true
+  imagem:
+    type: string
+    description: id ou nome da imagem centos 7
+    default: CentOS-7.0-64 bits
+  network:
+    type: string
+    description: id da rede
+    default: 4215eedb-6f29-44e9-bc1d-8e109790cf1e
+
+resources:
+  my_foreman:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: hostname }
+      key_name: { get_param: chave }
+      flavor: { get_param: flavor }
+      image: { get_param: imagem }
+      networks:
+        - port: { get_resource: server_port }
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/bash
+            rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+            yum -y install epel-release http://yum.theforeman.org/releases/1.8/el7/x86_64/foreman-release.rpm
+            yum -y install foreman-installer
+            echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.novalocal" >> /etc/hosts
+            hostname `hostname`.novalocal
+            setenforce permissive
+            sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+            sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+            foreman-installer --foreman-admin-password %admin_pass% --enable-foreman-compute-openstack --enable-foreman-compute-vmware
+            sleep 4 ; puppet agent -t
+            cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+
+          params:
+            "%admin_pass%": { get_param: admin_password }
+      user_data_format: RAW
+
+  server_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_param: network }
+
+  float_ip:
+    type: OS::Nova::FloatingIP
+    properties:
+      pool: publica
+  associate_float_ip:
+    type: OS::Nova::FloatingIPAssociation
+    properties:
+      floating_ip: { get_resource: float_ip }
+      server_id: { get_resource: my_foreman }
+
+# chamada na api:
+# heat stack-create foreman -f HEAT/MY_HEATS/foreman.yaml --parameters 'chave=vostro;hostname=frm01;flavor=small.1GB;admin_password=nada'
