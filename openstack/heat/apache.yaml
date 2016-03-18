@@ -41,7 +41,7 @@ resources:
         cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
         yum -y install httpd
         systemctl stop firewalld
-        echo "<h1>Server 1</h1>" > /usr/share/httpd/noindex/index.html
+        echo "<h1>`hostname`</h1>" > /usr/share/httpd/noindex/index.html
         systemctl start httpd
         systemctl enable httpd
 
@@ -52,15 +52,15 @@ resources:
     properties:
       network_id: { get_param: network }
 
-  float_ip:
-    type: OS::Nova::FloatingIP
-    properties:
-      pool: publica
-  associate_float_ip:
-    type: OS::Nova::FloatingIPAssociation
-    properties:
-      floating_ip: { get_resource: float_ip }
-      server_id: { get_resource: my_000 }
+#  float_ip:
+#    type: OS::Nova::FloatingIP
+#    properties:
+#      pool: publica
+#  associate_float_ip:
+#    type: OS::Nova::FloatingIPAssociation
+#    properties:
+#      floating_ip: { get_resource: float_ip }
+#      server_id: { get_resource: my_000 }
 
 # chamada na api:
 # heat stack-create foreman -f HEAT/MY_HEATS/foreman.yaml --parameters 'chave=vostro;hostname=frm01;flavor=small.1GB;admin_password=nada'
