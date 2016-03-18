@@ -1,0 +1,66 @@
+heat_template_version: 2013-05-23
+
+description: Template simples para deploy de uma instancia
+
+parameters:
+  chave:
+    type: string
+    description: nome da chave publica ssh
+    default: uol-diveo
+  flavor:
+    type: string
+    description: escolha de flavor
+    constraints:
+      - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB ]
+    default: small.1GB
+  imagem:
+    type: string
+    description: id ou nome da imagem centos 7
+    default: CentOS-7.0-64 bits
+  network:
+    type: string
+    description: id da rede
+    default: 9c0c3c5c-f435-4bb1-b4ab-f6849f5c9722
+
+resources:
+  my_000:
+    type: OS::Nova::Server
+    properties:
+      key_name: { get_param: chave }
+      flavor: { get_param: flavor }
+      image: { get_param: imagem }
+      networks:
+        - port: { get_resource: server_port }
+      user_data: |
+        #!/bin/bash
+        echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.novalocal" >> /etc/hosts
+        setenforce permissive
+        sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+        sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+        systemctl restart sshd
+        cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+        yum -y install httpd
+        systemctl stop firewalld
+        echo "<h1>Server 1</h1>" > /usr/share/httpd/noindex/index.html
+        systemctl start httpd
+        systemctl enable httpd
+
+      user_data_format: RAW
+
+  server_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_param: network }
+
+  float_ip:
+    type: OS::Nova::FloatingIP
+    properties:
+      pool: publica
+  associate_float_ip:
+    type: OS::Nova::FloatingIPAssociation
+    properties:
+      floating_ip: { get_resource: float_ip }
+      server_id: { get_resource: my_000 }
+
+# chamada na api:
+# heat stack-create foreman -f HEAT/MY_HEATS/foreman.yaml --parameters 'chave=vostro;hostname=frm01;flavor=small.1GB;admin_password=nada'

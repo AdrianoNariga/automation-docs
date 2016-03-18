@@ -1,0 +1,58 @@
+heat_template_version: 2013-05-23
+
+parameters:
+  image:
+    type: string
+    description: Image used for servers
+    default: CentOS-7.0-64 bits
+  chave:
+    type: string
+    description: Name of SSH key to connect to the servers
+    default: uol-diveo
+  flavor:
+    type: string
+    description: flavor used by the servers
+    default: small.1GB
+    constraints:
+      - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB ]
+  num_instances:
+    type: number
+    description: Number of instances to create
+    default: 2
+  network:
+    type: string
+    description: id da rede
+    default: 9c0c3c5c-f435-4bb1-b4ab-f6849f5c9722
+
+resources:
+  server_config:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: { get_param: num_instances }
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          image: { get_param: image }
+          flavor: { get_param: flavor}
+          key_name: { get_param: chave }
+          networks:
+            - port: { get_resource: server_port }
+          user_data: |
+            #!/bin/bash
+            echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.novalocal" >> /etc/hosts
+            setenforce permissive
+            sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+            sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+            systemctl restart sshd
+            cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+            yum -y install httpd
+            echo "<h1>`hostname`</h1>" > /usr/share/httpd/noindex/index.html
+            systemctl start httpd
+            systemctl enable httpd
+
+          user_data_format: RAW
+
+  server_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_param: network }
