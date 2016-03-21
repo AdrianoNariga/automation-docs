@@ -1,3 +1,0 @@
-#!/bin/bash
-## parametro deve ficar dentro de [Login]
-echo "HandleLidSwitch=ignore" >> /etc/systemd/logind.conf
