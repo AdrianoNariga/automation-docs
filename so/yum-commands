@@ -1,0 +1,8 @@
+### Listar historico yum
+yum history
+
+### Informacoes detalhadas de cada yum
+yum history info ID
+
+### Reverter yum update ou install
+yum history undo ID
