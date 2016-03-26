@@ -3,11 +3,10 @@ packages(){
         wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
         echo "deb http://download.virtualbox.org/virtualbox/debian jessie contrib non-free" > /etc/apt/sources.list.d/virtualbox.list
         apt-get update
-	apt-get install build-essential dkms unzip whet -y
+	apt-get install build-essential dkms unzip wget -y
         apt-get install apache2 php5 php5-common php-soap php5-gd virtualbox-5.0 -y
         wget -q -P /tmp https://sourceforge.net/projects/phpvirtualbox/files/phpvirtualbox-5.0-5.zip
 	wget -q -P /tmp http://download.virtualbox.org/virtualbox/5.0.16/VirtualBox-5.0.16-105871-Linux_amd64.run
-	vboxmanage extpack install /tmp/VirtualBox-5.0.16-105871-Linux_amd64.run
 }
 
 config_php(){
@@ -90,12 +89,11 @@ deploy_web(){
 	unzip /tmp/phpvirtualbox-5.0-5.zip -d /tmp
 	rm -rf /var/www/html/
 	mv /tmp/phpvirtualbox-5.0-5 /var/www/html
-	useradd -s /bin/false managervbox
+	useradd -s /bin/bash -g vboxusers -m managervbox
 	echo -e "new_password\nnew_password" | (passwd managervbox)
 	config_php managervbox new_password
-	usermod -aG vboxusers managervbox
 	chown -R managervbox:managervbox /var/www/html
-
+	runuser -l managervbox -c vboxmanage extpack install /tmp/VirtualBox-5.0.16-105871-Linux_amd64.run
 }
 
 
