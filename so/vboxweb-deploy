@@ -1,0 +1,99 @@
+#!/bin/bash
+packages(){
+        wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
+        echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" > /etc/apt/sources.list.d/virtualbox.list
+        apt-get update
+        apt-get install apache2 php5 php5-common php-soap php5-gd build-essential virtualbox-5.0 unzip wget -y
+        wget -q https://sourceforge.net/projects/phpvirtualbox/files/phpvirtualbox-5.0-5.zip
+	wget -q http://download.virtualbox.org/virtualbox/5.0.16/VirtualBox-5.0.16-105871-Linux_amd64.run
+	vboxmanage extpack install VirtualBox-5.0.16-105871-Linux_amd64.run
+}
+config_php(){
+cat > /var/www/html/config.php << EOF
+<?php
+class phpVBoxConfig {
+
+var \$username = '$1';
+var \$password = '$2';
+var \$location = 'http://127.0.0.1:18083/';
+var \$language = 'en';
+var \$vrdeports = '9000-9100';
+
+/*
+var \$servers = array(
+        array(
+                'name' => 'London',
+                'username' => 'user',
+                'password' => 'pass',
+                'location' => 'http://192.168.1.1:18083/',
+                'authMaster' => true // Use this server for authentication
+        ),
+        array(
+                'name' => 'New York',
+                'username' => 'user2',
+                'password' => 'pass2',
+                'location' => 'http://192.168.1.2:18083/'
+        ),
+);
+*/
+
+#var \$noAuth = true;
+#var \$consoleHost = '192.168.1.40';
+#var \$noPreview = true;
+#var \$previewUpdateInterval = 30;
+#var \$previewWidth = 180;
+
+var \$maxProgressList = 5;
+
+#var \$previewAspectRatio = 1.6;
+#var \$enableCustomIcons = true;
+#var \$phpVboxGroups = true;
+
+var \$deleteOnRemove = true;
+var \$browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
+
+#var \$browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like array('/home/vbox','/var/ISOs')
+#var \$browserLocal = true;
+#var \$browserDisable = true;
+#var \$noWindowsDriveList = true;
+#var \$forceWindowsAllDriveList = true;
+
+var \$hostMemInfoRefreshInterval = 5;
+
+#var \$hostMemInfoShowFreePct = true;
+#var \$vmMemoryStartLimitWarn = true;
+#var \$vmMemoryOffset = 100;
+#var \$enableGuestAdditionsVersionDisplay = true;
+#var \$disableTabVMSnapshots = true; // Snapshots tab
+#var \$disableTabVMConsole = true; // Console tab
+
+var \$consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
+var \$consoleKeyboardLayout = 'EN';
+var \$nicMax = 4;
+
+#var \$enableAdvancedConfig = true;
+#var \$startStopConfig = true;
+#var \$enforceVMOwnership = true;
+#var \$vmQuotaPerUser = 2;
+#var \$enableVDE = true; 
+#var \$disableSataPortCount = true;
+#var \$enableLPTConfig = true;
+#var \$enableHDFlushConfig = true;
+#var \$eventListenerTimeout = 20;
+}
+EOF
+}
+
+deploy_web(){
+	unzip phpvirtualbox-5.0-5.zip
+	rm -rf /var/www/html/
+	mv phpvirtualbox-5.0-5 /var/www/html
+	useradd -s /bin/false managervbox
+	echo -e "new_password\nnew_password" | (passwd managervbox)
+	config_php managervbox new_password
+	usermod -aG vboxusers managervbox
+	chown -R managervbox:managervbox /var/www/html
+
+}
+packages
+deploy_web
