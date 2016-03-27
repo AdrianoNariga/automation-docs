@@ -92,6 +92,7 @@ deploy_web(){
 	useradd -s /bin/bash -g vboxusers -m managervbox
 	echo -e "new_password\nnew_password" | (passwd managervbox)
 	config_php managervbox new_password
+	echo "VBOXWEB_USER=managervbox" > /etc/default/virtualbox
 	chown -R managervbox. /var/www/html
 	vboxmanage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-5.0.16-105871.vbox-extpack
 }
