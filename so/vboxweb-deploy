@@ -3,7 +3,6 @@ source determine_so
 ubt_debinstall(){
     wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
     apt-get update
-    pkg_apt="build-essential dkms unzip wget apache2 php5 php5-common php-soap php5-gd virtualbox-5.0"
     apt-get install $pkg_apt -y
     services_restarted="vboxweb-service vboxdrv apache2"
 }
@@ -13,11 +12,11 @@ packages(){
         Debian)
             echo "deb http://download.virtualbox.org/virtualbox/debian jessie contrib non-free" > /etc/apt/sources.list.d/virtualbox.list
             ubt_debinstall
-            ;;
+        ;;
         Ubuntu)
             echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" > /etc/apt/sources.list.d/virtualbox.list
             ubt_debinstall
-            ;;
+        ;;
         CentOS)
             setenforce permissive
             sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
@@ -25,13 +24,11 @@ packages(){
             systemctl disable firewalld.service
             systemctl stop firewalld.service
             iptables --flush
-            pkg_yum="binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers
-            kernel-devel dkms unzip wget httpd php php-soap php-gd VirtualBox-5.0"
             yum install -y epel-release
             wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
             yum install -y httpd $pkg_yum
             services_restarted="vboxweb-service vboxdrv httpd"
-            ;;
+        ;;
     esac
 
     wget -q -P /tmp https://sourceforge.net/projects/phpvirtualbox/files/phpvirtualbox-5.0-5.zip
@@ -117,13 +114,17 @@ purge_vboxweb(){
 		
 	case `get_so -s` in
         Debian)
-		apt-get remove $pkg_apt -y
-		apt-get autoremove -y
-	;;
-	Ubuntu)
-	;;
-	CentOS)
-	;;
+		    apt-get remove $pkg_apt -y
+		    apt-get autoremove -y
+	    ;;
+	    Ubuntu)
+		    apt-get remove $pkg_apt -y
+		    apt-get autoremove -y
+	    ;;
+	    CentOS)
+
+            yum erase $pkg_yum -y
+	    ;;
 	esac
 
 	userdel -r managervbox
@@ -138,6 +139,11 @@ msg_padrao="
 prog -i (instala)
 prog -r (unistall)
 "
+pkg_yum="binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers
+kernel-devel dkms unzip wget httpd php php-soap php-gd VirtualBox-5.0"
+
+pkg_apt="build-essential dkms unzip wget apache2 php5 php5-common php-soap
+php5-gd virtualbox-5.0"
 
 while test -n "$1"
 do
