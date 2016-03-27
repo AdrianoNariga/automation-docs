@@ -3,8 +3,9 @@ source determine_so
 ubt_debinstall(){
     wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
     apt-get update
-    apt-get install build-essential dkms unzip wget -y
-    apt-get install apache2 php5 php5-common php-soap php5-gd virtualbox-5.0 -y
+    pkg_apt="build-essential dkms unzip wget apache2 php5 php5-common php-soap php5-gd virtualbox-5.0"
+    apt-get install $pkg_apt -y
+    services_restarted="vboxweb-service vboxdrv apache2"
 }
 
 packages(){
@@ -18,11 +19,18 @@ packages(){
             ubt_debinstall
             ;;
         CentOS)
+            setenforce permissive
+            sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+            sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+            systemctl disable firewalld.service
+            systemctl stop firewalld.service
+            iptables --flush
+            pkg_yum="binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers
+            kernel-devel dkms unzip wget httpd php php-soap php-gd VirtualBox-5.0"
             yum install -y epel-release
-            yum install -y binutils gcc make patch libgomp glibc-headers \
-                glibc-devel kernel-headers kernel-devel dkms unzip wget
             wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
-            yum install -y httpd php php-soap php-gd VirtualBox-5.0
+            yum install -y httpd $pkg_yum
+            services_restarted="vboxweb-service vboxdrv httpd"
             ;;
     esac
 
@@ -98,9 +106,8 @@ deploy_web(){
 	echo "VBOXWEB_USER=managervbox" > /etc/default/virtualbox
 	chown -R managervbox. /var/www/html
 	vboxmanage extpack install /tmp/Oracle_VM_VirtualBox_Extension_Pack-5.0.16-105871.vbox-extpack
-	systemctl restart vboxweb-service vboxdrv apache2
+	systemctl restart $services_restarted
 }
-
 
 purge_vboxweb(){
 	vboxmanage extpack uninstall --force VirtualBox-5.0.16-105871-Linux_amd64
