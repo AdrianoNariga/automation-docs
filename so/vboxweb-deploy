@@ -115,8 +115,16 @@ purge_vboxweb(){
 	rm -rf /tmp/phpvirtualbox-5.0-5.zip /var/www/html/ /tmp/phpvirtualbox-5.0-5 \
 	/tmp/Oracle_VM_VirtualBox_Extension_Pack-5.0.16-105871.vbox-extpack /etc/apt/sources.list.d/virtualbox.list
 		
-	apt-get remove build-essential dkms unzip whet -y
-    apt-get remove apache2 php5 php5-common php-soap php5-gd virtualbox-5.0 -y
+	case `get_so -s` in
+        Debian)
+		apt-get remove $pkg_apt -y
+		apt-get autoremove -y
+	;;
+	Ubuntu)
+	;;
+	CentOS)
+	;;
+	esac
 
 	userdel -r managervbox
 }
