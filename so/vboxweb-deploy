@@ -1,11 +1,26 @@
 #!/bin/bash
-source determine_so
+get_so(){
+	while test -n "$1"
+	do
+	case $1 in
+		-s | --operatingsystem)
+			cat /etc/os-release | grep PRETTY_NAME= | cut -d \" -f 2 | awk '{print $1}'
+		;;
+		-v | --version)
+			cat /etc/os-release | grep VERSION_ID= | cut -d \" -f2
+		;;
+		*) echo "opcao invalida"
+	esac
+	shift
+	done
+}
 
 #### funcoes de gerencia ####
 # funcao para gerar config.php
 # uso config_php user senha
 config_php(){
 cat > $root_web/config.php << EOF
+# arquivo gerado no deploy, arquivo completo em $root_web/config.php-example
 <?php
 class phpVBoxConfig {
 
@@ -15,60 +30,28 @@ var \$location = 'http://127.0.0.1:18083/';
 var \$language = 'en';
 var \$vrdeports = '9000-9100';
 
-#var \$noAuth = true;
-#var \$consoleHost = '192.168.1.40';
-#var \$noPreview = true;
-#var \$previewUpdateInterval = 30;
-#var \$previewWidth = 180;
-
 var \$maxProgressList = 5;
-
-#var \$previewAspectRatio = 1.6;
-#var \$enableCustomIcons = true;
-#var \$phpVboxGroups = true;
 
 var \$deleteOnRemove = true;
 var \$browserRestrictFiles = array('.iso','.vdi','.vmdk','.img','.bin','.vhd','.hdd','.ovf','.ova','.xml','.vbox','.cdr','.dmg','.ima','.dsk','.vfd');
 
-#var \$browserRestrictFolders = array('D:\\','C:\\Users\\Ian'); // Or something like array('/home/vbox','/var/ISOs')
-#var \$browserLocal = true;
-#var \$browserDisable = true;
-#var \$noWindowsDriveList = true;
-#var \$forceWindowsAllDriveList = true;
-
 var \$hostMemInfoRefreshInterval = 5;
-
-#var \$hostMemInfoShowFreePct = true;
-#var \$vmMemoryStartLimitWarn = true;
-#var \$vmMemoryOffset = 100;
-#var \$enableGuestAdditionsVersionDisplay = true;
-#var \$disableTabVMSnapshots = true; // Snapshots tab
-#var \$disableTabVMConsole = true; // Console tab
 
 var \$consoleResolutions = array('640x480','800x600','1024x768','1280x720','1440x900');
 var \$consoleKeyboardLayout = 'EN';
 var \$nicMax = 4;
 
-#var \$enableAdvancedConfig = true;
-#var \$startStopConfig = true;
-#var \$enforceVMOwnership = true;
-#var \$vmQuotaPerUser = 2;
-#var \$enableVDE = true; 
-#var \$disableSataPortCount = true;
-#var \$enableLPTConfig = true;
-#var \$enableHDFlushConfig = true;
-#var \$eventListenerTimeout = 20;
 }
 EOF
+}
 
 # funcao para instalar pacotes em sos debian e ubuntu
 # setar variavel pkg_apt antes
-}
 ubt_debinstall(){
-    wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
-    apt-get update
-    apt-get install $pkg_apt -y
-    services_restarted="vboxweb-service vboxdrv apache2"
+	wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
+	apt-get update
+	apt-get install $pkg_apt -y
+	services_restarted="vboxweb-service vboxdrv apache2"
 }
 
 # funcao para configurar anbiente vbox com vboxweb
@@ -88,36 +71,36 @@ deploy_web(){
 }
 
 packages(){
-    case `get_so -s` in
-        Debian)
-            root_web="/var/www/html"
-            echo "deb http://download.virtualbox.org/virtualbox/debian jessie contrib non-free" > /etc/apt/sources.list.d/virtualbox.list
-            ubt_debinstall
-        ;;
-        Ubuntu)
-            root_web="/var/www/html"
-            echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" > /etc/apt/sources.list.d/virtualbox.list
-            ubt_debinstall
-        ;;
-        CentOS)
-            root_web="/var/www/html"
-            setenforce permissive
-            sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
-            sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
-            systemctl disable firewalld.service
-            systemctl stop firewalld.service
-            iptables --flush
-            yum install -y epel-release
-            wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
-	    echo "yum install -y $pkg_yum"
-            yum install -y $pkg_yum
-            services_restarted="vboxweb-service vboxdrv httpd"
-        ;;
-    esac
+root_web="/var/www/html"
+	case `get_so -s` in
+		Debian)
+			echo "deb http://download.virtualbox.org/virtualbox/debian jessie contrib non-free" \
+			> /etc/apt/sources.list.d/virtualbox.list
+		ubt_debinstall
+		;;
+		Ubuntu)
+ 			echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" \
+			> /etc/apt/sources.list.d/virtualbox.list
+			ubt_debinstall
+		;;
+		CentOS)
+ 			setenforce permissive
+			sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+			sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+			systemctl disable firewalld.service
+			systemctl stop firewalld.service
+			iptables --flush
+			yum install -y epel-release
+			wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
+			echo "yum install -y $pkg_yum"
+			yum install -y $pkg_yum
+			services_restarted="vboxweb-service vboxdrv httpd"
+		;;
+	esac
 
-    vbox_version="$(vboxmanage --version | tail -n1 | cut -d r -f 1)"
-    wget -q -P /tmp https://sourceforge.net/projects/phpvirtualbox/files/phpvirtualbox-5.0-5.zip
-    wget -q -P /tmp http://download.virtualbox.org/virtualbox/$vbox_version/Oracle_VM_VirtualBox_Extension_Pack-${vbox_version}.vbox-extpack
+	vbox_version="$(vboxmanage --version | tail -n1 | cut -d r -f 1)"
+	wget -q -P /tmp https://sourceforge.net/projects/phpvirtualbox/files/phpvirtualbox-5.0-5.zip
+	wget -q -P /tmp http://download.virtualbox.org/virtualbox/$vbox_version/Oracle_VM_VirtualBox_Extension_Pack-${vbox_version}.vbox-extpack
 }
 
 
@@ -129,19 +112,19 @@ purge_vboxweb(){
 	/tmp/Oracle_VM_VirtualBox_Extension_Pack-${vbox_version}.vbox-extpack /etc/apt/sources.list.d/virtualbox.list
 		
 	case `get_so -s` in
-        Debian)
-		    apt-get remove $pkg_apt -y
-		    apt-get autoremove -y
-	    ;;
-	    Ubuntu)
-		    apt-get remove $pkg_apt -y
-		    apt-get autoremove -y
-	    ;;
-	    CentOS)
-		    pkg_yum=$(echo $pkg_yum | sed "s/binutils //g")
-	            yum erase $pkg_yum -y
-		    rm -rf /etc/yum.repos.d/virtualbox.repo*
-	    ;;
+		Debian)
+			apt-get remove $pkg_apt -y
+			apt-get autoremove -y
+		;;
+		Ubuntu)
+			apt-get remove $pkg_apt -y
+			apt-get autoremove -y
+		;;
+		CentOS)
+			pkg_yum=$(echo $pkg_yum | sed "s/binutils //g")
+			yum erase $pkg_yum -y
+			rm -rf /etc/yum.repos.d/virtualbox.repo*
+		;;
 	esac
 
 	userdel -r managervbox
@@ -151,8 +134,6 @@ msg_padrao="
 \nflag padrao, valores aceitaveis:
 \n -i --install
 \n -r --remove
-\n -v --version
-\n -h --help
 prog -i (instala)
 prog -r (unistall)
 "
@@ -161,8 +142,6 @@ kernel-devel dkms unzip wget httpd php php-soap php-gd VirtualBox-5.0"
 
 pkg_apt="build-essential dkms unzip wget apache2 php5 php5-common php-soap
 php5-gd virtualbox-5.0"
-
-vbox_version="5.0.16"
 
 while test -n "$1"
 do
@@ -173,7 +152,6 @@ do
 		;;
 		-r | --remove) purge_vboxweb ;;
 		-v | --version) echo "flag -v ou --version" ;;
-		-h | --help) echo "flag -h ou --help" ;;
 		*) echo -e $msg_padrao
 	esac
 
