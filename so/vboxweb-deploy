@@ -24,8 +24,8 @@ get_so(){
 # uso config_php user senha
 config_php(){
 cat > $root_web/config.php << EOF
-# arquivo gerado no deploy, arquivo completo em $root_web/config.php-example
 <?php
+# arquivo gerado no deploy, arquivo completo em $root_web/config.php-example
 class phpVBoxConfig {
 
 var \$username = '$1';
