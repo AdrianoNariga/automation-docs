@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# funcao de descoberta do sistema operacional
+# get_so -s (retorna o sistema operasional)
+# get_so -v (versao do sistema)
 get_so(){
 	while test -n "$1"
 	do
@@ -113,15 +117,24 @@ purge_vboxweb(){
 		
 	case `get_so -s` in
 		Debian)
+			echo "pacotes removidos: $pkg_apt"
+			echo "para cancelar CTRL + C"
+			echo "continuar ENTER"
 			apt-get remove $pkg_apt -y
 			apt-get autoremove -y
 		;;
 		Ubuntu)
+			echo "pacotes removidos: $pkg_apt"
+			echo "para cancelar CTRL + C"
+			echo "continuar ENTER"
 			apt-get remove $pkg_apt -y
 			apt-get autoremove -y
 		;;
 		CentOS)
 			pkg_yum=$(echo $pkg_yum | sed "s/binutils //g")
+			echo "pacotes removidos: $pkg_yum"
+			echo "para cancelar CTRL + C"
+			echo "continuar ENTER"
 			yum erase $pkg_yum -y
 			rm -rf /etc/yum.repos.d/virtualbox.repo*
 		;;
