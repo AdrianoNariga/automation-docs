@@ -5,7 +5,7 @@ source determine_so
 # funcao para gerar config.php
 # uso config_php user senha
 config_php(){
-cat > /var/www/html/config.php << EOF
+cat > $root_web/config.php << EOF
 <?php
 class phpVBoxConfig {
 
@@ -76,10 +76,10 @@ ubt_debinstall(){
 # essa funcao depende da funcao config_php
 deploy_web(){
 	unzip /tmp/phpvirtualbox-5.0-5.zip -d /tmp
-	rm -rf /var/www/html/
+	rm -rf $root_web
 	mv /tmp/phpvirtualbox-5.0-5 $root_web
 	useradd -s /bin/bash -g vboxusers -m managervbox
-	echo -e "new_password\nnew_password" | (passwd managervbox)
+	echo -e "new_password\nnew_password" | (passwd -f managervbox)
 	config_php managervbox new_password
 	echo "VBOXWEB_USER=managervbox" > /etc/default/virtualbox
 	chown -R managervbox. /var/www/html
@@ -109,7 +109,9 @@ packages(){
             iptables --flush
             yum install -y epel-release
             wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
-            yum install -y httpd $pkg_yum
+	    echo "yum install -y $pkg_yum"
+	    read
+            yum install -y $pkg_yum
             services_restarted="vboxweb-service vboxdrv httpd"
         ;;
     esac
@@ -135,7 +137,9 @@ purge_vboxweb(){
 		    apt-get autoremove -y
 	    ;;
 	    CentOS)
-            yum erase $pkg_yum -y
+		    pkg_yum=$(echo $pkg_yum | sed "s/binutils //g")
+	            yum erase $pkg_yum -y
+		    rm -rf /etc/yum.repos.d/virtualbox.repo*
 	    ;;
 	esac
 
