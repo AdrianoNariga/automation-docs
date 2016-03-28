@@ -79,7 +79,7 @@ deploy_web(){
 	rm -rf $root_web
 	mv /tmp/phpvirtualbox-5.0-5 $root_web
 	useradd -s /bin/bash -g vboxusers -m managervbox
-	echo -e "new_password\nnew_password" | (passwd -f managervbox)
+	echo -e "new_password\nnew_password" | (passwd managervbox)
 	config_php managervbox new_password
 	echo "VBOXWEB_USER=managervbox" > /etc/default/virtualbox
 	chown -R managervbox. /var/www/html
@@ -110,7 +110,6 @@ packages(){
             yum install -y epel-release
             wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
 	    echo "yum install -y $pkg_yum"
-	    read
             yum install -y $pkg_yum
             services_restarted="vboxweb-service vboxdrv httpd"
         ;;
