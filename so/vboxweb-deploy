@@ -100,7 +100,7 @@ packages(){
             ubt_debinstall
         ;;
         CentOS)
-            root_web="/usr/share/httpd/noindex/"
+            root_web="/var/www/html"
             setenforce permissive
             sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
             sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
