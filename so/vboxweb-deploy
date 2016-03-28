@@ -1,6 +1,9 @@
 #!/bin/bash
 source determine_so
 
+#### funcoes de gerencia ####
+# funcao para gerar config.php
+# uso config_php user senha
 config_php(){
 cat > /var/www/html/config.php << EOF
 <?php
@@ -58,6 +61,8 @@ var \$nicMax = 4;
 }
 EOF
 
+# funcao para instalar pacotes em sos debian e ubuntu
+# setar variavel pkg_apt antes
 }
 ubt_debinstall(){
     wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
@@ -66,10 +71,13 @@ ubt_debinstall(){
     services_restarted="vboxweb-service vboxdrv apache2"
 }
 
+# funcao para configurar anbiente vbox com vboxweb
+# setar variaveis services_restarted e root_web antes
+# essa funcao depende da funcao config_php
 deploy_web(){
 	unzip /tmp/phpvirtualbox-5.0-5.zip -d /tmp
 	rm -rf /var/www/html/
-	mv /tmp/phpvirtualbox-5.0-5 /var/www/html
+	mv /tmp/phpvirtualbox-5.0-5 $root_web
 	useradd -s /bin/bash -g vboxusers -m managervbox
 	echo -e "new_password\nnew_password" | (passwd managervbox)
 	config_php managervbox new_password
@@ -82,14 +90,17 @@ deploy_web(){
 packages(){
     case `get_so -s` in
         Debian)
+            root_web="/var/www/html"
             echo "deb http://download.virtualbox.org/virtualbox/debian jessie contrib non-free" > /etc/apt/sources.list.d/virtualbox.list
             ubt_debinstall
         ;;
         Ubuntu)
+            root_web="/var/www/html"
             echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" > /etc/apt/sources.list.d/virtualbox.list
             ubt_debinstall
         ;;
         CentOS)
+            root_web="/usr/share/httpd/noindex/"
             setenforce permissive
             sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
             sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
@@ -124,7 +135,6 @@ purge_vboxweb(){
 		    apt-get autoremove -y
 	    ;;
 	    CentOS)
-
             yum erase $pkg_yum -y
 	    ;;
 	esac
