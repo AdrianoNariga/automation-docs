@@ -94,7 +94,7 @@ root_web="/var/www/html"
 			systemctl disable firewalld.service
 			systemctl stop firewalld.service
 			iptables --flush
-			yum install -y epel-release
+			yum install -y epel-release wget
 			wget -P /etc/yum.repos.d/ http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
 			echo "yum install -y $pkg_yum"
 			yum install -y $pkg_yum
