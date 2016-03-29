@@ -120,6 +120,7 @@ purge_vboxweb(){
 			echo "pacotes removidos: $pkg_apt"
 			echo "para cancelar CTRL + C"
 			echo "continuar ENTER"
+			read
 			apt-get remove $pkg_apt -y
 			apt-get autoremove -y
 		;;
@@ -127,6 +128,7 @@ purge_vboxweb(){
 			echo "pacotes removidos: $pkg_apt"
 			echo "para cancelar CTRL + C"
 			echo "continuar ENTER"
+			read
 			apt-get remove $pkg_apt -y
 			apt-get autoremove -y
 		;;
@@ -135,6 +137,7 @@ purge_vboxweb(){
 			echo "pacotes removidos: $pkg_yum"
 			echo "para cancelar CTRL + C"
 			echo "continuar ENTER"
+			read
 			yum erase $pkg_yum -y
 			rm -rf /etc/yum.repos.d/virtualbox.repo*
 		;;
