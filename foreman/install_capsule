@@ -40,3 +40,14 @@ capsule(){
 	--dns true --dns-forwarders 8.8.4.4 \
 	--dns-reverse 111.168.192.in-addr.arpa
 }
+
+# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.1/html/Installation_Guide/
+# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.1/html/User_Guide/
+# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.0/html/User_Guide/
+# alias manager_hamer="hammer -u admin -p $pass"
+# manager_hamer organization list
+# manager_hamer capsule list
+# manager_hamer lifecycle-environment list --organization-id 3
+# manager_hamer capsule content add-lifecycle-environment --id 4 --environment-id 2
+# manager_hamer capsule content synchronize --id 4
+# manager_hamer capsule content synchronize --id 4 --environment-id 2
