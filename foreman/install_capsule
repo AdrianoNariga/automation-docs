@@ -31,7 +31,7 @@ capsule(){
 	--pulp-oauth-secret yXdPXYowa6cocCHZnF9R6cMsQLSwYzrB \
 	--certs-tar ~/ktlclient.home.jab.tar \
 	--puppet true --puppetca true \
-	--pulp-master false --pulp true \
+	--pulp true \
 	--tftp true \
 	--dhcp true \
 	--dhcp-gateway 192.168.111.1 \
