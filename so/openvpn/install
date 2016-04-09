@@ -13,7 +13,8 @@ deploy(){
         [ -e $opvpn_dir/$file ] || cp -r $file $opvpn_dir
     done
     cd $opvpn_dir
-    gen_certs -s "$(hostname)"
+    bash gen_certs -b
+    bash gen_certs -s "$(hostname)"
 }
 
 centos
