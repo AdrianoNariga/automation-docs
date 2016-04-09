@@ -1,6 +1,6 @@
 #!/bin/bash
 EASY_RSA_PATH='/etc/openvpn/easy-rsa/'
-CERTS_OPENVPN_PATH='/etc/openvpn/certs'
+CERTS_OPENVPN_PATH='/etc/openvpn/certs_server/'
 
 cd $EASY_RSA_PATH
 source vars
