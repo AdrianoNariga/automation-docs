@@ -8,9 +8,9 @@ centos(){
 deploy(){
     files="example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa"
     opvpn_dir="/etc/openvpn"
-    for file in example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa
+    for file in $files
     do
-        test -e $file || cp -r $opvpn_dir
+        [ $opvpn_dir/$file ] || cp -r $file $opvpn_dir
     done
     cd $opvpn_dir
     gen_certs -s "$(hostname)"
