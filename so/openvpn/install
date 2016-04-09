@@ -1,4 +1,4 @@
-#/bin/bash
+#bin/bash
 source functions/determine_so
 
 centos(){
@@ -15,6 +15,12 @@ deploy(){
     cd $opvpn_dir
     bash gen_certs -b
     bash gen_certs -s "$(hostname)"
+}
+
+vpn_conf(){
+    sed -i.bak "s/dhcp-dns.conteiner/$(hostname)/g" $opvpn_dir/server_server.conf
+    systemctl enable openvpn@server_server
+    systemctl start openvpn@server_server
 }
 
 centos
