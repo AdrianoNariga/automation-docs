@@ -10,7 +10,7 @@ deploy(){
     opvpn_dir="/etc/openvpn"
     for file in $files
     do
-        [ $opvpn_dir/$file ] || cp -r $file $opvpn_dir
+        [ -e $opvpn_dir/$file ] || cp -r $file $opvpn_dir
     done
     cd $opvpn_dir
     gen_certs -s "$(hostname)"
