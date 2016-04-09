@@ -19,10 +19,20 @@ deploy(){
     bash gen_certs -s "$(hostname)"
 }
 
-vpn_conf(){
+conf_server(){
     ip_eth0="`ifconfig eth0 | grep broadcast | awk '{print $2}'`"
     sed -i.bak "s/dhcp-dns.conteiner/$(hostname)/g" $opvpn_dir/server_server.conf
     sed -i.bak "s/192.168.111.254/$ip_eth0/g" $opvpn_dir/server_server.conf
+    [ -f $opvpn_dir ] || rm -rf $opvpn_dir/server_server.conf.bak
+    systemctl enable openvpn@server_server
+    systemctl start openvpn@server_server
+}
+
+conf_client(){
+    ip_eth0="`ifconfig eth0 | grep broadcast | awk '{print $2}'`"
+    sed -i.bak "s/katello.cloud/$(hostname)/g" $opvpn_dir/client.conf
+    sed -i.bak "s/192.168.111.254/$ip_eth0/g" $opvpn_dir/client.conf
+    [ -f $opvpn_dir ] || rm -rf $opvpn_dir/server_server.conf.bak
     systemctl enable openvpn@server_server
     systemctl start openvpn@server_server
 }
