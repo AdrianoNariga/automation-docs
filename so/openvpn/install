@@ -1,0 +1,17 @@
+#/bin/bash
+source functions/determine_so
+
+centos(){
+    yum install -y openvpn easy-rsa
+}
+
+deploy(){
+    files="example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa"
+    opvpn_dir="/etc/openvpn"
+    cp -r $files $opvpn_dir
+    cd $opvpn_dir
+    gen_certs -s "$(hostname)"
+}
+
+centos
+deploy
