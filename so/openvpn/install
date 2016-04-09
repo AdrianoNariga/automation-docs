@@ -1,13 +1,14 @@
 #bin/bash
 source functions/determine_so
 
+files="example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa"
+opvpn_dir="/etc/openvpn"
+
 centos(){
     yum install -y openvpn easy-rsa
 }
 
 deploy(){
-    files="example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa"
-    opvpn_dir="/etc/openvpn"
     for file in $files
     do
         [ -e $opvpn_dir/$file ] || cp -r $file $opvpn_dir
