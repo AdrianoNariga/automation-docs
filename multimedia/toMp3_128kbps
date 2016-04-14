@@ -2,16 +2,17 @@
 # converte arquivos mp3 ou flac para mp3 128 kbps
 # arquivos convertidos ficam dentro de mp3
 mkdir mp3
-for file in *
+for f in *
 do
-    extencao=$(echo ${file##*.} | tr A-Z a-z)
+    extencao=$(echo ${f##*.} | tr A-Z a-z)
+
     [ "$extencao" = "flac" ] && {
-        echo "convertendo $file de flac para mp3"
+        echo "convertendo $f de flac para mp3"
         flac -cd "$f" | lame -b 128 - "${f%.*}".mp3 || erro="true"
     }
 
     [ "$extencao" = "mp3" ] && {
-        echo "convertendo $file de mp3 para mp3"
+        echo "convertendo $f de mp3 para mp3"
         lame -b 128 "$f" mp3/"${f%.*}".mp3 || erro="true"
     }
 
