@@ -1,6 +1,7 @@
 #!/bin/bash
 # converte arquivos mp3 ou flac para mp3 128 kbps
 # arquivos convertidos ficam dentro de mp3
+# mp3info -r a -p "%f %r\n" *.mp3
 mkdir mp3
 for f in *
 do
