@@ -1,0 +1,8 @@
+nova boot \
+--flavor large.4GB \
+--image 10f56f70-2247-433d-999e-5c211c9e690d \
+--nic net-id=9c0c3c5c-f435-4bb1-b4ab-f6849f5c9722,v4-fixed-ip=10.168.111.254 \
+--key-name vostro \
+--security-groups KATELLO,SSH-PING \
+--user-data deploy-centos \
+katello.cloud
