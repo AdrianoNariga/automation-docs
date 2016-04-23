@@ -16,4 +16,4 @@ tcOYK2GqbPUtlqNYfzLtEvv39zQWrq/LJIjp1z43O0Z3/RZFQsMOVMGux1+L2TkxCc5elSfJPXWke9p/
 systemctl restart sshd
 cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
 yum install git epel-release -y
-git clone https://github.com/narigacdo/automation-all.git
+git clone https://github.com/narigacdo/automation-all.git /root

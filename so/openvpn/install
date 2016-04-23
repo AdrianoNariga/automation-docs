@@ -39,4 +39,4 @@ conf_client(){
 
 centos
 deploy
-vpn_conf
+conf_server
