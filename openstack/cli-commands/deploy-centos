@@ -17,3 +17,14 @@ systemctl restart sshd
 cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
 yum install git epel-release -y
 git clone https://github.com/narigacdo/automation-all.git /root
+
+cd /root/automation-all/so/openvpn
+bash install
+
+yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/2.4/katello/RHEL/7Server/x86_64/katello-repos-latest.rpm
+yum -y localinstall http://yum.theforeman.org/releases/1.10/el7/x86_64/foreman-release.rpm
+yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+yum -y localinstall http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+yum -y install foreman-release-scl
+yum -y install katello
+katello-installer
