@@ -12,4 +12,6 @@ RUN yum clean all
 
 LABEL description="sn_web2py"
 
+EXPOSE 80
+
 ENTRYPOINT python /var/www/web2py/web2py.py -p 80 -a nada@nada
