@@ -14,4 +14,4 @@ LABEL description="sn_web2py"
 
 EXPOSE 80
 
-ENTRYPOINT python /var/www/web2py/web2py.py -i 0.0.0.0 -p 80 -a nada@nada
+ENTRYPOINT python /var/www/web2py/web2py.py -i 0.0.0.0 -p 80 -a nada@nada &
