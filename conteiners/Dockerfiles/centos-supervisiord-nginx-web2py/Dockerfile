@@ -8,5 +8,8 @@ RUN unzip /root/web2py_src.zip -d /var/www
 RUN rm -f /root/web2py_src.zip
 RUN easy_install supervisor
 RUN echo_supervisord_conf > /etc/supervisord.conf
+RUN yum clean all
 
 LABEL description="sn_web2py"
+
+ENTRYPOINT python /var/www/web2py/web2py.py -p 80 -a nada@nada
