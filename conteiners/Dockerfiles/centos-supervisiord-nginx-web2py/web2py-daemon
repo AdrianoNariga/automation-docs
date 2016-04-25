@@ -1,0 +1,28 @@
+#!/bin/bash
+w2p_path='/var/www/web2py/web2py.py'
+bind_ip='0.0.0.0'
+port='443'
+ce_path='/var/www/web2py/ssl/dualtec.com.br.pem'
+key_path='/var/www/web2py/ssl/dualtec.com.br.key'
+pass='nada@nada'
+
+start(){
+        python $w2p_path \
+        -i $bind_ip -p $port \
+        -c $ce_path -k $key_path \
+        -a $pass &
+}
+
+status(){
+        netstat -putan | grep python
+}
+
+stop(){
+        killall python
+}
+
+case $1 in
+        start) start ;;
+        status) status ;;
+        stop) stop ;;
+esac
