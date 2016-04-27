@@ -51,5 +51,5 @@ if_ubuntu(){
 
 case `get_so -s` in
 	Ubuntu) if_ubuntu ;;
-	Centos) if_centos ;;
+	CentOS) if_centos ;;
 esac
