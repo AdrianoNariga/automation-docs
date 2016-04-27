@@ -1,0 +1,55 @@
+#!/bin/bash
+# funcao de descoberta do sistema operacional
+# get_so -s (retorna o sistema operasional)
+# get_so -v (versao do sistema)
+get_so(){
+        while test -n "$1"
+        do
+        case $1 in
+                -s | --operatingsystem)
+                        cat /etc/os-release | grep PRETTY_NAME= | cut -d \" -f 2 | awk '{print $1}'
+                ;;
+                -v | --version)
+                        cat /etc/os-release | grep VERSION_ID= | cut -d \" -f2
+                ;;
+                *) echo "opcao invalida"
+        esac
+        shift
+        done
+}
+
+if_centos(){
+tee /etc/yum.repos.d/docker.repo <<-'EOF'
+[dockerrepo]
+name=Docker Repository
+baseurl=https://yum.dockerproject.org/repo/main/centos/$releasever/
+enabled=1
+gpgcheck=1
+gpgkey=https://yum.dockerproject.org/gpg
+EOF
+
+	yum install docker-engine
+	systemctl start docker
+	systemctl enable docker
+}
+
+if_ubuntu(){
+	apt-get install apt-transport-https ca-certificates
+	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58
+	if [ `get_so -v` = "15.10" ] ; then
+		echo "deb https://apt.dockerproject.org/repo ubuntu-wily main" > /etc/apt/sources.list.d/docker.list
+	elif [ `get_so -v` = "16.04" ] ; then
+		echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" > /etc/apt/sources.list.d/docker.list
+	fi
+
+	apt-get update
+	apt-get purge lxc-docker -Y
+	apt-get install docker-engine -Y
+	systemctl enable docker
+	systemctl restart docker
+}
+
+case `get_so -s` in
+	Ubuntu) if_ubuntu ;;
+	Centos) if_centos ;;
+esac
