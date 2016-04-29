@@ -30,6 +30,11 @@ EOF
 	yum install docker-engine -y
 }
 
+if_rhel(){
+	subscription-manager repos --enable=rhel-7-server-extras-rpms
+	yum install docker -y
+}
+
 if_ubuntu(){
 	apt-get install apt-transport-https ca-certificates
 	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58
@@ -47,6 +52,7 @@ if_ubuntu(){
 case `get_so -s` in
 	Ubuntu) if_ubuntu ;;
 	CentOS) if_centos ;;
+	Red) if_rhel ;;
 esac
 
 systemctl enable docker
