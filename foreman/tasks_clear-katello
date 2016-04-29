@@ -1,0 +1,9 @@
+su -s /bin/bash - postgres
+psql
+\c foreman;
+delete from foreman_tasks_tasks;
+delete from foreman_tasks_locks;
+\q
+for s in {qpidd,pulp_celerybeat,pulp_resource_manager,pulp_workers,httpd}; do service $s restart; done
+
+subscription-manager unregister
