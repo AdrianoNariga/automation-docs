@@ -57,3 +57,5 @@ esac
 
 systemctl enable docker
 systemctl restart docker
+groupadd docker
+echo "gpasswd -a nariga docker"
