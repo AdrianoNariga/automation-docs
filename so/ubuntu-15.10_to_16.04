@@ -9,7 +9,7 @@ apt-get autoremove -y
 apt-get clean -y
 
 apt-get install update-manager-core -y
-do-release-upgrade
+do-release-upgrade -d --mode=desktop
 
 uname –a
 cat /etc/lsb-release
