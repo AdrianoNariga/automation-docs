@@ -1,17 +1,46 @@
 #!/bin/bash
-apt-get update
-apt-get upgrade -y
-apt-get -f install -y
-apt-get autoremove -y
-apt-get dist-upgrade -y
-apt-get -f install -y
-apt-get autoremove -y
-apt-get clean -y
+prepare(){
+    apt-get update
+    apt-get upgrade -y
+    apt-get -f install -y
+    apt-get autoremove -y
+    apt-get dist-upgrade -y
+    apt-get -f install -y
+    apt-get autoremove -y
+    apt-get clean -y
+}
 
-apt-get install update-manager-core -y
-do-release-upgrade -d --mode=desktop
+upgrade(){
+    apt-get install update-manager-core -y
+    do-release-upgrade -q -d --mode=desktop
+}
 
-uname –a
-cat /etc/lsb-release
-cat /etc/issue.net
-cat /etc/debian_version
+check(){
+    uname –a
+    cat /etc/lsb-release
+    cat /etc/issue.net
+    cat /etc/debian_version
+}
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -u --upgrade
+\n -c --check
+prog -u (atualiza)
+prog -c (checa versao)
+"
+
+while test -n "$1"
+do
+	case $1 in
+		-u | --upgrade)
+            prepare
+            upgrade
+		;;
+		-c | --check) check ;;
+		-v | --version) echo "version 1.0" ;;
+		*) echo -e $msg_padrao
+	esac
+
+	shift
+done
