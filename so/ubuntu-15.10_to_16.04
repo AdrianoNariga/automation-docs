@@ -12,7 +12,6 @@ prepare(){
 
 upgrade(){
     apt-get install update-manager-core -y
-#    do-release-upgrade -q -d --mode=desktop
     do-release-upgrade -q -d --mode=desktop -f DistUpgradeViewNonInteractive
 }
 
@@ -23,9 +22,21 @@ check(){
     cat /etc/debian_version
 }
 
+sources-list(){
+    file="/etc/apt/sources.list"
+    echo "deb http://br.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse" > $file
+    echo "deb http://security.ubuntu.com/ubuntu xenial-security main restricted universe multiverse" >> $file
+    echo "deb http://br.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse" >> $file
+    echo "deb http://br.archive.ubuntu.com/ubuntu/ xenial-proposed main restricted universe multiverse" >> $file
+    echo "deb http://br.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse" >> $file
+    echo "deb http://archive.canonical.com/ubuntu xenial partner"
+}
+
 msg_padrao="
 \nflag padrao, valores aceitaveis:
+\n -p --prepare
 \n -u --upgrade
+\n -s --sources
 \n -c --check
 prog -u (atualiza)
 prog -c (checa versao)
@@ -34,10 +45,12 @@ prog -c (checa versao)
 while test -n "$1"
 do
 	case $1 in
+        -p | --prepare) prepare ;;
 		-u | --upgrade)
             prepare
             upgrade
 		;;
+        -s | --sources) sources-list ;;
 		-c | --check) check ;;
 		-v | --version) echo "version 1.0" ;;
 		*) echo -e $msg_padrao
@@ -45,3 +58,8 @@ do
 
 	shift
 done
+echo "Execute por varias vezes:"
+echo "$0 -p"
+echo "Reinicie a cada execucao"
+echo "Apos completar upgrade:"
+echo "$0 -s ; $0 -p"
