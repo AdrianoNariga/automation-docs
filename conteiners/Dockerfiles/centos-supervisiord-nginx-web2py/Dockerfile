@@ -1,7 +1,7 @@
 FROM centos
 
 RUN yum install epel-release -y
-RUN yum install nginx wget python-setuptools unzip python-devel -y
+RUN yum install nginx wget python-setuptools unzip python-devel gcc -y
 RUN easy_install pip
 RUN pip install gunicorn supervisor
 
@@ -16,6 +16,8 @@ ADD cloudportal/supervisord.conf /etc/supervisord.conf
 ADD nginx.conf /etc/nginx/nginx.conf
 ADD web2py.conf /etc/nginx/conf.d/web2py.conf
 ADD start-web2py /etc/init.d/start-web2py
+ADD cloudportal/requeriments /root/requeriments
+RUN pip install -r /root/requeriments
 RUN yum clean all
 
 LABEL description="sn_web2py"

@@ -1,0 +1,9 @@
+python-ceilometerclient
+python-cinderclient
+python-dateutil
+python-foreman
+python-keystoneclient
+python-neutronclient
+python-novaclient
+pycrypto
+pymongo

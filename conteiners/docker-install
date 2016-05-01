@@ -36,7 +36,7 @@ if_rhel(){
 }
 
 if_ubuntu(){
-	apt-get install apt-transport-https ca-certificates
+	apt-get install apt-transport-https ca-certificates -y
 	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58
 	if [ `get_so -v` = "15.10" ] ; then
 		echo "deb https://apt.dockerproject.org/repo ubuntu-wily main" > /etc/apt/sources.list.d/docker.list
