@@ -14,7 +14,7 @@ prepare(){
 
 upgrade(){
     apt-get install update-manager-core -y
-    do-release-upgrade -q -d --mode=desktop -f DistUpgradeViewNonInteractive
+    do-release-upgrade -q -d --mode=desktop
 }
 
 check(){

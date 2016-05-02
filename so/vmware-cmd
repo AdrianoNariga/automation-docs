@@ -1,0 +1,17 @@
+# exibe comandos validos
+vim-cmd help
+
+# exibe comandos validos de vmsvc
+vim-cmd vmsvc/
+
+# exibe ids das vms
+vim-cmd vmsvc/getallvms
+
+# snapshots da vm com id 182
+vim-cmd vmsvc/get.snapshotinfo 182
+
+# revert snapshot 1 da vm id 175
+vim-cmd vmsvc/snapshot.revert 175 1 suppressPowerOff
+
+# liga vm id 175
+vim-cmd vmsvc/power.on 175
