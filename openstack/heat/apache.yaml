@@ -6,21 +6,21 @@ parameters:
   chave:
     type: string
     description: nome da chave publica ssh
-    default: uol-diveo
+    default: project_key
   flavor:
     type: string
     description: escolha de flavor
     constraints:
-      - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB ]
-    default: small.1GB
+      - allowed_values: [ small.2GB ]
+    default: small.2GB
   imagem:
     type: string
     description: id ou nome da imagem centos 7
-    default: CentOS-7.0-64 bits
+    default: CentOS-7 64Bits
   network:
     type: string
     description: id da rede
-    default: bb929494-a275-4e81-a689-835dabd37ed1
+    default: 1ea707c7-ae0a-4c28-b799-72e601f81ee6
 
 resources:
   my_000:
