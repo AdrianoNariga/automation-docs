@@ -63,3 +63,6 @@ git push (envia alteracoes para repositorio remoto)
 git branch -d name_branch (deleta branch, deve-se estar fora)
 git branch -D name_branch (deleta branch descartando alteracao)
 git push origin :name_branch (deleta a branch remota)
+
+## salva a senha para evitar de digitar a senha nos pushs
+git config --global credential.helper 'cache --timeout=3600'
