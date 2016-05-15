@@ -1,9 +1,37 @@
+###
 su -s /bin/bash - postgres
 psql
 \c foreman;
 delete from foreman_tasks_tasks;
 delete from foreman_tasks_locks;
 \q
-for s in {qpidd,pulp_celerybeat,pulp_resource_manager,pulp_workers,httpd}; do service $s restart; done
+systemctl restart qpidd pulp_celerybeat pulp_resource_manager pulp_workers httpd
+###
 
-subscription-manager unregister
+###
+foreman-rake console  #(let it load all the way)
+ForemanTasks::Task.where(:state => :paused).where(:label => "Actions::Katello::Repository::Sync").destroy_all
+ForemanTasks::Task.where(:state => :paused).where(:label => "Actions::Pulp::Consumer::GenerateApplicability").destroy_all
+ForemanTasks::Task.where(:state => :paused).where(:label => "Actions::Katello::System::GenerateApplicability").destroy_all
+###
+
+###
+#!/bin/bash
+STATE=""
+for TASK in `pulp-admin tasks list | egrep '^Task Id:|^State:' | sed -e 's,^Task Id: ,,' -e 's,^State: ,,'`; do
+        if [ "$STATE" = "" ]; then
+                STATE=$TASK
+        else
+                if [ $STATE != Successful ] && [ $STATE != Cancelled ] && [ $STATE != Failed ]; then
+                        pulp-admin tasks details --task-id=$TASK
+                        pulp-admin tasks cancel --task-id=$TASK
+                fi
+                STATE=""
+        fi
+done
+###
+
+###
+foreman-rake katello:delete_orphaned_content --trace
+foreman-rake katello:reindex --trace
+###
