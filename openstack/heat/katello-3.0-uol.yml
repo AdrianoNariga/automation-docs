@@ -6,7 +6,7 @@ parameters:
   hostname:
     type: string
     description: hostname do servidor foreman
-    default: katello-3.internal
+    default: katello.cloud-uol
   chave:
     type: string
     description: nome da chave publica ssh
@@ -38,7 +38,7 @@ resources:
         - port: { get_resource: server_port }
       user_data: |
         #!/bin/bash
-        dominio="internal"
+        dominio="cloud-uol"
         hostname "`hostname`.$dominio"
         echo `hostname` > /etc/hostname
         echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`" >> /etc/hosts
