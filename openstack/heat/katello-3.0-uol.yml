@@ -60,7 +60,7 @@ resources:
         yum -y install foreman-release-scl
         yum -y install katello
 
-        foreman-installer --foreman-admin-password nada@nada --scenario katello
+        foreman-installer --foreman-admin-password nada@nada --scenario katello --capsule-pulp-master false --foreman-proxy-plugin-pulp-enabled false
         sleep 4 ; puppet agent -t
 
       user_data_format: RAW
