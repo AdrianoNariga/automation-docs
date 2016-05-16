@@ -1,53 +1,19 @@
-#!/bin/bash
-### on katello server ###
-# 1 capsule=server.domain
-# 2 capsule-certs-generate --capsule-fqdn "$capsule" --certs-tar "~/$capsule.tar"
-# 3 scp ~/$capsule.tar root@$capsule: (copiar $capsule.tar para /root do node capsule)
-#
-### on capsule server ###
-# 1 yum repolist 
-### base (somente repositorios base e epel habilitado)
-### epel
-# 2 yum install -y subscription-manager
-# 3 rpm -Uvh http://katello.cloud/pub/katello-ca-consumer-latest.noarch.rpm
-# 4 subscription-manager register --org "home" --force
-
-capsule(){
-	yum -y localinstall \
-	http://fedorapeople.org/groups/katello/releases/yum/2.4/katello/RHEL/7Server/x86_64/katello-repos-latest.rpm
-	yum -y localinstall \
-	http://yum.theforeman.org/releases/1.10/el7/x86_64/foreman-release.rpm
-
-	yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
-	yum -y localinstall http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-	yum -y install foreman-release-scl
-	yum install -y capsule-installer
-
-	capsule-installer \
-	--parent-fqdn katello.cloud \
-	--register-in-foreman true \
-	--foreman-oauth-key dPYRdYbjmuVRzrGorXXxiNuUcM2kHJ2K \
-	--foreman-oauth-secret 4zX5xc6dAmqgauNnEcwNL4pxfbEDpWJR \
-	--pulp-oauth-secret yXdPXYowa6cocCHZnF9R6cMsQLSwYzrB \
-	--certs-tar ~/ktlclient.home.jab.tar \
-	--puppet true --puppetca true \
-	--pulp true \
-	--tftp true \
-	--dhcp true \
-	--dhcp-gateway 192.168.111.1 \
-	--dhcp-nameservers "192.168.111.30,192.168.111.254" \
-	--dhcp-range "192.168.111.40 192.168.111.230" \
-	--dns true --dns-forwarders 8.8.4.4 \
-	--dns-reverse 111.168.192.in-addr.arpa
-}
-
-# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.1/html/Installation_Guide/
-# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.1/html/User_Guide/
-# https://access.redhat.com/documentation/en-US/Red_Hat_Satellite/6.0/html/User_Guide/
-# alias manager_hamer="hammer -u admin -p $pass"
-# manager_hamer organization list
-# manager_hamer capsule list
-# manager_hamer lifecycle-environment list --organization-id 3
-# manager_hamer capsule content add-lifecycle-environment --id 4 --environment-id 2
-# manager_hamer capsule content synchronize --id 4
-# manager_hamer capsule content synchronize --id 4 --environment-id 2
+foreman-installer --scenario capsule \
+--capsule-parent-fqdn "katello.cloud-uol" \
+--foreman-proxy-register-in-foreman "true" \
+--foreman-proxy-foreman-base-url "https://katello.cloud-uol" \
+--foreman-proxy-trusted-hosts "katello.cloud-uol" \
+--foreman-proxy-trusted-hosts "capsule.home.jab" \
+--foreman-proxy-oauth-consumer-key "b3b9P8GaBymaDyGS4vQFRpvqdfNW69HH" \
+--foreman-proxy-oauth-consumer-secret "MyhNaz3AtEEh8SXmcZJzTJBmn5H9HWzz" \
+--capsule-pulp-oauth-secret "Hb4FSNB9DrSy56wN6qRSbZqsFAVg8BBx" \
+--capsule-certs-tar "~/capsule.home.jab-certs.tar" \
+--foreman-proxy-tftp "true" \
+--foreman-proxy-dns=true \
+--foreman-proxy-dns-interface=eth0:0 \
+--foreman-proxy-dns-zone=test.jab \
+--foreman-proxy-dns-reverse=113.168.192.in-addr.arpa \
+--foreman-proxy-dns-forwarders=192.168.111.254 \
+--foreman-proxy-dns-forwarders=8.8.4.4 \
+--pulp=true --qpid-router=true --puppet=true --puppetca=true \
+--capsule-pulp-master true --foreman-proxy-plugin-pulp-enabled true
