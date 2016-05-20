@@ -1,0 +1,4 @@
+#!/bin/bash
+ip_hosts=$(grep capsule.home.jab /etc/hosts | awk '{print $1}')
+ip_atual=$(getent hosts homejab.redirectme.net | awk '{print $1}')
+cat /etc/hosts | grep -q $ip_atual || sed -i.bak "s/$ip_hosts/$ip_atual/g" /etc/hosts
