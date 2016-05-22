@@ -60,10 +60,10 @@ resources:
         zpool create lxd /var/lib/zfs/lxd.img
 
         lxd init --auto --storage-backend zfs --storage-pool lxd
-        dpkg-reconfigure -u -p medium lxd
-        juju bootstrap lxd-test lxd
-        juju switch
-        juju deploy mediawiki-single
+        #dpkg-reconfigure -u -p medium lxd
+        #juju bootstrap lxd-test lxd
+        #juju switch
+        #juju deploy mediawiki-single
 
       user_data_format: RAW
 
