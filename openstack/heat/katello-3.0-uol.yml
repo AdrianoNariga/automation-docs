@@ -10,7 +10,7 @@ parameters:
   chave:
     type: string
     description: nome da chave publica ssh
-    default: project_key
+    default: key
   flavor:
     type: string
     description: escolha de flavor
@@ -60,7 +60,12 @@ resources:
         yum -y install foreman-release-scl
         yum -y install katello
 
-        foreman-installer --foreman-admin-password nada@nada --scenario katello --capsule-pulp-master false --foreman-proxy-plugin-pulp-enabled false
+        foreman-installer --foreman-admin-password nada@nada --scenario katello \
+        --capsule-pulp-master false --foreman-proxy-plugin-pulp-enabled false
+
+        git clone https://github.com/narigacdo/automation-all.git /root/automation-all
+        bash /root/automation-all/foreman/create_organization
+
         sleep 4 ; puppet agent -t
 
       user_data_format: RAW
@@ -72,6 +77,7 @@ resources:
       security_groups:
         - SSH-PING
         - KATELLO
+        - WEB
 
   float_ip:
     type: OS::Nova::FloatingIP
