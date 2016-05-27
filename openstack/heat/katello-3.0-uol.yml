@@ -57,13 +57,16 @@ resources:
         yum -y localinstall http://yum.theforeman.org/releases/1.11/el7/x86_64/foreman-release.rpm
         yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
         yum -y localinstall http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        yum -y install git
+
+        export HOME=/root
+        git clone https://github.com/narigacdo/automation-all.git /root/automation-all
         yum -y install foreman-release-scl
         yum -y install katello
 
         foreman-installer --foreman-admin-password nada@nada --scenario katello \
         --capsule-pulp-master false --foreman-proxy-plugin-pulp-enabled false
-        
-        export HOME=/root
+
         git clone https://github.com/narigacdo/automation-all.git /root/automation-all
 
         hammer -u admin -p 'nada@nada' location create --name jab

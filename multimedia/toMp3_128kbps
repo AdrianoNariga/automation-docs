@@ -2,26 +2,70 @@
 # converte arquivos mp3 ou flac para mp3 128 kbps
 # arquivos convertidos ficam dentro de mp3
 # mp3info -r a -p "%f %r\n" *.mp3
-mkdir mp3
-for f in *
+
+converter(){
+    mkdir mp3
+    for f in *
+    do
+        extencao=$(echo ${f##*.} | tr A-Z a-z)
+
+        [ "$extencao" = "flac" ] && {
+            echo "convertendo $f de flac para mp3"
+            flac -cd "$f" | lame -b 128 - "${f%.*}".mp3 || erro="true"
+        }
+
+        [ "$extencao" = "mp3" ] && {
+            echo "convertendo $f de mp3 para mp3"
+            lame -b 128 "$f" mp3/"${f%.*}".mp3 || erro="true"
+        }
+
+        [ "$erro" == "true" ] && {
+            [ ! -d backup ] && mkdir -p backup
+            cp "$f" backup
+        }
+    done
+}
+
+remove_original(){
+    ls | while read saida
+    do
+	    echo "... entrando em $saida"
+	    cd "$saida"
+    	rm *.mp3
+	    mv mp3/* .
+	    rmdir mp3
+	    cd ..
+    done
+}
+
+msg_padrao="
+\nflag padrao, valores aceitaveis:
+\n -d --directory
+\n -f --file
+prog -d (converte files um nivel acima)
+prog -f (converte files no mesmo nivel)
+"
+while test -n "$1"
 do
-    extencao=$(echo ${f##*.} | tr A-Z a-z)
+    case $1 in
+        -d | --directory)
+            ls | while read saida
+            do
+                echo "... entrando em $saida"
+                cd "$saida"
+                converter
+                cd ..
+            done
+            remove_original
+        ;;
 
-    [ "$extencao" = "flac" ] && {
-        echo "convertendo $f de flac para mp3"
-        flac -cd "$f" | lame -b 128 - "${f%.*}".mp3 || erro="true"
-    }
-
-    [ "$extencao" = "mp3" ] && {
-        echo "convertendo $f de mp3 para mp3"
-        lame -b 128 "$f" mp3/"${f%.*}".mp3 || erro="true"
-    }
-
-    # nao executa se gerar erro na conversao do arquivo
-    # esse bloco ainda nao foi testato
-    #[ "$erro" = "true" ] || {
-    #    echo "substituindo $file"
-    #    rm -f $file
-    #    mv mp3/"${f%.*}".mp3 .
-    #}
+        -f | --file)
+            converter
+        	rm *.mp3
+	        mv mp3/* .
+	        rmdir mp3
+        ;;
+    *) echo -e $msg_padrao
+    esac
+    shift
 done
