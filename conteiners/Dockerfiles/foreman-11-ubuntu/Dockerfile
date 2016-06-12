@@ -10,6 +10,7 @@ ENV FOREOPTS --enable-foreman-compute-ovirt \
         --enable-foreman-compute-openstack \
         --enable-foreman-plugin-docker \
         --enable-foreman-plugin-ansible \
+        --foreman-proxy-tftp false \
         --foreman-admin-password nada@nada
 
 RUN apt-get update && \
@@ -35,9 +36,9 @@ RUN apt-get update && \
     /usr/sbin/foreman-installer $FOREOPTS; \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
 
-RUN hammer -u admin -p 'nada@nada' \
-    proxy create --name $HOSTNAME \
-    --url https://$HOSTNAME:8443
+RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
+RUN echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > /usr/share/foreman/.ssh/config
+RUN chown -R foreman. /usr/share/foreman/.ssh/
 
 RUN git clone https://github.com/narigacdo/home-jab.git /etc/puppet/environments/home_jab/
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
@@ -50,10 +51,10 @@ CMD /etc/init.d/puppet stop && \
     /etc/init.d/foreman stop && \
     /etc/init.d/postgresql stop && \
     echo "sleeping for postgresql to ensure stopped" && \
-    sleep 60 && \
+    sleep 30 && \
     /etc/init.d/postgresql start && \
     echo "sleeping for postgresql to ensure started" && \
-    sleep 60 && \
+    sleep 30 && \
     /etc/init.d/foreman start && \
     /etc/init.d/apache2 start && \
     /etc/init.d/puppet start && \
@@ -61,4 +62,8 @@ CMD /etc/init.d/puppet stop && \
     /usr/sbin/cron && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
-    tail -f /var/log/foreman/production.log
+    hammer -u admin -p 'nada@nada' \
+    proxy create --name $HOSTNAME --url https://$HOSTNAME:8443 || exit 0 && \
+    echo "------- Chave publica para os computes libvirt -------" && \
+    cat /usr/share/foreman/.ssh/id_rsa.pub && \
+    echo "" && tail -f /var/log/foreman/production.log
