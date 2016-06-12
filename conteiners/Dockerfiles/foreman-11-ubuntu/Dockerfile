@@ -1,5 +1,11 @@
+#####
+# usado como exemplo https://github.com/gbevan/ubuntu-foreman
+# run conteiner
+# docker build -t foreman-11 .
+# docker run -ti -h foreman.conteiner -v /home/puppet/modules:/etc/puppet/environments/home_jab/ -p 192.168.111.21:443:443 foreman-11
+#####
 FROM ubuntu:14.04
-MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
+MAINTAINER NarigaCDO "narigacdo@gmail.com"
 
 ENV HOSTNAME foreman.conteiner
 ENV FOREMANVER 1.11
@@ -40,7 +46,7 @@ RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 RUN echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
 
-RUN git clone https://github.com/narigacdo/home-jab.git /etc/puppet/environments/home_jab/
+#RUN git clone https://github.com/narigacdo/home-jab.git /etc/puppet/environments/home_jab/
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 443
 EXPOSE 8140
