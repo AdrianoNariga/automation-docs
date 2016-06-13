@@ -38,7 +38,8 @@ RUN apt-get update && \
     export FACTER_fqdn="$HOSTNAME" && \
     echo "`ifconfig eth0 | grep Bcast | awk '{print $2}' | cut -d : -f 2` $HOSTNAME" >> /etc/hosts && \
     /usr/sbin/foreman-installer $FOREOPTS; \
-    sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
+    sed -i -e "s/START=no/START=yes/g" /etc/default/foreman; \
+    sed -i.bak "s/certname*.*/certname = $HOSTNAME/g" /etc/puppet/puppet.conf
 
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config
