@@ -1,6 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
 
+ENV HOSTNAME foreman.conteiner
 ENV FOREMANVER 1.11
 ENV DEBIAN_FRONTEND noninteractive
 ENV FOREOPTS --enable-foreman-compute-ovirt \
@@ -10,6 +11,10 @@ ENV FOREOPTS --enable-foreman-compute-ovirt \
         --enable-foreman-plugin-docker \
         --enable-foreman-plugin-ansible \
         --foreman-proxy-tftp false \
+        --enable-puppet \
+        --puppet-listen=true \
+        --puppet-show-diff=true \
+        --puppet-server-envs-dir=/etc/puppet/environments \
         --foreman-admin-password nada@nada
 
 RUN apt-get update && \
@@ -17,7 +22,7 @@ RUN apt-get update && \
     apt-get -y install ca-certificates wget && \
     wget https://apt.puppetlabs.com/puppetlabs-release-trusty.deb && \
     dpkg -i puppetlabs-release-trusty.deb && \
-    apt-get install -y wget aptitude htop vim vim-puppet git traceroute dnsutils && \
+    rm puppetlabs-release-trusty.deb && \
     echo "deb http://deb.theforeman.org/ trusty $FOREMANVER" > /etc/apt/sources.list.d/foreman.list && \
     echo "deb http://deb.theforeman.org/ plugins $FOREMANVER" >> /etc/apt/sources.list.d/foreman.list && \
     wget -q http://deb.theforeman.org/pubkey.gpg -O- | apt-key add - && \
@@ -31,14 +36,13 @@ RUN apt-get update && \
     apt-get install -y ansible && \
     pip install 'pywinrm>=0.1.1' && \
     pip install 'kerberos==1.2.2' && \
-    echo "set modeline" > /root/.vimrc && \
     echo "export TERM=vt100" >> /root/.bashrc && \
     LANG=en_US.UTF-8 locale-gen --purge en_US.UTF-8 && \
     echo 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale && \
     dpkg-reconfigure --frontend=noninteractive locales && \
     rm -f /usr/share/foreman-installer/checks/hostname.rb && \
-    export FACTER_fqdn="foreman.example.com" && \
-    echo "127.1.1.2  foreman.example.com" >> /etc/hosts && \
+    export FACTER_fqdn="$HOSTNAME" && \
+    echo "`ifconfig eth0 | grep Bcast | awk '{print $2}' | cut -d : -f 2` $HOSTNAME" >> /etc/hosts && \
     /usr/sbin/foreman-installer $FOREOPTS; \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
 
