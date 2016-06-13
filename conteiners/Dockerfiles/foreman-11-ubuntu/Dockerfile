@@ -3,18 +3,14 @@ MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
 
 ENV FOREMANVER 1.11
 ENV DEBIAN_FRONTEND noninteractive
-ENV FOREOPTS --foreman-locations-enabled \
-        --enable-foreman-compute-ec2 \
-        --enable-foreman-compute-gce \
-        --enable-foreman-compute-ovirt \
+ENV FOREOPTS --enable-foreman-compute-ovirt \
         --enable-foreman-compute-vmware \
         --enable-foreman-compute-libvirt \
         --enable-foreman-compute-openstack \
-        --enable-foreman-compute-rackspace \
-        --enable-puppet \
-        --puppet-listen=true \
-        --puppet-show-diff=true \
-        --puppet-server-envs-dir=/etc/puppet/environments
+        --enable-foreman-plugin-docker \
+        --enable-foreman-plugin-ansible \
+        --foreman-proxy-tftp false \
+        --foreman-admin-password nada@nada
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -46,17 +42,11 @@ RUN apt-get update && \
     /usr/sbin/foreman-installer $FOREOPTS; \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
 
+RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 443
 EXPOSE 8140
 EXPOSE 8443
 
-#CMD ( test ! -f /etc/foreman/.first_run_completed && \
-#        ( echo "FIRST-RUN: Please wait while Foreman is installed and configured..."; \
-#        /usr/sbin/foreman-installer $FOREOPTS; \
-#        sed -i -e "s/START=no/START=yes/g" /etc/default/foreman; \
-#        touch /etc/foreman/.first_run_completed \
-#        ) \
-#    ); \
 CMD /etc/init.d/puppet stop && \
     /etc/init.d/apache2 stop && \
     /etc/init.d/foreman stop && \
@@ -71,7 +61,6 @@ CMD /etc/init.d/puppet stop && \
     /etc/init.d/puppet start && \
     /etc/init.d/foreman-proxy start && \
     /usr/sbin/cron && \
-    foreman-rake permissions:reset && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
     tail -f /var/log/foreman/production.log
