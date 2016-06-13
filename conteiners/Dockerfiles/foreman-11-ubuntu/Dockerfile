@@ -65,4 +65,8 @@ CMD /etc/init.d/puppet stop && \
     /usr/sbin/cron && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
-    tail -f /var/log/foreman/production.log
+    /usr/bin/hammer -u admin -p 'nada@nada' \
+       proxy create --name $HOSTNAME --url https://$HOSTNAME:8443 ; \
+    echo "------- Chave publica para os computes libvirt -------" ; \
+    cat /usr/share/foreman/.ssh/id_rsa.pub ; \
+    echo "" ; tail -f /var/log/foreman/production.log
