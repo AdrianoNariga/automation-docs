@@ -41,7 +41,7 @@ RUN apt-get update && \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
 
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
-RUN echo -e "Host * \n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > /usr/share/foreman/.ssh/config
+ADD config /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
