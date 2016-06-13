@@ -1,3 +1,4 @@
+# docker run -ti -h foreman.conteiner -p 443:443 nariga/foreman:11.2
 FROM ubuntu:14.04
 MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
 
@@ -26,16 +27,9 @@ RUN apt-get update && \
     echo "deb http://deb.theforeman.org/ trusty $FOREMANVER" > /etc/apt/sources.list.d/foreman.list && \
     echo "deb http://deb.theforeman.org/ plugins $FOREMANVER" >> /etc/apt/sources.list.d/foreman.list && \
     wget -q http://deb.theforeman.org/pubkey.gpg -O- | apt-key add - && \
-    apt-get install -y software-properties-common && \
-    apt-add-repository ppa:git-core/ppa -y && \
+    apt-get install -y software-properties-common git sshpass && \
     apt-get update && \
     apt-get install -y foreman-installer && \
-    apt-get install -y git python-pip iotop sysstat krb5-user libkrb5-dev python-dev python-jinja2 python-yaml python-paramiko python-httplib2 python-six python-crypto sshpass && \
-    apt-add-repository ppa:ansible/ansible && \
-    apt-get update && \
-    apt-get install -y ansible && \
-    pip install 'pywinrm>=0.1.1' && \
-    pip install 'kerberos==1.2.2' && \
     echo "export TERM=vt100" >> /root/.bashrc && \
     LANG=en_US.UTF-8 locale-gen --purge en_US.UTF-8 && \
     echo 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale && \
