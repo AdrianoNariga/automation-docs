@@ -1,6 +1,13 @@
-# docker run -ti -h foreman.conteiner -v /home/alrodrigues/home-jab/:/etc/puppet/environments/home_jab/ -p 443:443 nariga/foreman:11.2
+## Usado como base https://github.com/gbevan/ubuntu-foreman
+# Quick Start
+# cd directory/dockerfile
+# docker build -t dono/image_name .
+# docker run -ti -h foreman.conteiner \
+#     -v /home/alrodrigues/puppet_modules:/etc/puppet/environments/puppet_modules \
+#     -p 443:443 -p 8443:8443 -p 8140:8140 nariga/foreman:11.2
+# variavel HOSTNAME deve ser a mesma para o dockerfile e o conteiner
 FROM ubuntu:14.04
-MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
+MAINTAINER Graham Bevan "narigacdo@gmail.com"
 
 ENV HOSTNAME foreman.conteiner
 ENV FOREMANVER 1.11
