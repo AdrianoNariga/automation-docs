@@ -1,4 +1,4 @@
-# docker run -ti -h foreman.conteiner -p 443:443 nariga/foreman:11.2
+# docker run -ti -h foreman.conteiner -v /home/alrodrigues/home-jab/:/etc/puppet/environments/home_jab/ -p 443:443 nariga/foreman:11.2
 FROM ubuntu:14.04
 MAINTAINER Graham Bevan "graham.bevan@ntlworld.com"
 
@@ -39,6 +39,10 @@ RUN apt-get update && \
     echo "`ifconfig eth0 | grep Bcast | awk '{print $2}' | cut -d : -f 2` $HOSTNAME" >> /etc/hosts && \
     /usr/sbin/foreman-installer $FOREOPTS; \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman
+
+RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
+RUN echo -e "Host * \n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > /usr/share/foreman/.ssh/config
+RUN chown -R foreman. /usr/share/foreman/.ssh/
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 443
