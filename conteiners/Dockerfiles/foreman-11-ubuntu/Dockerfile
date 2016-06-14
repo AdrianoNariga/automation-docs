@@ -7,7 +7,7 @@
 #     -p 443:443 -p 8443:8443 -p 8140:8140 nariga/foreman:11.2
 # variavel HOSTNAME deve ser a mesma para o dockerfile e o conteiner
 FROM ubuntu:14.04
-MAINTAINER Graham Bevan "narigacdo@gmail.com"
+MAINTAINER NarigaCDO "narigacdo@gmail.com"
 
 ENV HOSTNAME foreman.conteiner
 ENV FOREMANVER 1.11
