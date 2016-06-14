@@ -1,13 +1,8 @@
 #!/bin/bash
-FOREMAN_USER=admin
-FOREMAN_PASS='nada@nada'
-
-manager_hammer="hammer -u $FOREMAN_USER -p $FOREMAN_PASS"
-
 # example
 # add_kvm_resource name 192.168.0.200
 add_kvm_resource(){
-	$manager_hammer compute-resource create \
+	hammer compute-resource create \
 	    --provider Libvirt --name $1 \
 	    --url qemu+ssh://$2/system
 }
@@ -15,7 +10,7 @@ add_kvm_resource(){
 # example
 # add_openstack_resource name tenant_name user pass region url
 add_openstack_resource(){
-	$manager_hammer compute-resource create \
+	hammer compute-resource create \
 	    --provider Openstack --name $1 \
 	    --tenant $2 --user $3 \
 	    --password $4 --region $5 \
@@ -25,17 +20,17 @@ add_openstack_resource(){
 import_class(){
 	for i in $($manager_hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}')
 	do
-		$manager_hammer proxy import-classes --id $i
+		hammer proxy import-classes --id $i
 	done
 }
 
 add_systems(){
 	hammer os create --name Debian --architectures x86_64 \
-	    --family Debian --major 8 --minor 5 --release-name Jessie --description "Debian Jessie"
+	    --family Debian --major 8 --minor 5 --release-name jessie --description "Debian 8.5"
 	hammer os create --name Ubuntu --architectures x86_64 \
 	    --family Debian --major 14 --minor 04 --release-name trusty --description "Ubuntu 14.04 LTS"
 	hammer os create --name Ubuntu --architectures x86_64 \
-	    --family Debian --major 16 --minor 04 --release-name "Xenial Xerus" --description "Ubuntu 16.04 LTS"
+	    --family Debian --major 16 --minor 04 --release-name xenial --description "Ubuntu 16.04 LTS"
 	hammer os create --name CentOS --architectures x86_64 --family Redhat --major 7 --minor 3
 	hammer os create --name RedHat --architectures x86_64 --family Redhat --major 7 --minor 3
 }

@@ -9,7 +9,7 @@
 FROM ubuntu:14.04
 MAINTAINER NarigaCDO "narigacdo@gmail.com"
 
-ENV HOSTNAME foreman.conteiner
+ENV HOSTNAME foreman.home.jab
 ENV FOREMANVER 1.11
 ENV DEBIAN_FRONTEND noninteractive
 ENV FOREOPTS --enable-foreman-compute-ovirt \
@@ -51,7 +51,8 @@ RUN apt-get update && \
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
-ADD cli_config.yml /etc/hammer/cli_config.yml
+#ADD cli_config.yml /etc/hammer/cli_config.yml
+ADD scripts/pos-deploy /root/pos-deploy
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 443
@@ -74,7 +75,9 @@ CMD /etc/init.d/puppet stop && \
     /usr/sbin/cron && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
-    /usr/bin/hammer -u admin -p 'nada@nada' \
+    adm_pass=$(foreman-rake permissions:reset | awk '{print $6}') && \
+    echo "Password admin $adm_pass" && \
+    /usr/bin/hammer -u admin -p $adm_pass \
        proxy create --name $HOSTNAME --url https://$HOSTNAME:8443 ; \
     echo "------- Chave publica para os computes libvirt -------" ; \
     cat /usr/share/foreman/.ssh/id_rsa.pub ; \
