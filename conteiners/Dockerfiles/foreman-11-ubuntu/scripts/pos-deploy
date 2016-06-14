@@ -1,0 +1,34 @@
+#!/bin/bash
+FOREMAN_USER=admin
+FOREMAN_PASS='nada@nada'
+
+manager_hammer="hammer -u $FOREMAN_USER -p $FOREMAN_PASS"
+
+# example
+# add_kvm_resource name 192.168.0.200
+add_kvm_resource(){
+	$manager_hammer compute-resource create \
+	    --provider Libvirt --name $1 \
+	    --url qemu+ssh://$2/system
+}
+
+# example
+# add_openstack_resource name tenant_name user pass region url
+add_openstack_resource(){
+	$manager_hammer compute-resource create \
+	    --provider Openstack --name $1 \
+	    --tenant $2 --user $3 \
+	    --password $4 --region $5 \
+	    --url $6/tokens
+}
+
+import_class(){
+	for i in $($manager_hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}')
+	do
+		$manager_hammer proxy import-classes --id $i
+	done
+}
+
+add_kvm_resource localhost.libvirt 172.19.226.205
+add_openstack_resource openstack xxx_tenant xxx_user 'xxx)$xxx' xxx-xxx 'https://keystone.xxx-xxx.openstack.xxxcloud.com.br:5000/v2.0'
+import_class
