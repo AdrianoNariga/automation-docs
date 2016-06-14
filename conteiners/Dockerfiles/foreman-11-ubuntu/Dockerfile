@@ -51,6 +51,7 @@ RUN apt-get update && \
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
+ADD cli_config.yml /etc/hammer/cli_config.yml
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 443
