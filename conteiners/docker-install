@@ -45,8 +45,8 @@ if_ubuntu(){
 	fi
 
 	apt-get update
-	apt-get purge lxc-docker -Y
-	apt-get install docker-engine -Y
+	apt-get purge lxc-docker -y
+	apt-get install docker-engine -y
 }
 
 case `get_so -s` in
