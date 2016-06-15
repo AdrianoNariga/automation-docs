@@ -9,7 +9,7 @@
 FROM ubuntu:14.04
 MAINTAINER NarigaCDO "narigacdo@gmail.com"
 
-ENV HOSTNAME foreman.home.jab
+ENV HOSTNAME foreman.conteiner
 ENV FOREMANVER 1.11
 ENV DEBIAN_FRONTEND noninteractive
 ENV FOREOPTS --enable-foreman-compute-ovirt \
@@ -51,7 +51,8 @@ RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
 ADD cli_config.yml /etc/hammer/cli_config.yml
-ADD cli_config.yml /root/.hammer/cli.modules.d/foreman.yml
+RUN rm /root/.hammer/cli.modules.d/foreman.yml
+RUN ln -s /etc/hammer/cli_config.yml /root/.hammer/cli.modules.d/foreman.yml
 ADD scripts/pos-deploy /root/pos-deploy
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
@@ -75,14 +76,14 @@ CMD /etc/init.d/puppet stop && \
     /usr/sbin/cron && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
-    adm_pass=$(foreman-rake permissions:reset | awk '{print $6}') && \
-    echo "Password admin $adm_pass" && \
-    /usr/bin/hammer -u admin -p $adm_pass \
+    old_pass=$(grep password /etc/hammer/cli_config.yml | cut -d \' -f 2) && \
+    new_pass=$(foreman-rake permissions:reset | awk '{print $6}') && \
+    echo "Password admin $new_pass" && \
+    /usr/bin/hammer -u admin -p $new_pass \
        proxy create --name $HOSTNAME --url https://$HOSTNAME:8443 ; \
     echo "------- Chave publica para os computes libvirt -------" ; \
-    sed -i -e "s/senha_admin/$adm_pass/g" /etc/hammer/cli_config.yml ; \
-    sed -i -e "s/senha_admin/$adm_pass/g" /root/.hammer/cli.modules.d/foreman.yml ; \
-    for i in $($manager_hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}') ; \
+    sed -i -e "s/$old_pass/$new_pass/g" /etc/hammer/cli_config.yml ; \
+    for i in $(hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}') ; \
     do hammer proxy import-classes --id $i ; done ; \
     cat /usr/share/foreman/.ssh/id_rsa.pub ; \
     echo "" ; tail -f /var/log/foreman/production.log
