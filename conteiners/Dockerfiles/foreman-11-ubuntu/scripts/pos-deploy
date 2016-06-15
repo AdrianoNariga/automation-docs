@@ -18,7 +18,7 @@ add_openstack_resource(){
 }
 
 import_class(){
-	for i in $($manager_hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}')
+	for i in $(hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}')
 	do
 		hammer proxy import-classes --id $i
 	done
