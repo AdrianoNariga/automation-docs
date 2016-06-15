@@ -12,7 +12,7 @@
 :foreman:
     :host: 'https://localhost/'
     :username: 'admin'
-    :password: 'nada@nada'
+    :password: 'senha_admin'
 
 :log_dir: '/var/log/foreman/'
 :log_level: 'debug'

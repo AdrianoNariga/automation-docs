@@ -22,8 +22,7 @@ ENV FOREOPTS --enable-foreman-compute-ovirt \
         --enable-puppet \
         --puppet-listen=true \
         --puppet-show-diff=true \
-        --puppet-server-envs-dir=/etc/puppet/environments \
-        --foreman-admin-password nada@nada
+        --puppet-server-envs-dir=/etc/puppet/environments
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -51,7 +50,8 @@ RUN apt-get update && \
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config
 RUN chown -R foreman. /usr/share/foreman/.ssh/
-#ADD cli_config.yml /etc/hammer/cli_config.yml
+ADD cli_config.yml /etc/hammer/cli_config.yml
+ADD cli_config.yml /root/.hammer/cli.modules.d/foreman.yml
 ADD scripts/pos-deploy /root/pos-deploy
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
@@ -80,5 +80,9 @@ CMD /etc/init.d/puppet stop && \
     /usr/bin/hammer -u admin -p $adm_pass \
        proxy create --name $HOSTNAME --url https://$HOSTNAME:8443 ; \
     echo "------- Chave publica para os computes libvirt -------" ; \
+    sed -i -e "s/senha_admin/$adm_pass/g" /etc/hammer/cli_config.yml ; \
+    sed -i -e "s/senha_admin/$adm_pass/g" /root/.hammer/cli.modules.d/foreman.yml ; \
+    for i in $($manager_hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}') ; \
+    do hammer proxy import-classes --id $i ; done ; \
     cat /usr/share/foreman/.ssh/id_rsa.pub ; \
     echo "" ; tail -f /var/log/foreman/production.log
