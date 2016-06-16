@@ -28,3 +28,11 @@ lista="valor1:valor2:valor3"
 for i in $lista ; do echo $i ; done
 # tome cuidado para voltar o valor padrao do IFS
 unset IFS
+
+# copia comando
+ctrl+u #(copia do cursor pra traz)
+ctrl+k #(copia do cursor pra frente)
+ctrl+y (cola)
+
+# apagar string inteira de comando
+esc+backspace
