@@ -26,6 +26,12 @@ installer_conf(){
 	  --foreman-proxy-dhcp-range="192.168.200.242 192.168.200.253" \
 	  --foreman-proxy-dhcp-nameservers="192.168.200.254,8.8.8.8" \
 	  --foreman-proxy-foreman-base-url=https://foreman.conteiner \
+	  --foreman-proxy-dns=true \
+	  --foreman-proxy-dns-interface=eth1 \
+	  --foreman-proxy-dns-zone=local.uol \
+	  --foreman-proxy-dns-reverse=200.168.192.in-addr.arpa \
+	  --foreman-proxy-dns-forwarders=8.8.8.8 \
+	  --foreman-proxy-dns-forwarders=8.8.4.4 \
 	  --foreman-proxy-trusted-hosts=foreman.conteiner \
 	  --foreman-proxy-oauth-consumer-key=XhXvzgvUTZ9RrKqoBKSw67sGamTHpyCS \
 	  --foreman-proxy-oauth-consumer-secret=uzyN2LpbxE7nXVugNA5iuNCPhkTY4bb5
