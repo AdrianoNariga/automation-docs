@@ -7,6 +7,10 @@ prepare_so(){
 	apt-get -y install ca-certificates
 	wget -q https://deb.theforeman.org/pubkey.gpg -O- | apt-key add -
 	apt-get update && apt-get -y install foreman-installer
+
+	grep -q ^net.ipv4.ip_forward=1 /etc/sysctl.conf || echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+	iptables -nL -t nat | grep ^"MASQUERADE  all  --  0.0.0.0/0            0.0.0.0/0" || \
+		iptables -t nat -A POSTROUTING -j MASQUERADE
 }
 
 installer_conf(){
@@ -36,6 +40,33 @@ installer_conf(){
 	  --foreman-proxy-trusted-hosts=foreman.conteiner \
 	  --foreman-proxy-oauth-consumer-key=XhXvzgvUTZ9RrKqoBKSw67sGamTHpyCS \
 	  --foreman-proxy-oauth-consumer-secret=uzyN2LpbxE7nXVugNA5iuNCPhkTY4bb5
+}
+
+add_zone(){
+cat >> /etc/bind/zones.conf << EOF
+
+zone "conteiner" {
+    type master;
+    file "/var/cache/bind/zones/db.conteiner";
+    update-policy {
+            grant rndc-key zonesub ANY;
+    };
+};
+EOF
+
+cat > /var/cache/bind/zones/db.conteiner << EOF
+$TTL 10800
+@ IN SOA gateway.local.uol. root.local.uol. (
+        1       ;Serial
+        86400   ;Refresh
+        3600    ;Retry
+        604800  ;Expire
+        3600    ;Negative caching TTL
+)
+
+@ IN NS gateway.local.uol.
+foreman.conteiner. IN A 192.168.100.241
+EOF
 }
 
 prepare_so
