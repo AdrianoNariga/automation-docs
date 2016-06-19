@@ -56,6 +56,7 @@ RUN ln -s /etc/hammer/cli_config.yml /root/.hammer/cli.modules.d/foreman.yml
 ADD scripts/pos-deploy /root/pos-deploy
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
+EXPOSE 80
 EXPOSE 443
 EXPOSE 8140
 EXPOSE 8443
