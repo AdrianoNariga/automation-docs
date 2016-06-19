@@ -20,6 +20,7 @@ installer_conf(){
 	  --foreman-proxy-puppetca=false \
 	  --foreman-proxy-puppetrun=false \
 	  --foreman-proxy-tftp=true \
+	  --foreman-proxy-tftp-servername=192.168.200.254 \
 	  --foreman-proxy-dhcp=true \
 	  --foreman-proxy-dhcp-interface=eth1 \
 	  --foreman-proxy-dhcp-gateway=192.168.200.254 \
