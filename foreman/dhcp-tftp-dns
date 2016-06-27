@@ -24,22 +24,22 @@ installer_conf(){
 	  --foreman-proxy-puppetca=false \
 	  --foreman-proxy-puppetrun=false \
 	  --foreman-proxy-tftp=true \
-	  --foreman-proxy-tftp-servername=192.168.200.254 \
+	  --foreman-proxy-tftp-servername=192.168.212.1 \
 	  --foreman-proxy-dhcp=true \
 	  --foreman-proxy-dhcp-interface=eth1 \
-	  --foreman-proxy-dhcp-gateway=192.168.200.254 \
-	  --foreman-proxy-dhcp-range="192.168.200.242 192.168.200.253" \
-	  --foreman-proxy-dhcp-nameservers="192.168.200.254,8.8.8.8" \
-	  --foreman-proxy-foreman-base-url=https://foreman.conteiner \
+	  --foreman-proxy-dhcp-gateway=192.168.212.1 \
+	  --foreman-proxy-dhcp-range="192.168.212.2 192.168.212.30" \
+	  --foreman-proxy-dhcp-nameservers="192.168.212.1,8.8.8.8" \
+	  --foreman-proxy-foreman-base-url=https://foreman.home.jab \
 	  --foreman-proxy-dns=true \
 	  --foreman-proxy-dns-interface=eth1 \
-	  --foreman-proxy-dns-zone=local.uol \
-	  --foreman-proxy-dns-reverse=200.168.192.in-addr.arpa \
+	  --foreman-proxy-dns-zone=vostro.internal \
+	  --foreman-proxy-dns-reverse=212.168.192.in-addr.arpa \
 	  --foreman-proxy-dns-forwarders=8.8.8.8 \
 	  --foreman-proxy-dns-forwarders=8.8.4.4 \
-	  --foreman-proxy-trusted-hosts=foreman.conteiner \
-	  --foreman-proxy-oauth-consumer-key=XhXvzgvUTZ9RrKqoBKSw67sGamTHpyCS \
-	  --foreman-proxy-oauth-consumer-secret=uzyN2LpbxE7nXVugNA5iuNCPhkTY4bb5
+	  --foreman-proxy-trusted-hosts=foreman.home.jab \
+	  --foreman-proxy-oauth-consumer-key=fRNBNoYL9JNwmTh2zsbuCXDpCFBeFanC \
+	  --foreman-proxy-oauth-consumer-secret=soG887jiZW2T2eZEcqhP9U3tULkfRrQT
 }
 
 add_zone(){
