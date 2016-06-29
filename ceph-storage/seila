@@ -1,0 +1,54 @@
+#!/bin/bash
+x=0 # contador apartir do ultimo disco adicionado
+for i in sdb sdc sdd # discos a serem preparados
+do
+	x=`expr $x + 1`
+	NEWOSD=$i
+	# prepara disco
+	ceph-disk prepare --cluster ceph --cluster-uuid `ceph -s | grep cluster | awk '{print $2}'` --fs-type xfs /dev/${NEWOSD}
+	# ativa disco
+	ceph-disk activate /dev/${NEWOSD}1
+	# associa disco ao servidor usando peso 1
+	ceph osd crush create-or-move osd.$x 1 host=$(hostname -s)
+	echo $x $i
+done
+
+# exibe arvore de discos de todos os servidores
+ceph osd tree
+
+# exibe arvore de particoes
+lsblk
+
+# detalhes, objetos, id e mons
+ceph -s
+
+# exibe pools, permissoes e keys
+ceph auth list
+
+# cria pool com nome snapshot
+ceph osd pool create snapshots 512 512
+
+# lista pools
+ceph osd pool ls
+
+# altera permissoes dos pools
+ceph auth caps client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=backups, allow rwx pool=images, allow rwx pool=vms, allow rwx pool=cinder-platinum, allow rwx pool=cinder-gold, allow rwx pool=snapshots'
+
+# envia nada para o pool vms com o nome nada
+rados -p vms put nada nada
+
+# pega objeto nada e grava com o nome nada dentro da pasta corrente
+rados -p vms get nada nada
+
+# lista objetos do pool vms
+rados -p vms ls
+
+# remove disco da gerencia do ceph
+ceph osd crush rm osd.7
+ceph auth del osd.8
+
+# remove disco da posicao 8
+ceph osd rm osd.8
+
+# destroy particao
+ceph-disk zap /dev/sdd
