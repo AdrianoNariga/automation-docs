@@ -1,0 +1,17 @@
+#!/bin/bash
+FLAVOR_DEFAULT=$(nova flavor-list | grep -iv name |  awk '{print $4}' | xargs  | awk '{print $1}')
+PUB_ID=$(neutron net-show publica | grep id | head -n1 | awk '{print $4}')
+
+for i in {1..3}
+do
+	neutron router-create router-$i
+	neutron router-gateway-set router-$i $PUB_ID
+
+	neutron net-create rede-$i
+	ID=$(neutron net-list | grep rede-$i | awk '{print $2}')
+
+	neutron subnet-create rede-$i 192.168.$i.0/24 --enable-dhcp --gateway 192.168.$i.1 --name sub-internal
+	ID_SUB=$(neutron subnet-list | grep 192.168.$i | awk '{print $2}')
+
+	neutron router-interface-add router-$i $ID_SUB
+done
