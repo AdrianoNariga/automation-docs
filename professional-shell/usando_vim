@@ -1,0 +1,33 @@
+:set background=dark
+:set background=light
+
+esc  + 	'a' - insere um caracter a frente
+	'I' - insere no inicio da linha
+	'A' - insere no final da linha
+	'O' - insere uma linha acima
+	'S' - apaga a linha toda e entra em incercao
+
+	shift + zz - salva e sai
+	ctrl + v - seleciona verticalmente
+	'yw' - copia uma palavra a direita do cursor
+	'3yw' - copia 3 palavras a direita do cursor
+
+:e /etc/hosts - sai do arquivo atual e entra no outro
+:r /etc/hosts - traz o conteudo do arquivo para o arquivo em edicao
+?palavra - pesquisa invertida
+:1,10s/essa/por_essa/ - substitui entre a linha 1 a linha 10
+
+Abrir varios arquivos
+:split /etc/hosts - abre mais uma tela com o outro arquivo
+
+vim arq1 arq2 arq3
+:previous	Vai para o arquivo anterior passado pela linha de comando.
+:next		Vai para o próximo arquivo passado pela linha de comando.
+:rewind		Ira para o primeiro arquivo.
+:last		Ira para o último arquivo.
+:args		Ira exibir os arquivos que podem ser navegados dessa forma.
+
+:wqall	Salva e fecha todos os arquivos abertos.
+:qall	Fecha todos os arquivos abertos.
+
+https://www.vivaolinux.com.br/artigo/VIM-avancado-(parte-2)?pagina=1
