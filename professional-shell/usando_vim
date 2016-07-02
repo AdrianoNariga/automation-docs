@@ -30,4 +30,16 @@ vim arq1 arq2 arq3
 :wqall	Salva e fecha todos os arquivos abertos.
 :qall	Fecha todos os arquivos abertos.
 
+inserindo comentarios
+1. modo visual vertical
+2. seleciona linhas
+3. shift + 'I'
+4. entra com '#'
+5. esc
+
+removendo comentarios
+1. modo visal vertical
+2. seleciona linhas
+3. 'x'
+
 https://www.vivaolinux.com.br/artigo/VIM-avancado-(parte-2)?pagina=1
