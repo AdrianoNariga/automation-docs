@@ -1,0 +1,46 @@
+#!/bin/bash
+# example
+# add_kvm_resource name 192.168.0.200
+add_kvm_resource(){
+	hammer compute-resource create \
+	    --provider Libvirt --name $1 \
+	    --url qemu+ssh://$2/system
+}
+
+# example
+# add_openstack_resource name tenant_name user pass region url
+add_openstack_resource(){
+	hammer compute-resource create \
+	    --provider Openstack --name $1 \
+	    --tenant $2 --user $3 \
+	    --password $4 --region $5 \
+	    --url $6/tokens
+}
+
+import_class(){
+	for i in $(hammer proxy list | egrep -v '(^ID|^-)' | awk '{print $1}')
+	do
+		hammer proxy import-classes --id $i
+	done
+}
+
+add_systems(){
+	hammer os create --name Debian --architectures x86_64 \
+	    --family Debian --major 8 --minor 5 --release-name jessie --description "Debian 8.5"
+	hammer os create --name Ubuntu --architectures x86_64 \
+	    --family Debian --major 14 --minor 04 --release-name trusty --description "Ubuntu 14.04 LTS"
+	hammer os create --name Ubuntu --architectures x86_64 \
+	    --family Debian --major 16 --minor 04 --release-name xenial --description "Ubuntu 16.04 LTS"
+	hammer os create --name CentOS --architectures x86_64 --family Redhat --major 7 --minor 3
+	hammer os create --name RedHat --architectures x86_64 --family Redhat --major 7 --minor 3
+}
+
+associate_template(){
+	CentOS=$(hammer os list | grep CentOS | awk '{print $1}')
+	hammer template add-operatingsystem --id 29 --operatingsystem-id $CentOS
+}
+
+add_kvm_resource localhost.libvirt 172.19.226.205
+add_openstack_resource openstack xxx_tenant xxx_user 'xxx)$xxx' xxx-xxx 'https://keystone.xxx-xxx.openstack.xxxcloud.com.br:5000/v2.0'
+import_class
+add_systems
