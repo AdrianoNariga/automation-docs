@@ -1,4 +1,5 @@
 #!/bin/bash
+# usar funcao installer ou installer_official_elementary
 installer(){
 	add-apt-repository ppa:elementary-os/daily
 	add-apt-repository ppa:elementary-os/os-patches
