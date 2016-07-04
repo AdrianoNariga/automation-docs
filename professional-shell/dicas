@@ -36,3 +36,9 @@ ctrl+y (cola)
 
 # apagar string inteira de comando
 esc+backspace
+
+# sed em varios arquivos
+for i in `grep -rl ansible_hostname roles/`
+do
+	sed -i 's/ansible_hostname/inventory_hostname/g' $i
+done
