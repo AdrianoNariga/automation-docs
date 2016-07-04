@@ -1,0 +1,28 @@
+#!/bin/bash
+installer(){
+	add-apt-repository ppa:elementary-os/daily
+	add-apt-repository ppa:elementary-os/os-patches
+	add-apt-repository ppa:elementary-os/testing
+	add-apt-repository ppa:mpstark/elementary-tweaks-daily
+	apt-get update
+	apt-get dist-upgrade
+	apt-get install elementary-theme elementary-icon-theme elementary-default-settings elementary-desktop
+}
+
+tweaks(){
+	apt-get install libgconf2-dev libpolkit-gobject-1-dev
+	git clone https://github.com/elementary-tweaks/elementary-tweaks
+	cd elementary-tweaks
+	mkdir build
+	cd build
+	cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/usr ../
+	make
+	make install
+	switchboard
+}
+
+installer_official_elementary(){
+	add-apt-repository ppa:elementary-os/stable
+	apt-get update
+	apt-get install elementary-desktop
+}
