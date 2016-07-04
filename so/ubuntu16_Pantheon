@@ -6,8 +6,8 @@ installer(){
 	add-apt-repository ppa:elementary-os/testing
 	add-apt-repository ppa:mpstark/elementary-tweaks-daily
 	apt-get update
-	apt-get dist-upgrade
-	apt-get install elementary-theme elementary-icon-theme elementary-default-settings elementary-desktop
+	apt-get dist-upgrade -y
+	apt-get install elementary-theme elementary-icon-theme elementary-default-settings elementary-desktop -y
 }
 
 tweaks(){
@@ -25,5 +25,5 @@ tweaks(){
 installer_official_elementary(){
 	add-apt-repository ppa:elementary-os/stable
 	apt-get update
-	apt-get install elementary-desktop
+	apt-get install elementary-desktop -y
 }
