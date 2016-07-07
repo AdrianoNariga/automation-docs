@@ -1,0 +1,52 @@
+#!/bin/bash
+echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname` `hostname -s`" >> /etc/hosts
+setenforce permissive
+sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+
+
+cat > /etc/yum.repos.d/virt7-docker-common-release.repo << EOF
+[virt7-docker-common-release]
+name=virt7-docker-common-release
+baseurl=http://cbs.centos.org/repos/virt7-docker-common-release/x86_64/os/
+gpgcheck=0
+EOF
+yum install kubernetes flannel etcd vim -y
+
+cat > /etc/kubernetes/config << EOF
+KUBE_LOGTOSTDERR="--logtostderr=true"
+KUBE_LOG_LEVEL="--v=0"
+KUBE_ALLOW_PRIV="--allow-privileged=false"
+KUBE_MASTER="--master=http://$HOSTNAME:8080"
+EOF
+
+cat > /etc/kubernetes/apiserver << EOF
+KUBE_API_ADDRESS="--address=0.0.0.0"
+KUBE_API_PORT="--port=8080"
+KUBELET_PORT="--kubelet-port=10250"
+KUBE_ETCD_SERVERS="--etcd-servers=http://127.0.0.1:2379"
+KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=10.254.0.0/16"
+#KUBE_ADMISSION_CONTROL="--admission-#control=NamespaceLifecycle,NamespaceExists,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota"
+KUBE_API_ARGS=""
+EOF
+
+cat > /etc/etcd/etcd.conf << EOF
+ETCD_NAME=default
+ETCD_DATA_DIR="/var/lib/etcd/default.etcd"
+ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
+ETCD_ADVERTISE_CLIENT_URLS="http://localhost:2379"
+EOF
+systemctl restart etcd kube-apiserver kube-controller-manager kube-scheduler
+systemctl enable etcd kube-apiserver kube-controller-manager kube-scheduler
+
+cat > /home/administrator/flannel-config.json << EOF
+{   
+    "Network": "10.0.10.0/16",
+    "SubnetLen": 24,
+    "Backend": {
+        "Type": "vxlan",
+        "VNI": 1
+     }
+}
+EOF
+etcdctl set /atomic.io/network/config < /home/administrator/flannel-config.json

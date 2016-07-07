@@ -4,15 +4,15 @@ parameters:
   image:
     type: string
     description: Image used for servers
-    default: CentOS-7.0-64 bits
+    default: CentOS-7 64Bits
   chave:
     type: string
     description: Name of SSH key to connect to the servers
-    default: uol-diveo
+    default: arodrigues
   flavor:
     type: string
     description: flavor used by the servers
-    default: small.1GB
+    default: small.2GB
     constraints:
       - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB ]
   num_instances:
@@ -22,7 +22,7 @@ parameters:
   network:
     type: string
     description: id da rede
-    default: 9c0c3c5c-f435-4bb1-b4ab-f6849f5c9722
+    default: 46d9b2da-ee3a-456c-b093-3b413dd98d2f
 
 resources:
   server_config:
@@ -35,8 +35,6 @@ resources:
           image: { get_param: image }
           flavor: { get_param: flavor}
           key_name: { get_param: chave }
-          networks:
-            - port: { get_resource: server_port }
           user_data: |
             #!/bin/bash
             echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`.novalocal" >> /etc/hosts
@@ -51,8 +49,3 @@ resources:
             systemctl enable httpd
 
           user_data_format: RAW
-
-  server_port:
-    type: OS::Neutron::Port
-    properties:
-      network_id: { get_param: network }
