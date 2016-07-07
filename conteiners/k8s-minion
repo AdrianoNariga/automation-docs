@@ -4,6 +4,9 @@ setenforce permissive
 sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
 sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
 
+systemctl disable firewalld
+systemctl stop firewalld
+
 cat > /etc/yum.repos.d/virt7-docker-common-release.repo << EOF
 [virt7-docker-common-release]
 name=virt7-docker-common-release
