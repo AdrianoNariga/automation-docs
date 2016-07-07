@@ -39,7 +39,7 @@ EOF
 systemctl restart etcd kube-apiserver kube-controller-manager kube-scheduler
 systemctl enable etcd kube-apiserver kube-controller-manager kube-scheduler
 
-cat > /home/administrator/flannel-config.json << EOF
+cat > /home/nariga/flannel-config.json << EOF
 {   
     "Network": "10.0.10.0/16",
     "SubnetLen": 24,
@@ -49,4 +49,4 @@ cat > /home/administrator/flannel-config.json << EOF
      }
 }
 EOF
-etcdctl set /atomic.io/network/config < /home/administrator/flannel-config.json
+etcdctl set /atomic.io/network/config < /home/nariga/flannel-config.json
