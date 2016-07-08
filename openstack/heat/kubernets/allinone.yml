@@ -14,10 +14,6 @@ resources:
         - port: { get_resource: server_port }
       user_data: |
         #!/bin/bash
-        dominio="lab.k8s"
-        hostname "`hostname`.$dominio"
-        echo `hostname` > /etc/hostname
-        echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname` `hostname -s`" >> /etc/hosts
         cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
         setenforce permissive
         sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
@@ -34,12 +30,15 @@ resources:
         gpgcheck=0
         EOF
         yum install kubernetes flannel etcd vim -y
+        hostnamectl set-hostname "$HOSTNAME.lab.k8s"
+        echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname` `hostname -s`" >> /etc/hosts
+        export HOSTNAME="$(hostname -f)"
 
         cat > /etc/kubernetes/config << EOF
         KUBE_LOGTOSTDERR="--logtostderr=true"
         KUBE_LOG_LEVEL="--v=0"
         KUBE_ALLOW_PRIV="--allow-privileged=false"
-        KUBE_MASTER="--master=http://master1.lab.k8s:8080"
+        KUBE_MASTER="--master=http://$HOSTNAME:8080"
         EOF
 
         cat > /etc/kubernetes/apiserver << EOF
@@ -94,5 +93,58 @@ resources:
       floating_ip: { get_resource: float_ip }
       server_id: { get_resource: master1 }
 
-# chamada na api:
-# heat stack-create foreman -f HEAT/MY_HEATS/foreman.yaml --parameters 'chave=vostro;hostname=frm01;flavor=small.1GB;admin_password=nada'
+  minions:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: 3
+      resource_def:
+        type: OS::Nova::Server
+        properties:
+          name: minion_%index%.lab.k8s
+          image: CentOS-7 64Bits
+          flavor: small.2GB
+          key_name: arodrigues
+          security_groups: [SSH-PING, KATELLO, WEB, KUBERNETS]
+          user_data: |
+            #!/bin/bash
+            setenforce permissive
+            sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+            sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+            systemctl restart sshd
+            cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+            cat > /etc/yum.repos.d/virt7-docker-common-release.repo << EOF
+            [virt7-docker-common-release]
+            name=virt7-docker-common-release
+            baseurl=http://cbs.centos.org/repos/virt7-docker-common-release/x86_64/os/
+            gpgcheck=0
+            EOF
+            yum install kubernetes flannel vim -y
+            hostnamectl set-hostname "$HOSTNAME.lab.k8s"
+            echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname` `hostname -s`" >> /etc/hosts
+            export HOSTNAME="$(hostname -f)"
+
+            cat > /etc/kubernetes/config << EOF
+            KUBE_LOGTOSTDERR="--logtostderr=true"
+            KUBE_LOG_LEVEL="--v=0"
+            KUBE_ALLOW_PRIV="--allow-privileged=false"
+            KUBE_MASTER="--master=http://master1.lab.k8s:8080"
+            EOF
+
+            cat > /etc/kubernetes/kubelet << EOF
+            KUBELET_ADDRESS="--address=0.0.0.0"
+            # KUBELET_PORT="--port=10250"
+            KUBELET_HOSTNAME="--hostname-override=$HOSTNAME"
+            KUBELET_API_SERVER="--api-servers=http://master1.lab.k8s:8080"
+            KUBELET_POD_INFRA_CONTAINER="--pod-infra-container-image=registry.access.redhat.com/rhel7/pod-infrastructure:latest"
+            KUBELET_ARGS=""
+            EOF
+
+            cat > /etc/sysconfig/flanneld << EOF
+            FLANNEL_ETCD="http://master1.lab.k8s:2379"
+            FLANNEL_ETCD_KEY="/atomic.io/network"
+            #FLANNEL_OPTIONS=""
+            EOF
+            systemctl restart kube-proxy kubelet docker flanneld
+            systemctl enable kube-proxy kubelet docker flanneld
+
+          user_data_format: RAW
