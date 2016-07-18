@@ -1,0 +1,9 @@
+watch -n0 "pcs resource show | grep rabbit -A2"
+for i in `pcs cluster status | grep Online: | cut -d [ -f 2 | cut -d ] -f 1`; do pcs resource ban rabbitmq $i; done
+
+ansible-playbook 01-default-env.yml -i dual-prod --check --tags force-join
+ansible controller -a "rabbitmqctl cluster_status" -i dual-prod
+
+todos_hosts=`cat nariga-lista-hosts | awk '{print $1}' | xargs`
+for i in $todos_hosts; do ssh -t $i 'yum repolist'; done
+for i in $todos_hosts; do ssh -t $i 'mv /etc/yum.repos.d/redhat.repo /etc/yum.repos.d/redhat.bkp'; done
