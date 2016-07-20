@@ -37,10 +37,10 @@ if_rhel(){
 
 if_ubuntu(){
 	apt-get install apt-transport-https ca-certificates -y
-	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58
+	apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
 	if [ `get_so -v` = "15.10" ] ; then
 		echo "deb https://apt.dockerproject.org/repo ubuntu-wily main" > /etc/apt/sources.list.d/docker.list
-	elif [ `get_so -v` = "16.04" ] ; then
+	elif [ `get_so -v` = "16.04" ] || [ `get_so -v` = "0.4" ] ; then
 		echo "deb https://apt.dockerproject.org/repo ubuntu-xenial main" > /etc/apt/sources.list.d/docker.list
 	fi
 
@@ -50,7 +50,7 @@ if_ubuntu(){
 }
 
 case `get_so -s` in
-	Ubuntu) if_ubuntu ;;
+	Ubuntu|elementary) if_ubuntu ;;
 	CentOS) if_centos ;;
 	Red) if_rhel ;;
 esac
