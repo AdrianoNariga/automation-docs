@@ -147,6 +147,14 @@ resources:
             FLANNEL_ETCD_KEY="/atomic.io/network"
             #FLANNEL_OPTIONS=""
             EOF
+
+            cat > /etc/sysconfig/docker << EOF
+            OPTIONS='--selinux-enabled --log-driver=journald'
+            DOCKER_CERT_PATH=/etc/docker
+            ADD_REGISTRY='--add-registry 200.98.31.176:9090'
+            INSECURE_REGISTRY='--insecure-registry 200.98.31.176:9090'
+            EOF
+
             systemctl restart kube-proxy kubelet docker flanneld
             systemctl enable kube-proxy kubelet docker flanneld
 
