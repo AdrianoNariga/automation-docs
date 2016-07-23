@@ -6,25 +6,25 @@ parameters:
   hostname:
     type: string
     description: hostname do servidor foreman
-    default: katello-3.internal
+    default: katello.cloud-uol
   chave:
     type: string
     description: nome da chave publica ssh
-    default: uol-diveo
+    default: key
   flavor:
     type: string
     description: escolha de flavor
     constraints:
-      - allowed_values: [ small.1GB, small.2GB, medium.2GB, medium.4GB, large.4GB ]
-    default: large.4GB
+      - allowed_values: [ small.2GB, medium.4GB, large.16GB, small.4GB, large.8GB micro.1GB, micro.2GB, medium.8GB ]
+    default: medium.8GB
   imagem:
     type: string
     description: id ou nome da imagem centos 7
-    default: CentOS-7.0-64 bits
+    default: CentOS-7 64Bits
   network:
     type: string
     description: id da rede
-    default: bb929494-a275-4e81-a689-835dabd37ed1
+    default: 1ea707c7-ae0a-4c28-b799-72e601f81ee6
 
 resources:
   my_000:
@@ -38,7 +38,7 @@ resources:
         - port: { get_resource: server_port }
       user_data: |
         #!/bin/bash
-        dominio="internal"
+        dominio="cloud-uol"
         hostname "`hostname`.$dominio"
         echo `hostname` > /etc/hostname
         echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname`" >> /etc/hosts
@@ -53,14 +53,37 @@ resources:
         >> /home/administrator/.ssh/authorized_keys
         systemctl restart sshd
 
-        yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/3.0/katello/RHEL/7Server/x86_64/katello-repos-latest.rpm
-        yum -y localinstall http://yum.theforeman.org/nightly/el7/x86_64/foreman-release.rpm
+        yum -y localinstall http://fedorapeople.org/groups/katello/releases/yum/3.0/katello/el7/x86_64/katello-repos-latest.rpm
+        yum -y localinstall http://yum.theforeman.org/releases/1.11/el7/x86_64/foreman-release.rpm
         yum -y localinstall http://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
         yum -y localinstall http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        yum -y install git
+
+        export HOME=/root
+        git clone https://github.com/narigacdo/automation-all.git /root/automation-all
         yum -y install foreman-release-scl
         yum -y install katello
 
-        foreman-installer --foreman-admin-password nada@nada --scenario katello
+        foreman-installer --foreman-admin-password nada@nada --scenario katello \
+        --capsule-pulp-master false --foreman-proxy-plugin-pulp-enabled false
+
+        git clone https://github.com/narigacdo/automation-all.git /root/automation-all
+
+        hammer -u admin -p 'nada@nada' location create --name jab
+        export loc_id=$(hammer -u admin -p 'nada@nada' location list | grep jab | awk '{print $1}')
+
+        hammer -u admin -p 'nada@nada' organization create --name 'home' --label 'home' --description 'My Home'
+        export org_id=$(hammer -u admin -p 'nada@nada'  organization list | grep home | awk '{print $1}')
+        
+        hammer -u admin -p 'nada@nada' user create --admin yes --default-location-id $loc_id \
+        --default-organization-id $org_id --login nariga --mail adriano@nada \
+        --firstname Adriano --lastname Lopes --password 'nada@nada' --organizations home \
+        --locations jab --auth-source-id 1
+
+        capsule="capsule.home.jab"
+        capsule-certs-generate --capsule-fqdn $capsule --certs-tar "~/$capsule-certs.tar" > /root/$capsule-install
+        mv ~/$capsule-certs.tar /home/administrator
+
         sleep 4 ; puppet agent -t
 
       user_data_format: RAW
@@ -69,14 +92,18 @@ resources:
     type: OS::Neutron::Port
     properties:
       network_id: { get_param: network }
+      fixed_ips:
+        - subnet_id: cf374e73-e884-4607-be71-e480ba9d8d3a
+          ip_address: 192.168.112.254
       security_groups:
         - SSH-PING
         - KATELLO
+        - WEB
 
   float_ip:
     type: OS::Nova::FloatingIP
     properties:
-      pool: publica
+      pool: public301
   associate_float_ip:
     type: OS::Nova::FloatingIPAssociation
     properties:
