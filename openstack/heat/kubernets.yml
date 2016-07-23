@@ -8,7 +8,7 @@ resources:
     properties:
       name: master1.lab.k8s
       key_name: arodrigues
-      flavor: small.2GB
+      flavor: micro.512MB
       image: CentOS-7 64Bits
       networks:
         - port: { get_resource: server_port }
@@ -29,10 +29,23 @@ resources:
         baseurl=http://cbs.centos.org/repos/virt7-docker-common-release/x86_64/os/
         gpgcheck=0
         EOF
-        yum install kubernetes flannel etcd vim -y
+        yum install kubernetes flannel etcd vim screen -y
         hostnamectl set-hostname "$HOSTNAME.lab.k8s"
         echo "`ifconfig eth0 | grep broadcast | awk '{print $2}'` `hostname` `hostname -s`" >> /etc/hosts
         export HOSTNAME="$(hostname -f)"
+
+        cat > /home/administrator/.screenrc << EOF
+        msgwait 3
+        sorendition 05 29
+        hardstatus alwayslastline
+        hardstatus string "%{= kG} [ %{= W} %-Lw%{=r}%n* %t%{-}%+Lw %= %{G}] [ %{W}@%H %d-%m %c %{G}] "
+        vbell off
+        EOF
+
+        cat > /home/administrator/.ssh/config << EOF
+        Host *
+           StrictHostKeyChecking no
+        EOF
 
         cat > /etc/kubernetes/config << EOF
         KUBE_LOGTOSTDERR="--logtostderr=true"
@@ -57,6 +70,11 @@ resources:
         ETCD_LISTEN_CLIENT_URLS="http://0.0.0.0:2379"
         ETCD_ADVERTISE_CLIENT_URLS="http://localhost:2379"
         EOF
+
+        chown -R administrator. /home/administrator/.screenrc
+        chown -R administrator. /home/administrator/.ssh/config
+        chmod 0400 /home/administrator/.ssh/config
+
         systemctl restart etcd kube-apiserver kube-controller-manager kube-scheduler
         systemctl enable etcd kube-apiserver kube-controller-manager kube-scheduler
         cat > /home/administrator/flannel-config.json << EOF
@@ -96,7 +114,7 @@ resources:
   minions:
     type: OS::Heat::ResourceGroup
     properties:
-      count: 3
+      count: 2
       resource_def:
         type: OS::Nova::Server
         properties:
@@ -155,8 +173,8 @@ resources:
             INSECURE_REGISTRY='--insecure-registry 200.98.31.176:9090'
             EOF
 
-            systemctl restart kube-proxy kubelet docker flanneld
             systemctl enable kube-proxy kubelet docker flanneld
+            systemctl restart kube-proxy kubelet docker flanneld
 
           user_data_format: RAW
 
