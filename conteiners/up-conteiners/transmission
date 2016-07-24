@@ -1,18 +1,20 @@
 #!/bin/bash
 local_bind=`ip a s $(ip r s | grep ^default | awk '{print $5}') | grep inet | head -n1 | cut -d / -f 1 | awk '{print $2}'`
+local_path=$1
 run_conteiner(){
 	docker run -it --name transmission \
-	-p $local_bind:80:9091 -v $1:/var/lib/transmission-daemon \
+	-p $local_bind:80:9091 -v $local_path:/var/lib/transmission-daemon \
 	-d dperson/transmission
 }
 
-if [ $1 == "" ]
+if [ "$1" == "" ]
 then
 	echo "defina caminho completo onde sera gravado os torrents finalizados"
 	echo "$0 /path/medias (lembre de ter acesso de gravacao nesse diretorio)"
 	exit 1
 
-elif [ $2 == "" ]
+elif [ "$2" == "" ]
+then
 	run_conteiner
 else
 	local_bind=$2

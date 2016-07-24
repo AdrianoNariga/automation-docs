@@ -1,20 +1,22 @@
 #!/bin/bash
 local_bind=`ip a s $(ip r s | grep ^default | awk '{print $5}') | grep inet | head -n1 | cut -d / -f 1 | awk '{print $2}'`
+local_path=$1
 run_conteiner(){
-	docker run -d --net=host -v $1:/media --name minidlna \
+	docker run -d --net=host -v $local_path:/media --name minidlna \
 	-e MINIDLNA_MEDIA_DIR=/media \
 	-e MINIDLNA_LISTENING_IP=$local_bind \
 	-e MINIDLNA_PORT=8200 \
 	-e MINIDLNA_FRIENDLY_NAME=$HOSTNAME bobrik/minidlna
 }
 
-if [ $1 == "" ]
+if [ "$1" == "" ]
 then
         echo "defina caminho completo onde sera gravado os torrents finalizados"
         echo "$0 /path/medias (lembre de ter acesso de gravacao nesse diretorio)"
         exit 1
 
-elif [ $2 == "" ]
+elif [ "$2" == "" ]
+then
         run_conteiner
 else
         local_bind=$2
