@@ -2,6 +2,11 @@
 mount -a
 CONFIG="offline-repo.conf"
 
+packages_install(){
+	rpm -qa | grep yum-utils || yum install -y yum-utils
+	rpm -qa | grep createrepo || yum install -y createrepo
+}
+
 create_repo(){
 	while read LINHA
 	do
@@ -46,6 +51,7 @@ create_repo(){
 		fi
 	done
 }
+packages_install
 create_repo
 echo "-----> Atualizando repomd.xml de $BASEDIR"
 createrepo --update $BASEDIR
