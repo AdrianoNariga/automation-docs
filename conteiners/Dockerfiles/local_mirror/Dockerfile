@@ -1,3 +1,6 @@
+# docker run -ti -h localmirror.home.jab \
+#  -v /media/storage-00/local_repo/:/var/www/ \
+#  -p 192.168.111.5:80:80 narigacdo/local_mirror
 FROM debian
 MAINTAINER NarigaCDO "narigacdo@gmail.com"
 
