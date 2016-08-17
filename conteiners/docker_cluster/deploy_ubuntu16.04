@@ -1,0 +1,18 @@
+apt-get install apt-transport-https ca-certificates -y
+apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+echo "deb https://apt.dockerproject.org/repo ubuntu-xenial experimental" > /etc/apt/sources.list.d/docker.list
+apt update
+apt-get purge lxc-docker
+apt-cache policy docker-engine
+apt-get -y install linux-image-extra-$(uname -r)
+apt-get -y install apparmor
+apt-get -y install docker-engine
+systemctl start docker
+systemctl enable docker
+
+docker swarm init (in manager)
+
+(in node)
+docker swarm join --secret 5od7t8lsmleemsbna5ibz1ics \
+	--ca-hash sha256:ee3d9ae4a32d296ef0b6898a3ebe7362bdaf76f7ed8983cc004252ac651fb8da \
+	192.168.221.158:2377

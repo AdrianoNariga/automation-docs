@@ -1,0 +1,2 @@
+nova service-disable hostname nova-comupte
+nova service-enable hostname nova-comupte
