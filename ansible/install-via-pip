@@ -2,11 +2,15 @@
 
 debian(){
 	apt update
-	apt install python-dev build-essential -y
+	apt install python-dev build-essential python-virtualenv -y
 	apt install python-pip -y
 	pip install --upgrade pip
 	virtualenv /root/.ansible
 	source /root/.ansible/bin/activate
 	pip install markupsafe
 	pip install ecdsa
+	pip install paramiko PyYAML Jinja2 httplib2 six
+	pip install ansible
 }
+
+debian
