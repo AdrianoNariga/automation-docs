@@ -7,10 +7,10 @@ debian(){
 	pip install --upgrade pip
 	virtualenv /root/.ansible
 	source /root/.ansible/bin/activate
-	pip install markupsafe
-	pip install ecdsa
 	pip install paramiko PyYAML Jinja2 httplib2 six
 	pip install ansible
+	pip install markupsafe
+	pip install ecdsa
 }
 
 debian
