@@ -1,0 +1,12 @@
+#!/bin/bash
+
+debian(){
+	apt update
+	apt install python-dev build-essential -y
+	apt install python-pip -y
+	pip install --upgrade pip
+	virtualenv /root/.ansible
+	source /root/.ansible/bin/activate
+	pip install markupsafe
+	pip install ecdsa
+}
