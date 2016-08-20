@@ -1,9 +1,21 @@
 #!/bin/bash
+get_so(){
+        while test -n "$1"
+        do
+        case $1 in
+                -s | --operatingsystem)
+                        cat /etc/os-release | grep PRETTY_NAME= | cut -d \" -f 2 | awk '{print $1}'
+                ;;
+                -v | --version)
+                        cat /etc/os-release | grep VERSION_ID= | cut -d \" -f2
+                ;;
+                *) echo "opcao invalida"
+        esac
+        shift
+        done
+}
 
-debian(){
-	apt update
-	apt install python-dev build-essential python-virtualenv python-pip -y
-	pip install --upgrade pip
+install_pip(){
 	virtualenv /root/.ansible
 	source /root/.ansible/bin/activate
 	pip install paramiko
@@ -12,4 +24,22 @@ debian(){
 	pip install ansible
 }
 
-debian
+debian(){
+	apt update
+	apt install python-dev build-essential python-virtualenv python-pip -y
+	pip install --upgrade pip
+	install_pip
+}
+
+centos(){
+	yum install epel-release -y
+	yum install python-virtualenv python-pip python-devel gcc gcc-c++ make cmake python-simplejson -y
+	pip install --upgrade pip
+	install_pip
+}
+
+case `get_so -s` in
+        Ubuntu|elementary|Debian) debian ;;
+        CentOS) centos ;;
+        Red) if_rhel ;;
+esac
