@@ -1,0 +1,19 @@
+#!/bin/bash
+subscription-manager register \
+--username=$1 \
+--password=$2 \
+--force
+
+subscription-manager list --consumed
+subscription-manager subscribe --auto
+subscription-manager repos \
+--enable=rhel-7-server-openstack-7.0-rpms \
+--enable=rhel-7-server-optional-rpms \
+--enable=rhel-7-server-rpms \
+--enable=rhel-7-server-extras-rpms \
+--enable=rhel-7-server-openstack-8-rpms \
+--enable=rhel-7-server-openstack-8-director-rpms \
+--enable=rhel-7-server-rh-common-rpms \
+--enable=rhel-server-rhscl-7-rpms
+
+yum repolist | egrep -v '(^repo|^Loaded)' | awk '{print $1}' | cut -d / -f 1
