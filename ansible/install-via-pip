@@ -26,7 +26,7 @@ install_pip(){
 
 debian(){
 	apt update
-	apt install python-dev build-essential python-virtualenv python-pip -y
+	apt install python-dev build-essential python-virtualenv python-pip libssl-dev -y
 	pip install --upgrade pip
 	install_pip
 }
