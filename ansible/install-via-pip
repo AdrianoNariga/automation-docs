@@ -33,7 +33,11 @@ debian(){
 
 centos(){
 	yum install epel-release -y
-	yum install python-virtualenv python-pip python-devel gcc gcc-c++ make cmake python-simplejson -y
+	yum install \
+		python-virtualenv python-pip \
+		python-devel gcc gcc-c++ make \
+		cmake python-simplejson openssl-devel \
+		libffi libffi-devel -y
 	pip install --upgrade pip
 	install_pip
 }
