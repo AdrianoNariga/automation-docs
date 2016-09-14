@@ -37,7 +37,7 @@ centos(){
 		python-virtualenv python-pip \
 		python-devel gcc gcc-c++ make \
 		cmake python-simplejson openssl-devel \
-		libffi libffi-devel -y
+		libffi libffi-devel pyOpenSSL pycryptopp -y
 	pip install --upgrade pip
 	install_pip
 }
