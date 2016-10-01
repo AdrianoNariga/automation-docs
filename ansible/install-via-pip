@@ -47,7 +47,3 @@ case `get_so -s` in
         CentOS) centos ;;
         Red) if_rhel ;;
 esac
-
-# narigacdo@gmail.com
-# 21da417987
-# http://patrickmaia.com.br/patrickmaia/login
