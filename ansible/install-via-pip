@@ -20,7 +20,7 @@ install_pip(){
 	source /root/.ansible/bin/activate
 	pip install paramiko
 	pip install paramiko
-	pip install PyYAML Jinja2 httplib2 six markupsafe ecdsa shade apache-libcloud boto
+	pip install PyYAML Jinja2 httplib2 six markupsafe ecdsa shade apache-libcloud boto PyOpenSSL
 	pip install ansible
 }
 
