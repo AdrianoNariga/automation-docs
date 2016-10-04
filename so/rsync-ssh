@@ -1,0 +1,4 @@
+#!/bin/bash
+rsync -avz --delete -e \
+"ssh -o StrictHostKeyChecking=no -i ~/Dropbox/dualtec-pem/arodrigues.pem" \
+--progress ~/Dropbox/git-projects/openstack-ansible arodrigues@gateway.lab-externo:
