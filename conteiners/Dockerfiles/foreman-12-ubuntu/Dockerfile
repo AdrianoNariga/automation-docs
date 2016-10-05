@@ -22,7 +22,7 @@ ENV FOREOPTS --enable-foreman-compute-ovirt \
         --enable-puppet \
         --puppet-listen=true \
         --puppet-show-diff=true \
-        --puppet-server-envs-dir=/etc/puppet/environments
+        --puppet-server-envs-dir=/etc/puppetlabs/code/environments
 
 RUN apt-get update && \
     apt-get upgrade -y && \
@@ -45,7 +45,7 @@ RUN apt-get update && \
     echo "`ifconfig eth0 | grep Bcast | awk '{print $2}' | cut -d : -f 2` $HOSTNAME" >> /etc/hosts && \
     /usr/sbin/foreman-installer $FOREOPTS; \
     sed -i -e "s/START=no/START=yes/g" /etc/default/foreman; \
-    sed -i.bak "s/certname*.*/certname = $HOSTNAME/g" /etc/puppet/puppet.conf
+    sed -i.bak "s/certname*.*/certname = $HOSTNAME/g" /etc/puppetlabs/puppet/puppet.conf
 
 RUN ssh-keygen -f /usr/share/foreman/.ssh/id_rsa -t rsa -N ''
 ADD config /usr/share/foreman/.ssh/config

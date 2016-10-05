@@ -1,0 +1,5 @@
+docker run -ti -h foreman.conteiner -v \
+	/home/nariga/environments/:/etc/puppetlabs/code/environments \
+	-p 192.168.112.10:80:80 -p 192.168.112.10:443:443 \
+	-p 192.168.112.10:8140:8140 -p 192.168.112.10:8443:8443 \
+	foreman12
