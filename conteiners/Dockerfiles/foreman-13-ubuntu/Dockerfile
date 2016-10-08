@@ -33,8 +33,9 @@ RUN apt-get update && \
     echo "deb http://deb.theforeman.org/ plugins $FOREMANVER" >> /etc/apt/sources.list.d/foreman.list && \
     wget -q http://deb.theforeman.org/pubkey.gpg -O- | apt-key add - && \
     apt-get install -y software-properties-common git sshpass && \
+    apt-add-repository ppa:ansible/ansible && \
     apt-get update && \
-    apt-get install -y foreman-installer && \
+    apt-get install -y foreman-installer ansible && \
     echo "export TERM=vt100" >> /root/.bashrc && \
     LANG=en_US.UTF-8 locale-gen --purge en_US.UTF-8 && \
     echo 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale && \
