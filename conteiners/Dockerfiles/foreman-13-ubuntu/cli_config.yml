@@ -1,0 +1,18 @@
+:ui:
+  :interactive: true
+  :per_page: 20
+  :history_file: '~/.hammer/history'
+
+:watch_plain: false
+:reload_cache: false
+:log_level: 'error'
+:modules:
+    - hammer_cli_foreman
+
+:foreman:
+    :host: 'https://localhost/'
+    :username: 'admin'
+    :password: 'senha_admin'
+
+:log_dir: '/var/log/foreman/'
+:log_level: 'debug'
