@@ -67,15 +67,7 @@ CMD /etc/init.d/puppet stop && \
     /etc/init.d/apache2 stop && \
     /etc/init.d/foreman stop && \
     /etc/init.d/postgresql stop && \
-    echo "sleeping for postgresql to ensure stopped" && \
-    sleep 60 && \
-    /etc/init.d/postgresql start && \
-    echo "sleeping for postgresql to ensure started" && \
-    sleep 60 && \
-    /etc/init.d/foreman start && \
-    /etc/init.d/apache2 start && \
-    /etc/init.d/puppet start && \
-    /etc/init.d/foreman-proxy start && \
+    /usr/sbin/foreman-installer && \
     /usr/sbin/cron && \
     /usr/sbin/foreman-rake db:seed && \
     service foreman-proxy restart && \
