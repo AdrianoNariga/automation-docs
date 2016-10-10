@@ -56,6 +56,7 @@ ADD cli_config.yml /etc/hammer/cli_config.yml
 RUN rm /root/.hammer/cli.modules.d/foreman.yml
 RUN ln -s /etc/hammer/cli_config.yml /root/.hammer/cli.modules.d/foreman.yml
 ADD scripts/pos-deploy /root/pos-deploy
+ADD scripts/provisioning_templates /root/provisioning_templates
 
 RUN apt-get autoremove && apt-get autoclean && apt-get clean
 EXPOSE 80

@@ -1,0 +1,43 @@
+<%#
+kind: user_data
+name: centos cloud_init
+oses:
+- CentOS 7
+-%>
+#!/bin/bash
+<%= snippet 'my_ssh_keys_administrator' %>
+<%= snippet 'fix_hosts' %>
+<%
+  # safemode renderer does not support unary negation
+  pm_set = @host.puppetmaster.empty? ? false : true
+  puppet_enabled = pm_set || @host.param_true?('force-puppet')
+%>
+cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+setenforce permissive
+sed -i.bak "s/SELINUX=enforcing/SELINUX=permissive/g" /etc/selinux/config
+sed -i.bak "s/#UseDNS yes/UseDNS no/g" /etc/ssh/sshd_config
+hostnamectl set-hostname <%= @host.certname %>
+systemctl restart sshd
+
+<%= snippet 'foreman_force_hosts' %>
+
+<% if puppet_enabled %>
+rpm -ivh https://yum.puppetlabs.com/puppetlabs-release-el-7.noarch.rpm
+yum install -y puppet wget
+cat > /etc/puppet/puppet.conf << EOF
+<%= snippet 'puppet.conf' %>
+EOF
+
+# Setup puppet to run on system reboot
+/sbin/chkconfig --level 345 puppet on
+
+/etc/cron.hourly/tr_ip
+
+/usr/bin/puppet agent --config /etc/puppet/puppet.conf --onetime --tags no_such_tag <%= @host.puppetmaster.blank? ? '' : "--server #{@host.puppetmaster}" %> --no-daemonize
+<% end -%>
+
+# UserData still needs wget to mark as finished
+/usr/bin/wget --quiet --output-document=/dev/null --no-check-certificate <%= foreman_url('built') %>
+yum update -y
+systemctl restart puppet
+systemctl enable puppet

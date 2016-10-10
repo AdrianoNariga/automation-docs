@@ -1,0 +1,44 @@
+<%#
+kind: user_data
+name: ubuntu cloud_init
+oses:
+- Debian
+- Ubuntu
+-%>
+#!/bin/bash
+<%= snippet 'my_ssh_keys_administrator' %>
+<%= snippet 'fix_hosts' %>
+
+<%
+  # safemode renderer does not support unary negation
+  pm_set = @host.puppetmaster.empty? ? false : true
+  puppet_enabled = pm_set || @host.param_true?('force-puppet')
+%>
+cat /etc/cloud/cloud.cfg | grep -v host > /tmp/cloud.cfg ; mv /tmp/cloud.cfg /etc/cloud/
+<%= snippet 'foreman_force_hosts' %>
+hostnamectl set-hostname <%= @host.certname %>
+
+apt-get update
+apt-get install wget -y
+
+wget https://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb
+dpkg -i puppetlabs-release-pc1-xenial.deb
+
+apt-get update
+apt-get install -y puppet
+cat > /etc/puppet/puppet.conf << EOF
+<%= snippet 'puppet.conf' %>
+EOF
+if [ -f "/etc/default/puppet" ]
+then
+/bin/sed -i 's/^START=no/START=yes/' /etc/default/puppet
+fi
+/bin/touch /etc/puppet/namespaceauth.conf
+/usr/bin/puppet agent --enable
+/etc/cron.hourly/tr_ip
+/usr/bin/puppet agent --config /etc/puppet/puppet.conf --onetime --tags no_such_tag <%= @host.puppetmaster.blank? ? '' : "--server #{@host.puppetmaster}" %> --no-daemonize
+
+/usr/bin/wget --quiet --output-document=/dev/null --no-check-certificate <%= foreman_url('built') %>
+
+systemctl restart puppet
+systemctl enable puppet

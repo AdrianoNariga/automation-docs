@@ -1,0 +1,16 @@
+%#
+kind: snippet
+name: fix_hosts
+%>
+echo "<%= @host.shortname %>" > /etc/hostname
+hostname <%= @host.shortname %>
+cat > /etc/hosts << EOF
+<%# simple snippet to generate /etc/hosts when provisioning image based systems -%>
+127.0.0.1   <%= @host %> <%= @host.shortname %> localhost localhost.localdomain
+192.168.111.10  foreman.home.jab    foreman
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+EOF
