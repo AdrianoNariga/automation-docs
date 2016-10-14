@@ -1,0 +1,9 @@
+git_nariga(){
+	mensagem=$(curl -s http://whatthecommit.com | perl -p0e '($_)=m{<p>(.+?)</p>}s')
+	echo
+	echo "Mensagem ...."
+	echo $mensagem
+	echo
+	git add --all
+	git commit -am "$mensagem"
+}
