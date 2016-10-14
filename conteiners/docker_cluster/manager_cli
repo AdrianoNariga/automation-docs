@@ -1,2 +1,0 @@
-docker node ls
-docker service create --replicas 4 --name centos_default centos bash

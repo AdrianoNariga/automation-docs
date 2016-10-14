@@ -1,5 +1,0 @@
-#!/bin/bash
-iptables -I FORWARD -s 192.168.100.240/28 -d 192.168.1.0/26 -j ACCEPT
-iptables -I FORWARD -d 192.168.100.240/28 -s 192.168.1.0/26 -j ACCEPT
-#iptables -I FORWARD -d 192.168.1.0/26 -j ACCEPT
-#iptables -I FORWARD -s 192.168.1.0/26 -j ACCEPT

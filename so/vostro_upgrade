@@ -1,0 +1,9 @@
+#!/bin/bash
+tmp_conteiner_file="/tmp/conteiners_started"
+docker ps | awk '{print $1}' | grep -v ^CONT > $tmp_conteiner_file
+cat $tmp_conteiner_file | while read i
+do
+	docker stop $i
+done
+apt update
+apt upgrade -y

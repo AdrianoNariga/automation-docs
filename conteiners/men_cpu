@@ -1,9 +1,0 @@
-docker run -ti --cpu-shares 1024 ubuntu (50% de cpu)
-docker run -ti --cpu-shares 512 ubuntu (25% de cpu)
-docker run -ti --cpu-shares 512 ubuntu (25% de cpu)
-
-docker update -m 256M id_conteiner
-docker update --cpu-shares 512 id_conteiner
-
-docker inspect id_conteiner | grep -i cpu
-docker inspect id_conteiner | grep -i mem

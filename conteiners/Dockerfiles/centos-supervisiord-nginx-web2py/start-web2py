@@ -1,5 +1,0 @@
-#!/bin/bash
-python /var/www/web2py/web2py.py \
-       -i 0.0.0.0 -p 443 -a nada@nada \
-       -c /var/www/web2py/ssl/public.pem \
-       -k /var/www/web2py/ssl/private.key -Y

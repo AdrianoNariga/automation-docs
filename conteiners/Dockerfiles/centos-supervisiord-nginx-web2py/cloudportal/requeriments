@@ -1,9 +1,0 @@
-python-ceilometerclient==1.0.10
-python-cinderclient==1.1.1
-python-dateutil==2.1
-python-foreman==0.2.2
-python-keystoneclient==0.11.2
-python-neutronclient==2.3.9
-python-novaclient==2.20.0
-pycrypto==2.6
-pymongo
