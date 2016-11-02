@@ -8,10 +8,10 @@ get_so(){
 	do
 	case $1 in
 		-s | --operatingsystem)
-			cat /etc/os-release | grep PRETTY_NAME= | cut -d \" -f 2 | awk '{print $1}'
+			grep PRETTY_NAME= /etc/os-release | cut -d \" -f 2 | awk '{print $1}'
 		;;
 		-v | --version)
-			cat /etc/os-release | grep VERSION_ID= | cut -d \" -f2
+			grep VERSION_ID= /etc/os-release | cut -d \" -f2
 		;;
 		*) echo "opcao invalida"
 	esac
