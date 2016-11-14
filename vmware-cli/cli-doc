@@ -1,0 +1,6 @@
+
+vim-cmd vmsvc/getallvms
+vim-cmd vmsvc/snapshot.get id_vm
+
+vim-cmd vmsvc/snapshot.get $(vim-cmd vmsvc/getallvms |grep name | awk '{print $1}')
+vim-cmd vmsvc/snapshot.revert $(vim-cmd vmsvc/getallvms |grep name | awk '{print $1}') id_snap suppressPowerOff
