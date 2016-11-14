@@ -1,6 +1,34 @@
+# https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1026380
+# http://www.doublecloud.org/2013/11/vmware-esxi-vim-cmd-command-a-quick-tutorial/
 
+# mostra opcoes do comando
+vim-cmd vmsvc
+
+# lista todas as vms com seus ids
 vim-cmd vmsvc/getallvms
+vim-cmd vmsvc/power.on id_vm
+vim-cmd vmsvc/power.off id_vm
+
+# lista todas as redes da vm
+vim-cmd vmsvc/get.networks id_vm
+
+# cria snapshot da vm
+vim-cmd vmsvc/snapshot.create id_vm label_snap
+
+# inclui snapshot da memoria e quiesced (valores boleanos)
+# vim-cmd vmsvc/snapshot.create id_vm snapshotName description includeMemory quiesced
+vim-cmd vmsvc/snapshot.create id_vm label_snap snap_descricao 1 1
+
+# lista snapshots da vm com seus ids
 vim-cmd vmsvc/snapshot.get id_vm
 
+# reverte snap
+vim-cmd vmsvc/snapshot.revert id_vm id_snap suppressPowerOff
+
+# remove todos os snapshot
+vim-cmd vmsvc/snapshot.removeall id_vm
+
+# shell
+# substituir name pelo nome da vm
 vim-cmd vmsvc/snapshot.get $(vim-cmd vmsvc/getallvms |grep name | awk '{print $1}')
 vim-cmd vmsvc/snapshot.revert $(vim-cmd vmsvc/getallvms |grep name | awk '{print $1}') id_snap suppressPowerOff
