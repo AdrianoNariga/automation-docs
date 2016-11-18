@@ -83,7 +83,7 @@ root_web="/var/www/html"
 		ubt_debinstall
 		;;
 		Ubuntu)
- 			echo "deb http://download.virtualbox.org/virtualbox/debian wily contrib" \
+ 			echo "deb http://download.virtualbox.org/virtualbox/debian xenial contrib" \
 			> /etc/apt/sources.list.d/virtualbox.list
 			ubt_debinstall
 		;;
@@ -157,7 +157,7 @@ pkg_yum="binutils gcc make patch libgomp glibc-headers glibc-devel kernel-header
 kernel-devel dkms unzip wget httpd php php-soap php-gd VirtualBox-5.0"
 
 pkg_apt="build-essential dkms unzip wget apache2 php5 php5-common php-soap
-php5-gd virtualbox-5.0"
+php5-gd virtualbox-5.1"
 
 while test -n "$1"
 do
