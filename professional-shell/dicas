@@ -42,3 +42,9 @@ for i in `grep -rl ansible_hostname roles/`
 do
 	sed -i 's/ansible_hostname/inventory_hostname/g' $i
 done
+
+# renomeando varios arquivos usando or no sed
+ls -l *.avi | awk '{print $9}' | while read i
+do
+	mv $i $(echo $i | sed 's/.Fitness.Mix.\|.dublado.dvdrip.by.\|.Fitness.Step.By.Step.\|.Fitness.Ripped.//g')
+done
