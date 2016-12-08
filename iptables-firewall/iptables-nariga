@@ -1,26 +1,26 @@
 #!/bin/bash
 ips_liberados='ips_liberados'
-
-clear_roles(){
-	systemctl stop firewalld
-	iptables -F
-	iptables -F -t nat
-}
+sysctl net.ipv4.ip_forward=1
 
 enable_forward(){
-	sysctl net.ipv4.ip_forward=1
-	iptables -t nat -A POSTROUTING -j MASQUERADE
+	iptables -t nat $1 POSTROUTING -j MASQUERADE
 }
 
 enable_clear_ips(){
 	iptables -P FORWARD DROP
 	for i in $(cat $ips_liberados | xargs)
 	do
-		iptables -A FORWARD -d $i -j ACCEPT
-		iptables -A FORWARD -s $i -j ACCEPT
+		iptables $1 FORWARD -d $i -j ACCEPT
+		iptables $1 FORWARD -s $i -j ACCEPT
 	done
 }
 
+clear_roles(){
+	systemctl stop firewalld
+	enable_forward -D
+	enable_clear_ips -D
+}
+
 clear_roles
-enable_forward
-enable_clear_ips
+enable_forward -A
+enable_clear_ips -A
