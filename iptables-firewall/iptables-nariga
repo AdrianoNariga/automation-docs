@@ -1,1 +1,18 @@
 #!/bin/bash
+ips_liberados='ips_liberados'
+
+clear_roles(){
+	iptables -F
+	iptables -F -t nat
+}
+
+get_clear_ips(){
+	cat $ips_liberados | xargs
+}
+
+enable_clear_ips(){
+	for i in $(cat $ips_liberados | xargs)
+	do
+		
+	done
+}
