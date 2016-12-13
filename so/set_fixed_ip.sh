@@ -41,7 +41,7 @@ iface $1 inet static
         address $2
         netmask $3
         dns-nameservers 8.8.8.8 8.8.4.4
-        dns-namesearch home$1
+        dns-namesearch home.jab
 EOF
 }
 
