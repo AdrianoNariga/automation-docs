@@ -25,7 +25,7 @@ install_pip(){
 	virtualenv /root/.ansible
 	source /root/.ansible/bin/activate
 	pip install paramiko --upgrade
-	pip install paramiko --upgrade
+	pip install paramiko requests --upgrade
 	pip install PyYAML Jinja2 httplib2 six \
 		markupsafe ecdsa shade apache-libcloud \
 		boto PyOpenSSL --upgrade
