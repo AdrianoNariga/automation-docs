@@ -1,6 +1,6 @@
 #!/bin/bash
-ips_liberados='ips_liberados'
-redirects='redirects'
+ips_liberados=$1
+redirects=$2
 sysctl net.ipv4.ip_forward=1
 
 enable_forward(){
