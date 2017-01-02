@@ -1,0 +1,20 @@
+#!/bin/bash
+
+route_file=$1
+make_route(){
+	while read LINHA
+	do
+		[ "$(echo $LINHA | cut -c1)" = '#' ] && continue
+		[ "$LINHA" ] || continue
+		set - $LINHA
+		rede_destino=$1
+		shift
+		gateway=$*
+
+		route add -net $rede_destino gw $gateway
+
+	done < "$route_file"
+
+}
+
+make_route
