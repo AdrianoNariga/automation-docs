@@ -9,6 +9,7 @@ enable_forward(){
 
 enable_clear_ips(){
 	iptables -P FORWARD DROP
+
 	for i in $(cat $ips_liberados | xargs)
 	do
 		iptables $1 FORWARD -d $i -j ACCEPT
@@ -41,7 +42,16 @@ redirects(){
 
 }
 
+fixed_roles(){
+	iptables -A FORWARD -p tcp --dport 53 -j ACCEPT
+	iptables -A FORWARD -p udp --dport 53 -j ACCEPT
+	
+	iptables -A FORWARD -p tcp --dport 587 -j ACCEPT
+	iptables -A FORWARD -p tcp --dport 110 -j ACCEPT
+}
+
 clear_roles
 enable_forward -A
 enable_clear_ips -A
 redirects
+fixed_roles
