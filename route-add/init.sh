@@ -1,15 +1,12 @@
 #!/bin/bash
 
-arquivo_rotas="route-add/routes"
-ips_liberados="iptables-firewall/ips_liberados"
-ips_redirects="iptables-firewall/redirects"
+arquivo_rotas="/opt/server-init/route-add/routes"
+ips_liberados="/opt/server-init/iptables-firewall/ips_liberados"
+ips_redirects="/opt/server-init/iptables-firewall/redirects"
 
 echo "Criando rotas"
-bash route-add/make-routes $arquivo_rotas
+bash /opt/server-init/route-add/make-routes $arquivo_rotas
 route -n
 
 echo "Criando regras"
-bash iptables-firewall/iptables-nariga $ips_liberados $ips_redirects
-iptables -nL FORWARD
-iptables -t nat -nL PREROUTING
-iptables -t nat -nL POSTROUTING
+bash /opt/server-init/iptables-firewall/iptables-nariga $ips_liberados $ips_redirects
