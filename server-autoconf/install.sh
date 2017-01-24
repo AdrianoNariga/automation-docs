@@ -9,6 +9,7 @@ cp route-add/make-routes /opt/server-init/sh/make-routes
 cp iptables-firewall/ips_liberados /opt/server-init/conf/ips_liberados
 cp iptables-firewall/redirects /opt/server-init/conf/redirects
 
+cp init.sh /opt/server-init/init.sh
 cp server-init.service /etc/systemd/system/server-init.service
 systemctl daemon-reload
 systemctl enable server-init.service
