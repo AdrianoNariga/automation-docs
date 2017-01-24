@@ -1,0 +1,9 @@
+[Unit]
+Requires=docker.service
+After=docker-squid.service
+
+[Service]
+ExecStart=/opt/server-init/init.sh
+
+[Install]
+WantedBy=default.target
