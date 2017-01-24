@@ -11,4 +11,4 @@ bash $sh_dir/make-routes $arquivo_rotas
 
 echo "Criando regras"
 bash $sh_dir/iptables-nariga $ips_liberados $ips_redirects
-bash $sh_din/fixed_roles
+bash $sh_dir/fixed_roles
