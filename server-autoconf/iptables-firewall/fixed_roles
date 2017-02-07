@@ -3,8 +3,15 @@ fixed_roles(){
         iptables -A FORWARD -p tcp --dport 53 -j ACCEPT
         iptables -A FORWARD -p udp --dport 53 -j ACCEPT
 
+        iptables -A FORWARD -p tcp --sport 53 -j ACCEPT
+        iptables -A FORWARD -p udp --sport 53 -j ACCEPT
+
+
         iptables -A FORWARD -p tcp --dport 587 -j ACCEPT
         iptables -A FORWARD -p tcp --dport 110 -j ACCEPT
+
+        iptables -A FORWARD -p tcp --sport 587 -j ACCEPT
+        iptables -A FORWARD -p tcp --sport 110 -j ACCEPT
 }
 
 fixed_roles
