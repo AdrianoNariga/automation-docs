@@ -24,6 +24,7 @@ clear_roles(){
 }
 
 redirects(){
+	iptables -t nat -F PREROUTING
 	while read LINHA
 	do
 		[ "$(echo $LINHA | cut -c1)" = '#' ] && continue
