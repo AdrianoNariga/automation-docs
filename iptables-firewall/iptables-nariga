@@ -1,0 +1,47 @@
+#!/bin/bash
+ips_liberados=$1
+redirects=$2
+sysctl net.ipv4.ip_forward=1
+
+enable_forward(){
+	iptables -t nat $1 POSTROUTING -j MASQUERADE
+}
+
+enable_clear_ips(){
+	iptables -P FORWARD DROP
+	for i in $(cat $ips_liberados | xargs)
+	do
+		iptables $1 FORWARD -d $i -j ACCEPT
+		iptables $1 FORWARD -s $i -j ACCEPT
+	done
+}
+
+clear_roles(){
+	systemctl stop firewalld
+	enable_forward -D
+	enable_clear_ips -D
+}
+
+redirects(){
+	while read LINHA
+	do
+		[ "$(echo $LINHA | cut -c1)" = '#' ] && continue
+		[ "$LINHA" ] || continue
+		set - $LINHA
+		ip_origem=$(echo $1 | cut -d : -f 1)
+		port_origem=$(echo $1 | cut -d : -f 2)
+		shift
+		ip_detino=$(echo $* | cut -d : -f 1)
+		port_destino=$(echo $* | cut -d : -f 2)
+
+		iptables -t nat -A PREROUTING -p tcp \
+			--dst $ip_origem --dport $port_origem -j DNAT \
+			--to-destination $ip_detino:$port_destino
+	done < "$redirects"
+
+}
+
+clear_roles
+enable_forward -A
+enable_clear_ips -A
+redirects

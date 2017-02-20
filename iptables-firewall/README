@@ -1,0 +1,21 @@
+Script para aplicar regras de forward para saida de internet e redirecionamento de portas
+
+O script funcina lendo dois arquivos, primeiro arquivo deve conter os ips liberado para sair para internet,
+o segundo arquivo indica os redirecionamentos usando a sintaxe ip_origem:porta  ip_destino:porta
+
+Arquivos....
+ips_liberados (arquivo de exmplo usado para ips liberados)
+redirects (arquivo de exemplo usado para redirecionamento)
+iptables-nariga (script em si pode mudar o nome caso necessidade)
+
+Recomendado fazer copia desses arquivos e colocar os enderços da sua rede
+
+Execução do arquivo...
+bash script arquivo_ips_liberados arquivos_redirect
+
+ou pode dar permissao de execução
+chmod +x script
+./script arquivo_ips_liberados arquivos_redirect
+
+Resumindo...
+bash iptables-nariga ips_liberados redirects
