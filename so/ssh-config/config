@@ -1,0 +1,5 @@
+Host 172.16.129.*
+ProxyCommand ssh -W %h:%p foreman.lab.intranet
+
+Host 172.16.131.*
+ProxyCommand ssh -W %h:%p foreman.lab.intranet
