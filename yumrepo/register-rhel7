@@ -6,6 +6,8 @@ subscription-manager register \
 
 subscription-manager list --consumed
 subscription-manager subscribe --auto
+
+openstack-kilo-liberty(){
 subscription-manager repos \
 --enable=rhel-7-server-openstack-7.0-rpms \
 --enable=rhel-7-server-optional-rpms \
@@ -15,5 +17,14 @@ subscription-manager repos \
 --enable=rhel-7-server-openstack-8-director-rpms \
 --enable=rhel-7-server-rh-common-rpms \
 --enable=rhel-server-rhscl-7-rpms
+}
+
+openstack-newton(){
+subscription-manager repos --disable=* \
+--enable=rhel-7-server-rpms \
+--enable=rhel-7-server-openstack-10-rpms \
+--enable=rhel-7-server-rh-common-rpms \
+--enable=rhel-7-server-extras-rpms
+}
 
 yum repolist | egrep -v '(^repo|^Loaded)' | awk '{print $1}' | cut -d / -f 1
