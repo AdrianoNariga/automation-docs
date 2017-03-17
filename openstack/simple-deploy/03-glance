@@ -1,0 +1,31 @@
+#!/bin/bash
+yum -y install openstack-glance
+
+export OS_TOKEN=admintoken
+export OS_URL=http://localhost:35357/v2.0/
+
+openstack user create --project service --password servicepassword glance
+openstack role add --project service --user glance admin
+openstack service list | grep -q glance || openstack service create --name glance --description "OpenStack Image service" image
+openstack endpoint create \
+--publicurl http://$controller:9292 \
+--internalurl http://$controller:9292 \
+--adminurl http://$controller:9292 \
+--region RegionOne \
+image
+
+mysql -e "create database glance;"
+mysql -e "grant all privileges on glance.* to glance@'localhost' identified by 'password';"
+mysql -e "grant all privileges on glance.* to glance@'%' identified by 'password';"
+mysql -e "flush privileges;"
+
+sed -i 's/#connection=mysql:\/\/glance:glance@localhost\/glance/connection=mysql:\/\/glance:password@localhost\/glance/g' \
+	/etc/glance/glance-api.conf
+
+sed -i 's/#connection=mysql:\/\/glance:glance@localhost\/glance/connection=mysql:\/\/glance:password@localhost\/glance/g' \
+	/etc/glance/glance-registry.conf
+
+glance-manage db_sync
+chown -R glance. /var/log/glance
+systemctl start openstack-glance-api openstack-glance-registry
+systemctl enable openstack-glance-api openstack-glance-registry

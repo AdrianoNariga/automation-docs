@@ -4,3 +4,39 @@ mysql -e "create database keystone;"
 mysql -e "grant all privileges on keystone.* to keystone@'localhost' identified by 'password';"
 mysql -e "grant all privileges on keystone.* to keystone@'%' identified by 'password';"
 mysql -e "flush privileges;"
+sed -i 's/#admin_token = ADMIN/admin_token = admintoken/g' /etc/keystone/keystone.conf
+sed -i 's/#connection = mysql:\/\/keystone:keystone@localhost\/keystone/connection = mysql:\/\/keystone:password@localhost\/keystone/g' \
+	/etc/keystone/keystone.conf
+
+
+keystone-manage pki_setup --keystone-user keystone --keystone-group keystone
+keystone-manage db_sync
+chown -R keystone. /var/log/keystone
+systemctl start openstack-keystone
+systemctl enable openstack-keystone
+export OS_TOKEN=admintoken
+export OS_URL=http://localhost:35357/v2.0/
+openstack project create --description "Admin Project" admin
+openstack project create --description "Service Project" service
+openstack project list
+
+openstack role create admin
+openstack role create Member
+openstack role list
+
+openstack user create --project admin --password adminpassword admin
+openstack role add --project admin --user admin admin
+openstack user list
+
+openstack service create --name keystone --description "OpenStack Identity" identity
+openstack service list
+
+export controller="`ip -o -4 a s $(route -n | grep ^0.0.0.0 | awk '{print $8}') | awk '{print $4}' | cut -d / -f 1`"
+openstack endpoint create \
+--publicurl http://$controller:5000/v2.0 \
+--internalurl http://$controller:5000/v2.0 \
+--adminurl http://$controller:35357/v2.0 \
+--region RegionOne \
+identity
+
+openstack endpoint list
