@@ -1,0 +1,4 @@
+#!/bin/bash
+yum install rabbitmq-server memcached
+systemctl start rabbitmq-server memcached
+systemctl enable rabbitmq-server memcached

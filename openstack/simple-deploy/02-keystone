@@ -1,0 +1,2 @@
+#!/bin/bash
+yum y install openstack-keystone openstack-utils python-openstackclient
