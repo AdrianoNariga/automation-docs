@@ -1,4 +1,4 @@
 #!/bin/bash
-yum install rabbitmq-server memcached
-systemctl start rabbitmq-server memcached
-systemctl enable rabbitmq-server memcached
+yum -y install rabbitmq-server memcached mariadb-server
+systemctl start rabbitmq-server memcached mariadb
+systemctl enable rabbitmq-server memcached mariadb
