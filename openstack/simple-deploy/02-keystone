@@ -4,7 +4,7 @@ mysql -e "create database keystone;"
 mysql -e "grant all privileges on keystone.* to keystone@'localhost' identified by 'password';"
 mysql -e "grant all privileges on keystone.* to keystone@'%' identified by 'password';"
 mysql -e "flush privileges;"
-sed -i 's/#admin_token = ADMIN/admin_token = admintoken/g' /etc/keystone/keystone.conf
+sed -i 's/#admin_token = <None>/admin_token = admintoken/g' /etc/keystone/keystone.conf
 sed -i 's/#connection = mysql:\/\/keystone:keystone@localhost\/keystone/connection = mysql:\/\/keystone:password@localhost\/keystone/g' \
 	/etc/keystone/keystone.conf
 
