@@ -7,6 +7,7 @@ export OS_URL=http://localhost:35357/v2.0/
 openstack user create --project service --password servicepassword glance
 openstack role add --project service --user glance admin
 openstack service list | grep -q glance || openstack service create --name glance --description "OpenStack Image service" image
+export controller="`ip -o -4 a s $(route -n | grep ^0.0.0.0 | awk '{print $8}') | awk '{print $4}' | cut -d / -f 1`"
 openstack endpoint create \
 --publicurl http://$controller:9292 \
 --internalurl http://$controller:9292 \

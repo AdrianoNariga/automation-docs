@@ -1,0 +1,21 @@
+#!/bin/bash
+yum -y install openstack-nova
+
+export OS_TOKEN=admintoken
+export OS_URL=http://localhost:35357/v2.0/
+
+mysql -e "create database nova;"
+mysql -e "grant all privileges on nova.* to nova@'localhost' identified by 'password';"
+mysql -e "grant all privileges on nova.* to nova@'%' identified by 'password';"
+mysql -e "flush privileges;"
+
+openstack user create --project service --password servicepassword nova
+openstack role add --project service --user nova admin
+openstack service create --name nova --description "OpenStack Compute service" compute
+export controller="`ip -o -4 a s $(route -n | grep ^0.0.0.0 | awk '{print $8}') | awk '{print $4}' | cut -d / -f 1`"
+openstack endpoint create \
+--publicurl http://$controller:8774/v2/%\(tenant_id\)s \
+--internalurl http://$controller:8774/v2/%\(tenant_id\)s \
+--adminurl http://$controller:8774/v2/%\(tenant_id\)s \
+--region RegionOne \
+compute
