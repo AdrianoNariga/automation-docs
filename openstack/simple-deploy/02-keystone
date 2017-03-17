@@ -1,2 +1,6 @@
 #!/bin/bash
 yum -y install openstack-keystone openstack-utils python-openstackclient
+mysql -e "create database keystone;"
+mysql -e "grant all privileges on keystone.* to keystone@'localhost' identified by 'password';"
+mysql -e "grant all privileges on keystone.* to keystone@'%' identified by 'password';"
+mysql -e "flush privileges;"
