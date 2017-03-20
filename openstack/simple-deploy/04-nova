@@ -1,8 +1,10 @@
 #!/bin/bash
 yum -y install openstack-nova
-
+cp /etc/nova/nova.conf /etc/nova/nova-org
 export OS_TOKEN=admintoken
 export OS_URL=http://localhost:35357/v2.0/
+export controller="`ip -o -4 a s $(route -n | grep ^0.0.0.0 | awk '{print $8}') | awk '{print $4}' | cut -d / -f 1`"
+export if_pub="eth0"
 
 mysql -e "create database nova;"
 mysql -e "grant all privileges on nova.* to nova@'localhost' identified by 'password';"
@@ -22,6 +24,23 @@ compute
 
 sed -i 's/#connection=mysql:\/\/nova:nova@localhost\/nova/connection=mysql:\/\/nova:password@localhost\/nova/g' \
 	/etc/nova/nova.conf
+sed -i "s/^#my_ip=10.0.0.1/my_ip=$controller/g" /etc/nova/nova.conf
+sed -i "s/^#use_ipv6=false/use_ipv6=false/g" /etc/nova/nova.conf
+sed -i "s/^#state_path=\/var\/lib\/nova/state_path=\/var\/lib\/nova/g" /etc/nova/nova.conf
+sed -i "s/^#enabled_apis=ec2,osapi_compute,metadata/enabled_apis=ec2,osapi_compute,metadata/g" /etc/nova/nova.conf
+sed -i "s/^#osapi_compute_listen=0.0.0.0/osapi_compute_listen=0.0.0.0/g" /etc/nova/nova.conf
+sed -i "s/^#memcached_servers=<None>/memcached_servers=$controller/g" /etc/nova/nova.conf
+sed -i "s/^#scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler/scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler/g" \
+	/etc/nova/nova.conf
+sed -i "s/^#notification_driver =/notification_driver=nova.openstack.common.notifier.rpc_notifier/g" /etc/nova/nova.conf
+sed -i "s/^#rpc_backend=rabbit/rpc_backend=rabbit/g" /etc/nova/nova.conf
+sed -i "s/^#rabbit_host=localhost/rabbit_host=$controller/g" /etc/nova/nova.conf
+sed -i "s/^#auth_uri=<None>/auth_uri=$controller/g" /etc/nova/nova.conf
+sed -i "s/^#admin_auth_url=http:\/\/localhost:5000\/v2.0/admin_auth_url=http:\/\/$controller:5000\/v2.0/g" /etc/nova/nova.conf
+sed -i "s/^#public_interface=eth0/public_interface=$if_pub/g" /etc/nova/nova.conf
+sed -i "s/^#flat_network_bridge=<None>/flat_network_bridge=br100/g" /etc/nova/nova.conf
+sed -i "s/^#flat_interface=<None>/flat_interface=dummy0/g" /etc/nova/nova.conf
+
 
 chmod 640 /etc/nova/nova.conf
 chgrp nova /etc/nova/nova.conf

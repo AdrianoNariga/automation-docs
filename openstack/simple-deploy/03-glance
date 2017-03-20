@@ -1,6 +1,7 @@
 #!/bin/bash
 yum -y install openstack-glance
-
+cp /etc/glance/glance-api.conf /etc/glance/glance-api-org
+cp /etc/glance/glance-registry.conf /etc/glance/glance-registry-org
 export OS_TOKEN=admintoken
 export OS_URL=http://localhost:35357/v2.0/
 
