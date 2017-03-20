@@ -22,7 +22,9 @@ openstack endpoint create \
 --region RegionOne \
 compute
 
-sed -i 's/#connection=mysql:\/\/nova:nova@localhost\/nova/connection=mysql:\/\/nova:password@localhost\/nova/g' \
+sed -i 's/^#connection=mysql:\/\/nova:nova@localhost\/nova/connection=mysql:\/\/nova:password@localhost\/nova/g' \
+	/etc/nova/nova.conf
+sed -i 's/^#connection=<None>/connection=mysql:\/\/nova:password@localhost\/nova/g' \
 	/etc/nova/nova.conf
 sed -i "s/^#my_ip=10.0.0.1/my_ip=$controller/g" /etc/nova/nova.conf
 sed -i "s/^#use_ipv6=false/use_ipv6=false/g" /etc/nova/nova.conf
@@ -40,6 +42,7 @@ sed -i "s/^#admin_auth_url=http:\/\/localhost:5000\/v2.0/admin_auth_url=http:\/\
 sed -i "s/^#public_interface=eth0/public_interface=$if_pub/g" /etc/nova/nova.conf
 sed -i "s/^#flat_network_bridge=<None>/flat_network_bridge=br100/g" /etc/nova/nova.conf
 sed -i "s/^#flat_interface=<None>/flat_interface=dummy0/g" /etc/nova/nova.conf
+sed -i "s/^#lock_path=\/var\/lib\/nova\/tmp/lock_path=\/var\/lib\/nova\/tmp/g" /etc/nova/nova.conf
 
 
 chmod 640 /etc/nova/nova.conf
