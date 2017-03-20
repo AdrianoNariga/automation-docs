@@ -19,3 +19,27 @@ openstack endpoint create \
 --adminurl http://$controller:8774/v2/%\(tenant_id\)s \
 --region RegionOne \
 compute
+
+sed -i 's/#connection=mysql:\/\/nova:nova@localhost\/nova/connection=mysql:\/\/nova:password@localhost\/nova/g' \
+	/etc/nova/nova.conf
+
+chmod 640 /etc/nova/nova.conf
+chgrp nova /etc/nova/nova.conf
+
+cat > /etc/sysconfig/network-scripts/ifcfg-dummy0 <<EOF
+DEVICE=dummy0
+BOOTPROTO=none
+ONBOOT=yes
+TYPE=Ethernet
+NM_CONTROLLED=no
+EOF
+
+echo "alias dummy0 dummy" > /etc/modprobe.d/dummy.conf
+ifup dummy0
+nova-manage db sync
+chown -R nova. /var/log/nova
+for service in api objectstore conductor scheduler cert consoleauth compute network
+do
+	systemctl start openstack-nova-$service
+	systemctl enable openstack-nova-$service
+done
