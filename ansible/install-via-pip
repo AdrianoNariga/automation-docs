@@ -15,26 +15,26 @@ get_so(){
         done
 }
 
-pip_extra_pkgs(){
-	pip install sklearn joblib pyparsing \
-		wrapt debtcollector pytz debtcollector \
-		monotonic netaddr shade functools32 --upgrade
-}
-
 install_pip(){
 	virtualenv /root/.ansible
 	source /root/.ansible/bin/activate
-	pip install paramiko --upgrade
-	pip install paramiko requests --upgrade
-	pip install PyYAML Jinja2 httplib2 six \
-		markupsafe ecdsa shade apache-libcloud \
-		boto PyOpenSSL --upgrade
-	pip install ansible --upgrade
+
+	pip install --upgrade pip
+	pip install --upgrade paramiko requests
+	pip install --upgrade PyYAML Jinja2 httplib2
+	pip install --upgrade six markupsafe ecdsa
+        pip install --upgrade shade apache-libcloud
+	pip install --upgrade boto PyOpenSSL python-ldap
+	pip install --upgrade sklearn joblib pyparsing
+	pip install --upgrade wrapt debtcollector pytz
+	pip install --upgrade debtcollector monotonic
+	pip install --upgrade netaddr shade functools32
+	pip install --upgrade ansible
 }
 
 debian(){
 	apt update
-	apt install python-dev build-essential python-virtualenv python-pip libssl-dev -y
+	apt install libsasl2-dev libldap2-dev libssl-dev python-dev build-essential python-virtualenv python-pip libssl-dev -y
 	pip install --upgrade pip
 	install_pip
 }
@@ -46,7 +46,8 @@ centos(){
 		python-devel gcc gcc-c++ make \
 		cmake python-simplejson openssl-devel \
 		libffi libffi-devel pyOpenSSL pycryptopp \
-		libselinux-python python2 python-simplejson -y
+		libselinux-python python2 python-simplejson \
+		python-devel openldap-devel -y
 	pip install --upgrade pip
 	install_pip
 }

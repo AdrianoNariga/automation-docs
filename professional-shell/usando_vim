@@ -42,4 +42,11 @@ removendo comentarios
 2. seleciona linhas
 3. 'x'
 
+escrevendo varias vezes a mesma linha
+<esc> num <i> texto a ser digitado <enter> <esc>
+<esc> 10 <i> texto a ser digitado <enter> <esc>
+
+abre o arquivo com o cursor procurando comentario
+vim +/comentario professional-shell/usando_vim
+
 https://www.vivaolinux.com.br/artigo/VIM-avancado-(parte-2)?pagina=1
