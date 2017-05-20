@@ -1,0 +1,30 @@
+#!/bin/bash
+
+get_so(){
+	while test -n "$1"
+	do
+	case $1 in
+		-s | --operatingsystem)
+			grep PRETTY_NAME= /etc/os-release | cut -d \" -f 2 | awk '{print $1}'
+		;;
+		-v | --version)
+			grep VERSION_ID= /etc/os-release | cut -d \" -f2
+		;;
+		*) echo "opcao invalida"
+	esac
+	shift
+	done
+}
+
+
+case `get_so -s` in
+	Debian|Ubuntu)
+	apt -y install qemu-kvm libvirt-bin virtinst \
+		bridge-utils libguestfs-tools virt-top
+	;;
+	CentOS)
+	yum install -y qemu-kvm libvirt virt-install \
+		bridge-utils libguestfs-tools virt-top \
+		spice-server spice-protocol
+	;;
+esac

@@ -12,13 +12,8 @@ gen_screenrc(){
 cat > $HOME/.screenrc << EOF
 msgwait 3
 sorendition 05 29
-#hardstatus alwayslastline " %c | %d/%m/%Y | %w"
-#bind h hardstatus ignore
-#bind g hardstatus alwayslastline
 hardstatus alwayslastline
 hardstatus string "%{= kG} [ %{= W} %-Lw%{=r}%n* %t%{-}%+Lw %= %{G}] [ %{W}@%H %d-%m %c %{G}] "
-#hardstatus string "%{= kG} %{= w}%-Lw%{=r}%n%f* %t%{-}%+LW"
-# hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{W}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %m-%d %{W}%c %{g}]'
 vbell off #flashs na tela removidos
 EOF
 }

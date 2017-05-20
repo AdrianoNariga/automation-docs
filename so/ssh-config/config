@@ -1,5 +1,6 @@
-Host 172.16.129.*
-ProxyCommand ssh -W %h:%p foreman.lab.intranet
+Host 172.16.*
+ProxyCommand ssh -W %h:%p 192.168.111.22
 
-Host 172.16.131.*
-ProxyCommand ssh -W %h:%p foreman.lab.intranet
+Host *
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
