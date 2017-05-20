@@ -1,0 +1,8 @@
+#!/bin/bash
+wget http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud-1704.qcow2 -O /tmp
+cp /tmp/CentOS-7-x86_64-GenericCloud-1704.qcow2 /var/lib/libvirt/images/disks/foreman.internal-disk1
+virt-install --name foreman.internal \
+        --ram 2048 --vcpus 2 \
+        --network bridge=br0,model=virtio \
+        --disk path=/var/lib/libvirt/images/disks/foreman.internal-disk1,size=20,format=qcow2,device=disk,bus=virtio \
+        --graphics type=vnc,listen=0.0.0.0 --os-type linux --os-variant rhl7.3 --pxe --noautoconsole

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 get_so(){
 	while test -n "$1"
 	do
@@ -15,7 +14,6 @@ get_so(){
 	shift
 	done
 }
-
 
 case `get_so -s` in
 	Debian|Ubuntu)
@@ -38,6 +36,5 @@ case `get_so -s` in
 	;;
 esac
 
-echo "gpasswd -a nariga kvm"
 echo "gpasswd -a nariga libvirt"
-
+echo "get centos image http://cloud.centos.org/centos/7/images/"
