@@ -16,7 +16,7 @@ get_so(){
 }
 
 centos_ip(){
-	ipaddr=$(ip -o -4 a s $(ip r s | grep default | awk '{print $5}') | awk '{print $4}' | cut -d \/ -f 1)
+	ipaddr=$(ip -o -4 a s $(ip r s | grep default | awk '{print $5}' | head -n1) | awk '{print $4}' | cut -d \/ -f 1)
 	iface=$(ip -o -4 a s|grep "$ipaddr" | awk '{print $2}')
 	cid=$(ip -o -4 a s|grep "$ipaddr" | awk '{print $4}' |cut -d / -f 2)
 	gw=$(ip r s | grep ^default | awk '{print $3}')
