@@ -16,18 +16,25 @@ get_so(){
 }
 
 centos_ip(){
-cat > /etc/sysconfig/network-scripts/ifcfg-$1 << EOF
+	ipaddr=$(ip -o -4 a s $(ip r s | grep default | awk '{print $5}') | awk '{print $4}' | cut -d \/ -f 1)
+	iface=$(ip -o -4 a s|grep "$ipaddr" | awk '{print $2}')
+	cid=$(ip -o -4 a s|grep "$ipaddr" | awk '{print $4}' |cut -d / -f 2)
+	gw=$(ip r s | grep ^default | awk '{print $3}')
+	dns=$(grep nameserver /etc/resolv.conf | head -n1 | awk '{print $2}')
+
+cat > /etc/sysconfig/network-scripts/ifcfg-$iface << EOF
 BOOTPROTO=static
-IPADDR=$2
-NETMASK=$3
-DEVICE=$1
+IPADDR=$ipaddr
+CID=$cid
+DEVICE=$iface
 ONBOOT=yes
 TYPE=Ethernet
-NAME="System $1"
-DNS1=8.8.8.8
-DNS2=8.8.4.4
-#8.8.8.8
+NAME="System $iface"
+GATEWAY=$gw
+DNS1=$dns
+DNS2=8.8.8.8
 EOF
+
 }
 
 ubuntu_ip(){
@@ -45,26 +52,8 @@ iface $1 inet static
 EOF
 }
 
-run(){
-
-        case `get_so -s` in
-                Debian) ubuntu_ip $1 $2 $3 ;;
-                Ubuntu) ubuntu_ip $1 $2 $3 ;;
-                CentOS) centos_ip $1 $2 $3 ;;
-        esac
-}
-
-while test -n "$1"
-do
-        case $1 in
-                -h | --help)
-                        echo "$0 iface ip_fixo netmask"
-                        echo "Exemplo....."
-                        echo "$0 eth1 192.168.0.0 255.255.255.0"
-                ;;
-                *)
-                        run $1 $2 $3
-        esac
-
-        shift
-done
+case `get_so -s` in
+        Debian) ubuntu_ip ;;
+        Ubuntu) ubuntu_ip ;;
+        CentOS) centos_ip ;;
+esac
