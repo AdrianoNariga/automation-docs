@@ -1,2 +1,6 @@
 ssh-add dir/chave-privada.pem
 ssh-agent $BASH
+
+ssh-copy-id root@192.168.111.252
+ou
+cat ~/.ssh/id_rsa.pub | ssh root@192.168.111.252 "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"
