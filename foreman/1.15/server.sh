@@ -1,8 +1,8 @@
 #!/bin/bash
-foreman_hostname=foreman.internal
+foreman_hostname=foreman.local
 ip_foreman=192.168.111.100
 
-proxy_hostname=proxy.internal
+proxy_hostname=proxy.local
 ip_proxy=192.168.111.101
 
 hostnamectl set-hostname $foreman_hostname
@@ -19,4 +19,5 @@ foreman-installer --enable-foreman-compute-libvirt
 systemctl stop firewalld
 systemctl disable firewalld
 
-/opt/puppetlabs/bin/puppet cert generate $foreman_proxy
+ls /etc/puppetlabs/puppet/ssl/certs/$proxy_hostname.pem || \
+  /opt/puppetlabs/bin/puppet cert generate $proxy_hostname
