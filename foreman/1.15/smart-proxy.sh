@@ -41,6 +41,8 @@ foreman-installer \
   --foreman-proxy-oauth-consumer-secret=$consumer_secret
 }
 
+mkdir -p /etc/puppetlabs/puppet/ssl/certs/
+mkdir -p /etc/puppetlabs/puppet/ssl/private_keys/
 scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/certs/ca.pem /etc/puppetlabs/puppet/ssl/certs/ca.pem
 scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/certs/$foreman_proxy.pem /etc/puppetlabs/puppet/ssl/certs/$foreman_proxy.pem
 scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/private_keys/$foreman_proxy.pem /etc/puppetlabs/puppet/ssl/private_keys/$foreman_proxy.pem
