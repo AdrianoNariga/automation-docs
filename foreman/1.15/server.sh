@@ -19,4 +19,5 @@ foreman-installer --enable-foreman-compute-libvirt
 systemctl stop firewalld
 systemctl disable firewalld
 
-/opt/puppetlabs/bin/puppet cert generate $proxy_hostname
+ls /etc/puppetlabs/puppet/ssl/certs/$proxy_hostname.pem || \
+  /opt/puppetlabs/bin/puppet cert generate $proxy_hostname
