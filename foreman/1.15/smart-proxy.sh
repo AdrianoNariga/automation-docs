@@ -12,12 +12,14 @@ foreman_proxy=proxy.internal
 #foreman-installer --help | grep oauth-consumer
 
 grep $foreman_hostname /etc/hosts || echo "$ip_foreman $foreman_hostname foreman" >> /etc/hosts
-grep $proxy_hostname /etc/hosts || echo "$ip_proxy $foreman_proxy foreman" >> /etc/hosts
+grep $proxy_hostname /etc/hosts || echo "$ip_proxy $foreman_proxy proxy" >> /etc/hosts
 yum -y install https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
 yum -y install http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum -y install https://yum.theforeman.org/releases/1.15/el7/x86_64/foreman-release.rpm
 yum -y install foreman-installer
 setenforce permissive
+systemctl stop firewalld
+systemctl disable firewalld
 
 clear_proxy(){
 foreman-installer \
@@ -40,8 +42,8 @@ foreman-installer \
 }
 
 scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/certs/ca.pem /etc/puppetlabs/puppet/ssl/certs/ca.pem
-scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/certs/foreman.internal.pem /etc/puppetlabs/puppet/ssl/certs/foreman.internal.pem
-scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/private_keys/foreman.internal.pem /etc/puppetlabs/puppet/ssl/private_keys/foreman.internal.pem
+scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/certs/$foreman_proxy.pem /etc/puppetlabs/puppet/ssl/certs/$foreman_proxy.pem
+scp root@$ip_foreman:/etc/puppetlabs/puppet/ssl/private_keys/$foreman_proxy.pem /etc/puppetlabs/puppet/ssl/private_keys/$foreman_proxy.pem
 
 dns_proxy(){
 foreman-installer \
