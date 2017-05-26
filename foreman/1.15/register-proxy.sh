@@ -9,6 +9,8 @@ foreman_proxy=proxy.internal
 # garantir o foreman server resolve o nome do proxy
 #foreman-installer --help | grep oauth-consumer
 
+hostnamectl set-hostname $foreman_proxy
+
 grep $foreman_hostname /etc/hosts || echo "$ip_foreman $foreman_hostname foreman" >> /etc/hosts
 grep $proxy_hostname /etc/hosts || echo "$ip_proxy $foreman_proxy proxy" >> /etc/hosts
 yum -y install https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm

@@ -5,6 +5,8 @@ ip_foreman=192.168.111.100
 proxy_hostname=proxy.internal
 ip_proxy=192.168.111.101
 
+hostnamectl set-hostname $foreman_hostname
+
 grep $foreman_hostname /etc/hosts || echo "$ip_foreman $foreman_hostname" >> /etc/hosts
 grep $proxy_hostname /etc/hosts || echo "$ip_proxy $proxy_hostname" >> /etc/hosts
 yum -y install https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
