@@ -1,9 +1,9 @@
 #!/bin/bash
-foreman_hostname=foreman.internal
+foreman_hostname=foreman.local
 ip_foreman=192.168.111.100
 
 proxy_hostname=192.168.111.101
-foreman_proxy=proxy.internal
+foreman_proxy=proxy.local
 
 # Pegar essas entradas no foreman server
 # garantir o foreman server resolve o nome do proxy
