@@ -5,6 +5,7 @@ ip_foreman=192.168.111.100
 proxy_hostname=puppet.local
 ip_proxy=192.168.111.102
 
+yum install -y dos2unix
 hostnamectl set-hostname $proxy_hostname
 ls ~/.ssh/id_rsa.pub || ssh-keygen
 ssh-copy-id root@$ip_foreman
@@ -28,7 +29,7 @@ grep $proxy_hostname /etc/hosts || echo "$ip_proxy $proxy_hostname proxy" >> /et
 yum -y install https://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm
 yum -y install http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum -y install https://yum.theforeman.org/releases/1.15/el7/x86_64/foreman-release.rpm
-yum -y install foreman-installer dos2unix
+yum -y install foreman-installer
 setenforce permissive
 systemctl stop firewalld
 systemctl disable firewalld
@@ -43,9 +44,8 @@ foreman-installer \
   --puppet-server-foreman-url=https://$foreman_hostname \
   --foreman-proxy-puppetca=false \
   --foreman-proxy-trusted-hosts=$foreman_hostname \
-  --foreman-proxy-trusted-hosts=$HOSTNAME \
+  --foreman-proxy-trusted-hosts=$proxy_hostname \
   --foreman-proxy-oauth-consumer-key=$consumer_key \
-  --foreman-proxy-oauth-consumer-secret=$consumer_secret
-  --puppet-server-foreman-url=https://foreman.example.com \
+  --foreman-proxy-oauth-consumer-secret=$consumer_secret \
   --enable-foreman-proxy \
   --foreman-proxy-puppetca=false
