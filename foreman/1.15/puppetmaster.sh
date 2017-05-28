@@ -7,4 +7,4 @@ foreman-installer \
   --puppet-server-ca=false \
   --puppet-server-foreman-url=https://foreman.example.com \
   --enable-foreman-proxy \
-  --foreman-proxy-puppetca=false \
+  --foreman-proxy-puppetca=false
