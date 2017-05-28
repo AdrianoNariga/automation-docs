@@ -37,7 +37,6 @@ clear_proxy(){
 	  --foreman-proxy-puppet=false \
 	  --foreman-proxy-puppetca=false \
 	  --foreman-proxy-tftp=false \
-	  --foreman-proxy-foreman-base-url=https://$foreman_hostname \
 	  --foreman-proxy-trusted-hosts=$foreman_hostname \
 	  --foreman-proxy-trusted-hosts=$HOSTNAME \
 	  --foreman-proxy-foreman-base-url=https://$foreman_hostname \
