@@ -1,0 +1,2 @@
+X11UseLocalHost no
+X11Forwarding yes
