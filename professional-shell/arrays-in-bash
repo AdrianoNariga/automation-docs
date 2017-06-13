@@ -1,0 +1,54 @@
+# Arrays associativos só estão disponíveis a partir da versão 4 do bash. Para descobrir a sua, basta digitar "bash --version", ou "echo $BASH_VERSION"
+
+# cria array vazio
+declare -a nome_array
+
+# cria array passado os valores
+array1=(um dois "1 2 tres")
+echo ${array1[1]}
+echo ${array1[2]}
+array1[2]="novo item"
+
+# array interativo
+readarray array_interativo
+item0
+item um
+"da uns tres"
+CTRL+d
+echo ${array_interativo[1]}
+
+# mostra a quantidade de itens que contem o array
+echo ${#array_interativo[@]}
+echo ${#array_interativo[*]}
+
+# mostra todos os itens
+echo ${array_interativo[@]}
+echo ${array_interativo[*]}
+
+# mostra os indeces (nao o valor dos ideces)
+# util para arrays nomeados
+echo ${!array_interativo[*]}
+0 1 2
+
+# cria array nomeado vazio
+declare -A musicas
+
+# funcionou apenas declarando o com "declare antes"
+musicas[heavymetal]="Irom Maiden"
+musicas[deathmetal]="Cannibal Corpse"
+musicas[progmetal]="Dream Theater"
+
+# declarando
+declare -A musicas1
+
+# assiciando valores
+musicas1=([rock]="iron" [rap]="eminen" [pop]="rhiana")
+
+# mostra a quantidade de items
+echo ${#musicas1[*]}
+
+# mostra os ideces
+echo ${!musicas1[*]}
+
+# mostra os valores dos indeces
+echo ${musicas1[*]}
