@@ -1,0 +1,46 @@
+#!/bin/bash
+
+## while com contador
+# criano array
+array=(nariga adriano Loppes)
+
+# criano contador
+cont=0
+
+# enquanto cont for menor que a quantidade de indeces do array
+while [ $cont -lt ${#array[*]} ]
+do
+	# mostra o array usando o indice cont
+	echo ${array[$cont]}
+
+	# incrementa cont
+	((cont++))
+done
+
+# ate que cont seja igual a 10 nao saia do loop
+until [ $cont -eq 10 ]
+do
+	echo "$cont ainda nao eh igual a 10"
+
+	# incrementa cont
+	let cont++
+done
+
+for (( var=1 ; var<10 ; var++ ))
+do
+	echo $var
+done
+
+# eh gerado um menu numerado com as opcoes entre aspas
+nada="Selecione uma opcao "
+# usa a variavel name para imprimir a pergunta
+select name in "op 1" "op 2" "op 3"
+do
+	case $name in
+	# continue ira forçar recomeçar o loop
+	"op 1") echo "vou tentar denovo" ; continue ;;
+	"op 2") echo "fazer nada" ; continue ;;
+	"op 3") break ;;
+	esac
+	echo "Opcao errada"
+done

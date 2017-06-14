@@ -1,0 +1,48 @@
+# variavel imutavel
+var="Adriano"
+readonly var
+
+# cria variavel imutavel ja associando o valor
+readonly var1="nada"
+
+# marco a variavel contador como inteiro
+declare -i contador
+contador=23+123
+echo $contador
+146
+
+# eh possivel fazer operacoes matematicas
+contador=nada
+echo $contador
+0
+
+# reverter atributo de inteiro
+declare +i contador
+
+# transforma tudo em minuscolo
+declare -l lower
+lower="Frase Nariga"
+echo $lower
+
+# revert
+declare +l lower
+
+# tudo maiusculo
+# so funciona com variaveis associadas depois do declare
+upper="Nariga Adriano"
+declare -u upper
+echo $upper
+Nariga Adriano
+
+upper="Nariga Adriano"
+echo $upper
+NARIGA ADRIANO
+
+declare +u upper
+
+# variavel imutavel
+# primeiro associo o valor, depois torno ela imutavel
+READONLY="nada 123"
+declare -r READONLY
+echo $READONLY
+READONLY="123"

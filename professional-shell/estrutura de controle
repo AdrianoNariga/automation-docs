@@ -1,0 +1,7 @@
+# teste /home é diretorio e script é arquivo
+[ -d /home -a -f script ]
+[ ! -d /home -a -f script ]
+
+# /home é diretorio ou script é arquivo
+[ -d /home -o -f script ]
+[ ! -d /home -o -f script ]

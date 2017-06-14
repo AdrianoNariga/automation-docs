@@ -1,0 +1,62 @@
+${variavel:-palavra}
+# mostra o conteudo de variavel, mas se variavel nao existir mostra palavra
+echo ${var1:-var1 nao existe}
+var1="agora existe"
+echo ${var1:-var1 nao existe}
+
+${variavel:=palavra}
+# se a variavel nao existir ela sera criada com palavra
+echo ${var2:=conteudo default de var2}
+var2="agora existe"
+echo ${var2:=conteudo default de var2}
+
+${variavel:+palavra}
+# se variavel existir retorne palavra
+echo ${var3:+var3 existe}
+var3="conteudo"
+echo ${var3:+var3 existe}
+
+${variavel:N}
+# retorna tudo depois da posicao N do conteudo da variavel
+echo ${var4:2}
+var4="conteudo"
+echo ${var4:2}
+
+${variavel:N:N2}
+# retorna tudo depois da posicao N do conteudo da variavel ate N2
+echo ${var5:2:4}
+var5="conteudo"
+echo ${var5:2:4}
+
+{#variavel}
+# conta a quantidade de caracteres
+var5="nariga123"
+echo ${#var5}
+
+${variavel##string}
+# remove string do começo da variavel
+var6="123nariga"
+echo ${var6##123}
+
+${variavel%%string}
+# remove string do final da variavel
+var7="123nariga"
+echo ${var7%%nariga}
+
+${variavel/trocaisso/porisso}
+# exibe trocando o conteudo da variavel
+var8="NarigaCDO"
+echo ${var8/CDO/Lopes}
+
+${variavel^c} ou ${variavel^^c}
+# exemplo a cima... troca o 'c' encontrado na variavel por 'C'
+# ^ - somente uma entrada ^^ - todas entradas
+var9="caralho camargo"
+echo ${var9^c}
+echo ${var9^^c}
+
+${variavel,c} ou ${variavel,,c}
+# mesmo que o de cima porem para minuscolo
+var10="CARALHO CAMARGO"
+echo ${var10,C}
+echo ${var10,,C}
