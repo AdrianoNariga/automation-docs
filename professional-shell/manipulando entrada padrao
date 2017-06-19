@@ -1,0 +1,25 @@
+grep bla <<< "saida procura blabla"
+
+grep bla <<EOF
+procurando
+bla dentro
+dessa saida
+EOF
+
+##### exemplo #####
+#!/bin/bash
+read dados
+echo $dados
+
+read dados
+echo dados
+
+###### execução exemplo ######
+./script_acima <<EOF
+saida1
+saida2
+saida3
+EOF
+saida1
+saida2
+
