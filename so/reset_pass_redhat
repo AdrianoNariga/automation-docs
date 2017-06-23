@@ -1,0 +1,13 @@
+grub > "e"
+linux16 ....
+... rd.break
+
+grub > ctrl+x
+
+shell > mount -oremount, rw /sysroot
+shell > chroot /sysroot
+shell > echo 123@senha | passwd --stdin root
+
+shell > touch /.autorelabel # importante
+shell > exit
+shell > exit # boot
