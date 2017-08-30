@@ -1,0 +1,7 @@
+#!/bin/bash
+# acessar 192.168.0.12:443 apartir de localhost:4443
+# ssh -L 4443:192.168.0.12:443 root@192.168.0.12
+ip_destino=$(echo $1 | cut -d : -f 1)
+port_destino=$(echo $1 | cut -d : -f 2)
+port_local=$2
+ssh -L $port_local:$ip_destino:$port_destino root@$ip_destino
