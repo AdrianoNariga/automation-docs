@@ -1,0 +1,24 @@
+#!/bin/bash
+apache_php(){
+yum -y install httpd php php-mbstring php-pear
+rm -f /etc/httpd/conf.d/welcome.conf
+
+sed -i "s/#ServerName www.example.com:80/ServerName $HOSTNAME/g" /etc/httpd/conf/httpd.conf
+sed -i "s/AllowOverride None/AllowOverride All/g" /etc/httpd/conf/httpd.conf
+sed -i "s/DirectoryIndex index.html/DirectoryIndex index.html index.cgi index.php/g" /etc/httpd/conf/httpd.conf
+grep -q "ServerTokens Prod" || echo "ServerTokens Prod" >> /etc/httpd/conf/httpd.conf
+grep -q "KeepAlive On" || echo "KeepAlive On" >> /etc/httpd/conf/httpd.conf
+
+sed -i "s/;date.timezone */date.timezone \= \"America\/Sao_Paulo\"/g" /etc/php.ini
+
+systemctl restart httpd
+}
+
+yum install epel-release -y
+yum --enablerepo=epel -y install nagios nagios-plugins-{ping,disk,users,procs,load,swap,ssh,http}
+firewall-cmd --add-service={http,https} --permanent 
+firewall-cmd --reload 
+
+systemctl start nagios 
+systemctl enable nagios 
+systemctl restart httpd 
