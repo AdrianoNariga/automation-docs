@@ -15,7 +15,7 @@ get_so(){
 	shift
 	done
 }
-debian_os(){
+debian_so(){
 apt-get -y install nagios-nrpe-server
 cat > /etc/nagios/nrpe.cfg << EOF
 log_facility=daemon
@@ -40,8 +40,13 @@ EOF
 systemctl restart nagios-nrpe-server
 systemctl enable nagios-nrpe-server
 }
-centos_os(){
+centos_so(){
         yum install -y epel-release
         yum --enablerepo=epel -y install nrpe nagios-plugins-{ping,disk,users,procs,load,swap,ssh}
 }
 
+case `get_so -s` in
+        Debian) debian_so ;;
+        Ubuntu) debian_so ;;
+        CentOS) centos_so ;;
+esac
