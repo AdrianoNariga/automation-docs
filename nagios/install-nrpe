@@ -1,8 +1,22 @@
 #!/bin/bash
-apt-get -y install nagios-nrpe-server
-
 ip_local=$(ip -o -4 a s `ip r s | grep default | awk '{print $5}'` | grep inet | awk '{print $4}' | cut -d \/ -f 1)
-
+get_so(){
+	while test -n "$1"
+	do
+	case $1 in
+		-s | --operatingsystem)
+			grep PRETTY_NAME= /etc/os-release | cut -d \" -f 2 | awk '{print $1}'
+		;;
+		-v | --version)
+			grep VERSION_ID= /etc/os-release | cut -d \" -f2
+		;;
+		*) echo "opcao invalida"
+	esac
+	shift
+	done
+}
+debian_os(){
+apt-get -y install nagios-nrpe-server
 cat > /etc/nagios/nrpe.cfg << EOF
 log_facility=daemon
 debug=0
@@ -25,3 +39,9 @@ include_dir=/etc/nagios/nrpe.d/
 EOF
 systemctl restart nagios-nrpe-server
 systemctl enable nagios-nrpe-server
+}
+centos_os(){
+        yum install -y epel-release
+        yum --enablerepo=epel -y install nrpe nagios-plugins-{ping,disk,users,procs,load,swap,ssh}
+}
+
