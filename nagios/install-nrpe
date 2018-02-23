@@ -1,0 +1,27 @@
+#!/bin/bash
+apt-get -y install nagios-nrpe-server
+
+ip_local=$(ip -o -4 a s `ip r s | grep default | awk '{print $5}'` | grep inet | awk '{print $4}' | cut -d \/ -f 1)
+
+cat > /etc/nagios/nrpe.cfg << EOF
+log_facility=daemon
+debug=0
+pid_file=/var/run/nagios/nrpe.pid
+server_port=5666
+nrpe_user=nagios
+nrpe_group=nagios
+allowed_hosts=172.0.0.1,$1
+dont_blame_nrpe=0
+allow_bash_command_substitution=0
+command_timeout=60
+connection_timeout=300
+command[check_users]=/usr/lib/nagios/plugins/check_users -w 5 -c 10
+command[check_load]=/usr/lib/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
+command[check_hda]=/usr/lib/nagios/plugins/check_disk -w 20% -c 10% -p /
+command[check_zombie_procs]=/usr/lib/nagios/plugins/check_procs -w 5 -c 10 -s Z
+command[check_total_procs]=/usr/lib/nagios/plugins/check_procs -w 150 -c 200
+include=/etc/nagios/nrpe_local.cfg
+include_dir=/etc/nagios/nrpe.d/
+EOF
+systemctl restart nagios-nrpe-server
+systemctl enable nagios-nrpe-server
