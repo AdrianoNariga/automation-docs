@@ -1,0 +1,14 @@
+## Lista neutron_node com servico L3
+neutron agent-list | grep l3
+
+## Lista routers ha nos neutron_node
+neutron l3-agent-list-hosting-router <router>
+
+## Remove agent do router
+neutron l3-agent-router-remove <neutron_node> <router>
+
+## Adiciona agente ao router
+neutron l3-agent-router-add <neutron_node> <router>
+
+## Lista routers ativos no neutron_node
+neutron router-list-on-l3-agent <neutron_node>
