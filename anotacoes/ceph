@@ -1,0 +1,2 @@
+rados --id cinder --keyfile /etc/ceph/client.cinder.key -p vms ls
+rbd --id cinder --keyfile /etc/ceph/client.cinder.key -p vms ls
