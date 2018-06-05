@@ -1,0 +1,2 @@
+openstack user list --project <id_project>
+openstack project list --user <id_user>
