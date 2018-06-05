@@ -52,3 +52,6 @@ ceph osd rm osd.8
 
 # destroy particao
 ceph-disk zap /dev/sdd
+
+rados --id cinder --keyfile /etc/ceph/client.cinder.key -p vms ls
+rbd --id cinder --keyfile /etc/ceph/client.cinder.key -p vms ls

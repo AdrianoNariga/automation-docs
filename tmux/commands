@@ -1,0 +1,29 @@
+Em linhas de comando
+$ tmux new -s nomedasessão
+$ tmux list-sessions
+$ tmux ls
+$ tmux attach -t nomedasessão
+$ tmux attach-session -t 3
+$ tmux a # (attach last session)
+$ tmux a -t name:
+
+Dentro do tmux
+Ctrl+b+d (Sessao em background)
+Ctrl+b+$ (Renomeia sessao)
+Ctrl+b+s (Modo escolha de sessao)
+Ctrl+b+c (Cria sessao)
+Ctrl+b+p (Session previus)
+Ctrl+b+n (Session next)
+Ctrl+b+1 (1 numero da sessao)
+
+Ctrl+b+ “ (Divide horizontal)
+Ctrl+b+% (Divide vertical)
+Ctrl+b+ { (Inverte janelas)
+Ctrl+b setas_do_teclado (Alterna entre janelas)
+Ctrl+b+espaço (Organiza janelas)
+Ctrl+b+o (Alterna entre janelas)
+Ctrl+b+q (Mostra identificador)
+Ctrl+b+z (Janela em tela cheia)
+Ctrl+b+[ (modo secreen janela, esc para voltar)
+
+Ctrl-b : setw synchronize-panes on (sincronize panel)
