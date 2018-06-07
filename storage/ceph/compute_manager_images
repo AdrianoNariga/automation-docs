@@ -1,0 +1,6 @@
+rbd --id cinder --keyfile /etc/ceph/client.cinder1.key -p images ls
+
+rbd --id cinder --keyfile /etc/ceph/client.cinder1.key -p images info $id_image
+
+qemu-img convert -O qcow2 \
+	rbd:images/$id_image:id=cinder:conf=/etc/ceph/ceph.conf path_local.qcow2
