@@ -36,7 +36,9 @@ install_pip(){
 
 debian(){
 	apt update
-	apt install libsasl2-dev libldap2-dev libssl-dev python-dev build-essential python-virtualenv python-pip libssl-dev -y
+	apt install libsasl2-dev libldap2-dev libssl-dev \
+		python-dev build-essential python-virtualenv \
+		python-pip libssl-dev sshpass -y
 	pip install --upgrade pip
 	install_pip
 }
