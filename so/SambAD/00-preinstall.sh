@@ -1,16 +1,15 @@
 #!/bin/bash
 yum -y groupinstall 'Development Tools'
-yum -y install wget vim
 yum -y install openldap-devel pam-devel git gcc make wget libacl-devel \
-libblkid-devel gnutls-devel readline-devel python-devel cups-devel libaio-devel \
-quota-devel ctdb-devel krb5-devel krb5-workstation acl \
-setroubleshoot-server setroubleshoot-plugins policycoreutils-python \
-libsemanage-python setools-libs-python setools-libs popt-devel libpcap-devel \
-libidn-devel libxml2-devel libacl-devel libsepol-devel libattr-devel \
-keyutils-libs-devel cyrus-sasl-devel cups-devel bind-utils bind-sdb bind-devel \
-bind-libs bind avahi-devel mingw32-iconv gamin libcap-devel rpc2-devel \
-glusterfs-devel python-dns pkgconfig gdb e2fsprogs-devel zlib-devel sqlite-devel \
-perl attr acl krb5-user ntp bind bind-sdb
+	libblkid-devel gnutls-devel readline-devel python-devel cups-devel \
+	quota-devel ctdb-devel krb5-devel krb5-workstation acl libaio-devel \
+	setroubleshoot-server setroubleshoot-plugins policycoreutils-python \
+	libsemanage-python setools-libs-python setools-libs popt-devel libpcap-devel \
+	libidn-devel libxml2-devel libacl-devel libsepol-devel libattr-devel \
+	keyutils-libs-devel cyrus-sasl-devel cups-devel bind-utils bind-sdb bind-devel \
+	bind-libs bind avahi-devel mingw32-iconv gamin libcap-devel rpc2-devel \
+	glusterfs-devel python-dns pkgconfig gdb e2fsprogs-devel zlib-devel \
+	perl attr acl krb5-user ntp bind bind-sdb wget vim sqlite-devel
 
 sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
 setenforce permissive
