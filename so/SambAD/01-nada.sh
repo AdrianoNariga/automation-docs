@@ -27,5 +27,14 @@ make install || {
 	exit 1
 }
 
+source config/named.conf
+
 /usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
 	--interactive
+
+source config/samba.systemd
+rm -f /etc/krb5.conf
+cp /usr/local/samba/private/krb5.conf /etc/krb5.conf
+chgrp named /usr/local/samba/private/dns.keytab
+chmod g+r /usr/local/samba/private/dns.keytab
+/usr/local/samba/sbin/samba_dnsupdate --verbose
