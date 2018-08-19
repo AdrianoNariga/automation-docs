@@ -46,6 +46,9 @@ source config/named.conf
 source config/samba.systemd
 rm -f /etc/krb5.conf
 cp /usr/local/samba/private/krb5.conf /etc/krb5.conf
+chown root.named /etc/krb5.conf
+
 chgrp named /usr/local/samba/private/dns.keytab
 chmod g+r /usr/local/samba/private/dns.keytab
+systemctl restart named
 /usr/local/samba/sbin/samba_dnsupdate --verbose
