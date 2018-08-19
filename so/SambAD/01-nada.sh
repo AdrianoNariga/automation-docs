@@ -1,5 +1,6 @@
 #/bin/bash
 version=4.8.3
+current_dir=$(pwd)
 
 cd ~
 wget -c https://ftp.samba.org/pub/samba/stable/samba-${version}.tar.gz
@@ -27,10 +28,20 @@ make install || {
 	exit 1
 }
 
+cd $current_dir
 source config/named.conf
 
-/usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
-	--interactive
+#/usr/local/samba/bin/samba-tool domain provision --use-rfc2307 \
+#	--interactive
+
+/usr/local/samba/bin/samba-tool \
+	domain provision \
+	--domain=$(hostname -d | cut -d . -f 1 | tr 'a-z' 'A-Z') \
+	--realm=$(hostname -d | tr 'a-z' 'A-Z') \
+	--adminpass='nada@nada' \
+	--dns-backend=BIND9_DLZ \
+	--server-role=dc \
+	--use-rfc2307
 
 source config/samba.systemd
 rm -f /etc/krb5.conf
