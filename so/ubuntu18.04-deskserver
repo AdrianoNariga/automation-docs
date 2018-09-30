@@ -4,12 +4,6 @@ useradd -u 1001 -G adm,cdrom,sudo,dip,plugdev,lxd -g users nariga
 
 echo "nariga  ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nariga 
 
-apt -y remove lxd lxd-client lxcfs liblxc1 liblxc-common snapd apparmor docker docker-engine docker.io
-
-systemctl disable snap.rocketchat-server.rocketchat-caddy.service \
-	snap.rocketchat-server.rocketchat-mongo.service \
-	snap.rocketchat-server.rocketchat-server.service ufw.service
-
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 apt -y install \
 	apt-transport-https \
@@ -21,3 +15,9 @@ apt -y install \
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 apt-get update
 apt-get install docker-ce -y
+
+apt -y remove lxd lxd-client lxcfs liblxc1 liblxc-common snapd apparmor docker docker-engine docker.io
+
+systemctl disable snap.rocketchat-server.rocketchat-caddy.service \
+	snap.rocketchat-server.rocketchat-mongo.service \
+	snap.rocketchat-server.rocketchat-server.service ufw.service
