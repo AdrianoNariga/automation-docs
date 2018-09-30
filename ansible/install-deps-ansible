@@ -40,7 +40,16 @@ debian(){
 		python-dev build-essential python-virtualenv \
 		python-pip libssl-dev sshpass -y
 	pip install --upgrade pip
-	install_pip
+}
+
+ubuntu18(){
+	add-apt-repository universe -y
+	add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) universe" -y
+	apt update
+	apt install libsasl2-dev libldap2-dev libssl-dev \
+		python-dev build-essential python3-venv \
+		libffi-dev python3-pip libssl-dev sshpass -y
+	pip3 install --upgrade pip
 }
 
 centos(){
@@ -57,7 +66,13 @@ centos(){
 }
 
 case `get_so -s` in
-        Ubuntu|elementary|Debian) debian ;;
+        elementary|Debian) debian ;;
+	Ubuntu)
+		case `get_so -v` in
+			18.04) ubuntu18 ;;
+			*) debian ;;
+		esac
+		;;
         CentOS) centos ;;
         Red) if_rhel ;;
-esac	\
+esac
