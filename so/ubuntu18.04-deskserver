@@ -7,10 +7,11 @@ echo "nariga  ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/nariga
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 apt -y install \
 	apt-transport-https \
-	ca-certificates \
+	ca-certificates libguestfs-tools \
 	curl tmux screen wget \
 	software-properties-common \
-	telnet nmap tcpdump netstat vim
+	telnet nmap tcpdump vim \
+	libguestfs-reiserfs
 
 add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 apt-get update

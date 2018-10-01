@@ -16,7 +16,14 @@ get_so(){
 }
 
 install_pip(){
-	virtualenv /root/.ansible
+
+	if [ `get_so -v` = "18.04" ]
+	then
+		python3.6 -m venv /root/.ansible
+	else
+		virtualenv /root/.ansible
+	fi
+
 	source /root/.ansible/bin/activate
 
 	pip install --upgrade pip
