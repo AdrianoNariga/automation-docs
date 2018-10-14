@@ -1,0 +1,8 @@
+[[ "$-" != *i* ]] && return
+alias ls='ls --color'
+#PS1="[\$(date +%k:%M:%S)] \e[1;34m\ue[m\ @\h ~"
+# Inicio \033[0;35m 
+# Fim    \033[0m
+
+#### Inicio #### Comando ########## Fim ### Inicio ## # Fim ## Inicio ## # Fim # Inicio ## # Fim ##
+PS1="\033[0;35m[\$(date +%k:%M:%S)] \033[0m\033[0;36m\u\033[0m\033[0;31m@\033[0m\033[0;33m\h\033[0m \w "
