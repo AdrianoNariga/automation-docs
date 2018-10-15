@@ -22,3 +22,23 @@ apt -y remove lxd lxd-client lxcfs liblxc1 liblxc-common snapd apparmor docker d
 systemctl disable snap.rocketchat-server.rocketchat-caddy.service \
 	snap.rocketchat-server.rocketchat-mongo.service \
 	snap.rocketchat-server.rocketchat-server.service ufw.service
+
+cat >> /etc/netplan/01-network-manager-all.yaml << EOF
+network:
+  version: 2
+  renderer: networkd
+  wifis:
+    wlp1s0:
+     dhcp4: yes
+     dhcp6: no
+     gateway4: 192.168.111.1
+     addresses: [192.168.111.240/24]
+     nameservers:
+       search: [home.stc]
+       addresses: [192.168.111.239,8.8.8.8]
+     access-points:
+       'router-5g.home.stc':
+        password: '$passwifi'
+EOF
+netplan generate
+netplan apply
