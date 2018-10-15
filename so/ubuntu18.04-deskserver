@@ -23,13 +23,28 @@ systemctl disable snap.rocketchat-server.rocketchat-caddy.service \
 	snap.rocketchat-server.rocketchat-mongo.service \
 	snap.rocketchat-server.rocketchat-server.service ufw.service
 
+cat >> /etc/network/interfaces << EOF
+auto wlp1s0
+iface wlp1s0 inet static
+	wpa-ssid router-5g.home.stc
+	wpa-psk $wifipass
+	address 192.168.111.250
+	netmask 255.255.255.0
+	gateway 192.168.111.1
+	bridge_ports wlp1s0
+	bridge_stp off
+	bridge_fd 0.0
+	bridge_maxwait 0
+	dns-nameservers 192.168.111.239 189.40.198.80 189.40.198.81
+	dns-nameserarch home.stc
+EOF
+
 cat >> /etc/netplan/01-network-manager-all.yaml << EOF
 network:
   version: 2
   renderer: networkd
   wifis:
     wlp1s0:
-     dhcp4: yes
      dhcp6: no
      gateway4: 192.168.111.1
      addresses: [192.168.111.240/24]
