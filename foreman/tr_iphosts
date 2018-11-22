@@ -1,9 +1,0 @@
-#!/bin/bash
-# host1 recebe o ip do hosts2
-## script host1.domain host2.domain
-host1="foreman.home.jab"
-host2="homejab.redirectme.net"
-ip_hosts=$(grep $host1 /etc/hosts | awk '{print $1}')
-ip_atual=$(getent hosts $host2 | awk '{print $1}')
-echo "determine ip $ip_atual para $host1"
-cat /etc/hosts | grep -q $ip_atual || sed -i.bak "s/$ip_hosts/$ip_atual/g" /etc/hosts

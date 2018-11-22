@@ -1,7 +1,0 @@
-\l (lista dbs)
-\c database (connect db)
-\dt (lista tabelas)
-select * from table;
-
-SELECT * FROM link;
-UPDATE link SET last_update = DEFAULT WHERE last_update IS NULL;
