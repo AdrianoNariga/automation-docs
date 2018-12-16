@@ -27,9 +27,11 @@ install_pip(){
 }
 
 debian(){
+	echo 1
 }
 
 ubuntu18(){
+	echo 2
 }
 
 centos(){
