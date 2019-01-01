@@ -15,33 +15,38 @@ get_so(){
         done
 }
 
-install_pip(){
+change_conf(){
+	sed -i 's/Server=127.0.0.1/Server=192.168.111.3/g' /etc/zabbix/zabbix_agentd.conf
+	sed -i 's/ServerActive=127.0.0.1/ServerActive=192.168.111.3/g' /etc/zabbix/zabbix_agentd.conf
 
-	if [ `get_so -v` = "18.04" ]
-	then
-		python3.6 -m venv /root/.ansible
-	else
-		virtualenv /root/.ansible
-	fi
-
+	systemctl start zabbix-agent
+	systemctl enable zabbix-agent
 }
 
 debian(){
-	echo 1
+	apt update
+	apt install -y wget
+
+	wget https://repo.zabbix.com/zabbix/4.0/debian/pool/main/z/zabbix-release/zabbix-release_4.0-1%2Bstretch_all.deb -O
+		/tmp/zabbix-release.deb
+
+	dpkg -i /tmp/zabbix-release.deb
+	apt update
+	apt install -y zabbix-agent
+	change_conf
+	rm /tmp/zabbix-release.deb
 }
 
 ubuntu18(){
+	wget https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb -O
+		/tmp/zabbix-release.deb
 	echo 2
 }
 
 centos(){
 	yum -y install http://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-1.el7.noarch.rpm
 	yum install -y zabbix-agent
-	sed -i 's/Server=127.0.0.1/Server=192.168.111.3/g' /etc/zabbix/zabbix_agentd.conf
-	sed -i 's/ServerActive=127.0.0.1/ServerActive=192.168.111.3/g' /etc/zabbix/zabbix_agentd.conf
-
-	systemctl start zabbix-agent
-	systemctl enable zabbix-agent
+	change_conf
 }
 
 case `get_so -s` in
