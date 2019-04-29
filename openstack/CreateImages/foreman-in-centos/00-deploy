@@ -1,0 +1,24 @@
+#!/bin/bash
+
+flavor="medium.8GB"
+image="f54753a8-d6d6-49b7-92d6-0eba848418d6"
+net="890e7e25-2f99-457d-8c51-22e9e894ddd5"
+sshkey="nagios-engenharia"
+secgroups="default,teste"
+instancename="manager.openstack.uol"
+floatip="200.98.3.162"
+
+id_instance=$(nova boot \
+--flavor $flavor \
+--image $image \
+--nic net-id=$net \
+--key-name $sshkey \
+--security-group $secgroups \
+--user-data cloud-data/configure.sh \
+$instancename | grep " id " | awk '{print $4}')
+sleep 10
+
+internal_ip=$(nova show $id_instance | grep network | awk '{print $5}')
+port_id=$(openstack port list | grep  $internal_ip | awk '{print $2}')
+
+openstack floating ip set --port $port_id $floatip
