@@ -8,4 +8,4 @@ systemctl start network
 yum install -y centos-release-openstack-rocky epel-release
 yum update -y
 yum install -y openstack-packstack python-pip
-packstack --allinone
+packstack --allinone --standalone_network_plugin_ip_version=4
