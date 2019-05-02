@@ -5,7 +5,7 @@ systemctl disable NetworkManager
 systemctl stop NetworkManager
 systemctl enable network
 systemctl start network
-yum install -y centos-release-openstack-rocky
+yum install -y centos-release-openstack-rocky epel-release
 yum update -y
-yum install -y openstack-packstack
+yum install -y openstack-packstack python-pip
 packstack --allinone
