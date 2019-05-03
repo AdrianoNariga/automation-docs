@@ -1,4 +1,12 @@
 #!/bin/bash
+echo -e "LANG=en_US.utf-8\nLC_ALL=en_US.utf-8\n" > /etc/environment
+sed -e 's/BOOTPROTO=none/BOOTPROTO=dhcp/g' /etc/sysconfig/network-scripts/ifcfg-eth0
+
+lsmod | grep -q kvm && lsmod | grep -q kvm || {
+	echo "Virtualization guest not enable"
+	exit 1
+}
+
 systemctl disable firewalld
 systemctl stop firewalld
 systemctl disable NetworkManager
