@@ -1,0 +1,2 @@
+rbd -p vms --id cinder --keyring /etc/ceph/client.cinder.key ls
+rados -p images ls --id cinder
