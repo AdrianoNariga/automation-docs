@@ -1,0 +1,6 @@
+#!/bin/bash
+yum -y install cloud-utils-growpart
+growpart /dev/vda 2
+pvresize /dev/vda2
+lvextend -l +100%FREE /dev/mapper/cl-root
+xfs_growfs /
