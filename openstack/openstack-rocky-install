@@ -1,11 +1,15 @@
 #!/bin/bash
 echo -e "LANG=en_US.utf-8\nLC_ALL=en_US.utf-8\n" > /etc/environment
-sed -e 's/BOOTPROTO=none/BOOTPROTO=dhcp/g' /etc/sysconfig/network-scripts/ifcfg-eth0
 
-lsmod | grep -q kvm && lsmod | grep -q kvm && grep -vq ipv6 /etc/default/grub || {
+lsmod | grep -q kvm && lsmod | grep -q kvm || {
 	echo "Virtualization guest not enable"
+	exit 1
+}
+
+grep -q 'ipv6.disable=1' /etc/default/grub && {
 	echo "Remove disable ipv6 grub"
 	exit 1
+
 }
 
 systemctl disable firewalld
@@ -17,4 +21,4 @@ systemctl start network
 yum install -y centos-release-openstack-rocky
 yum update -y
 yum install -y openstack-packstack
-packstack --allinone
+packstack --answer-file=packstack-answers.txt
