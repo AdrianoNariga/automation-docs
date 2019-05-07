@@ -1,0 +1,1 @@
+openstack image create "Windows 2016 MSSQL Standard" --file W2016_MSSQL_Standard-sparsy.raw --disk-format raw --container-format bare --private
