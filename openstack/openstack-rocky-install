@@ -33,3 +33,6 @@ packstack --answer-file=packstack-answers.txt
 # in /etc/magnum/magnum.conf
 # default_docker_volume_type = volType1
 # systemctl restart openstack-magnum-api openstack-magnum-conductor
+
+# wget https://download.fedoraproject.org/pub/alt/atomic/stable/Fedora-29-updates-20190429.0/AtomicHost/x86_64/images/Fedora-AtomicHost-29-20190429.0.x86_64.qcow2
+# glance image-create --visibility public --os-distro fedora-atomic --name fedora-atomic-latest --container-format bare --disk-format qcow2 --file Fedora-AtomicHost-29-20190429.0.x86_64.qcow2 --progress
