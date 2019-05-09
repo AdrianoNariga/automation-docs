@@ -26,3 +26,10 @@ packstack --answer-file=packstack-answers.txt
 # in /etc/magnum/magnum.conf VV
 # [keystone_authtoken]
 # www_authenticate_uri=http://10.144.134.12:5000/v3
+
+# openstack volume type create volType1 --description "Fix for Magnum" --public
+# openstack volume type list
+#
+# in /etc/magnum/magnum.conf
+# default_docker_volume_type = volType1
+# systemctl restart openstack-magnum-api openstack-magnum-conductor
