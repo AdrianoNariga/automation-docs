@@ -1,0 +1,24 @@
+#!/bin/bash
+magnum_posinstall(){
+	# [keystone_authtoken]
+	# www_authenticate_uri=http://10.144.134.12:5000/v3
+	sed 's//www_authenticate_uri\=http\:/\/10.144.134.12\:5000\/v3/g' /etc/magnum/magnum.conf
+	sed 's//default_docker_volume_type \= volType1/g' /etc/magnum/magnum.conf
+	
+	openstack volume type create volType1 --description "Fix for Magnum" --public
+	openstack volume type list
+	
+	systemctl restart openstack-magnum-api openstack-magnum-conductor
+	
+	wget https://download.fedoraproject.org/pub/alt/atomic/stable/Fedora-29-updates-20190429.0/AtomicHost/x86_64/images/Fedora-AtomicHost-29-20190429.0.x86_64.qcow2
+	glance image-create \
+		--visibility public \
+		--os-distro fedora-atomic \
+		--name fedora-atomic-latest \
+		--container-format bare \
+		--disk-format qcow2 \
+		--file Fedora-AtomicHost-29-20190429.0.x86_64.qcow2 \
+		--progress
+}
+
+magnum_posinstall

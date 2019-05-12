@@ -1,0 +1,53 @@
+#!/bin/bash
+echo -e "LANG=en_US.utf-8\nLC_ALL=en_US.utf-8\n" > /etc/environment
+
+check_prereques(){
+	lsmod | grep -q kvm && lsmod | grep -q kvm || {
+		echo "Virtualization guest not enable"
+		exit 1
+	}
+	
+	grep -q 'ipv6.disable=1' /etc/default/grub && {
+		echo "Remove disable ipv6 grub"
+		exit 1
+	
+	}
+}
+
+clear_puppet(){
+	rpm -qa | grep puppet | while read i
+	do
+		yum erase $i -y
+	done
+	rm -rf /etc/puppet* /opt/puppet* /var/lib/puppet*
+}
+
+network_prepare(){
+	systemctl disable firewalld
+	systemctl stop firewalld
+	systemctl disable NetworkManager
+	systemctl stop NetworkManager
+	systemctl enable network
+	systemctl start network
+	ip addr flush dev eth1
+}
+
+extend_partition(){
+	yum -y install cloud-utils-growpart
+	growpart /dev/vda 2
+	pvresize /dev/vda2
+	lvextend -l +100%FREE /dev/mapper/cl-root
+	xfs_growfs /
+}
+
+install_openstack(){
+	yum install -y centos-release-openstack-rocky
+	yum update -y
+	yum install -y openstack-packstack
+	packstack --answer-file=packstack-answers.txt
+}
+
+clear_puppet
+network_prepare
+extend_partition
+install_openstack
