@@ -1,0 +1,3 @@
+
+sleep de 5 segundos entre hosts, definido para fazer 1 a 1 usando --fork=1
+ansible compute -m shell -a "systemctl status openstack-nova-compute | grep Active && sleep 5" -i inventory/prod-uol -kK -b --fork=1

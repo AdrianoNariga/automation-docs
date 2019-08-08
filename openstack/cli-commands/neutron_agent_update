@@ -1,0 +1,2 @@
+neutron agent-update --admin-state-up=True a94a1451-cabf-4ec2-916e-48cd6aa139d1
+neutron agent-update --admin-state-up=False a97498a1-9cd1-405a-b925-9e6c06d98d40
