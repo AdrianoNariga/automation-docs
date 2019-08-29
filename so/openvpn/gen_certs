@@ -2,38 +2,140 @@
 EASY_RSA_PATH='/etc/openvpn/easy-rsa/'
 CERTS_OPENVPN_PATH='/etc/openvpn/certs_server/'
 
-cd $EASY_RSA_PATH
-source vars
 export hostname=$2
-[ ! -d keys ] && mkdir -p keys
+
+create_sctructure(){
+	rpm -qa | grep -q easy-rsa || \
+		yum install -y easy-rsa || {
+			echo "Instale o epel-release"
+			echo "instale o pacote easy-rsa"
+			exit 1
+		}
+
+	cp -r /usr/share/easy-rsa /etc/openvpn/
+	mv $EASY_RSA_PATH/3/* $EASY_RSA_PATH/
+	rm -rf $EASY_RSA_PATH/3*
+
+cat > $EASY_RSA_PATH/vars << EOF
+set_var EASYRSA                 "\$PWD"
+set_var EASYRSA_PKI             "\$EASYRSA/pki"
+set_var EASYRSA_DN              "cn_only"
+set_var EASYRSA_REQ_COUNTRY     "SP"
+set_var EASYRSA_REQ_CN		"vpn.home.stc"
+set_var EASYRSA_BATCH		"yes"
+set_var EASYRSA_REQ_PROVINCE    "SaoPaulo"
+set_var EASYRSA_REQ_CITY        "SaoPaulo"
+set_var EASYRSA_REQ_ORG         "Home STC"
+set_var EASYRSA_REQ_EMAIL       "narigacdo@gmail.com"
+set_var EASYRSA_REQ_OU          "HOME STC"
+set_var EASYRSA_KEY_SIZE        2048
+set_var EASYRSA_ALGO            rsa
+set_var EASYRSA_CA_EXPIRE       7500
+set_var EASYRSA_CERT_EXPIRE     365
+set_var EASYRSA_NS_SUPPORT      "no"
+set_var EASYRSA_NS_COMMENT      "HOME_STC CERTIFICATE AUTHORITY"
+set_var EASYRSA_EXT_DIR         "\$EASYRSA/x509-types"
+set_var EASYRSA_SSL_CONF        "\$EASYRSA/openssl-1.0.cnf"
+set_var EASYRSA_DIGEST          "sha256"
+EOF
+	chmod +x $EASY_RSA_PATH/vars
+}
 
 gen_certificadora(){
-	./clean-all
-	./build-ca
-	./build-dh
-	cp keys/ca.crt $CERTS_OPENVPN_PATH
-	cp keys/dh2048.pem $CERTS_OPENVPN_PATH
+	cd $EASY_RSA_PATH
+	echo "Executando init-pki..."
+	echo "...."
+	./easyrsa init-pki
+
+	echo "Executando build-ca"
+	echo "...."
+	./easyrsa build-ca nopass
+
+	echo "Executando gen-dh"
+	echo "...."
+	./easyrsa gen-dh
+
+	cp pki/ca.crt $CERTS_OPENVPN_PATH
+	cp pki/dh.pem $CERTS_OPENVPN_PATH
 }
 
 server_cert(){
-	echo "$EASY_RSA_PATH/build-key-server $hostname"
-	./build-key-server $hostname
-	cp keys/"$hostname".crt $CERTS_OPENVPN_PATH
-	cp keys/"$hostname".key $CERTS_OPENVPN_PATH
+	cd $EASY_RSA_PATH
+	echo "easyrsa gen-req $hostname nopass"
+	./easyrsa gen-req $hostname nopass
+	./easyrsa sign-req server $hostname
+
+	cp pki/issued/$hostname.crt $CERTS_OPENVPN_PATH
+	cp pki/private/$hostname.key $CERTS_OPENVPN_PATH
 }
 
 client_cert(){
-	./build-key $hostname
-	cp keys/"$hostname".crt $CERTS_OPENVPN_PATH
-	cp keys/"$hostname".key $CERTS_OPENVPN_PATH
-	
+	cd $EASY_RSA_PATH
+	./easyrsa build-client-full $hostname nopass
+
+	mkdir /etc/openvpn/client/$hostname/
+	cp pki/ca.crt /etc/openvpn/client/$hostname/
+	cp pki/issued/$hostname.crt /etc/openvpn/client/$hostname/
+	cp pki/private/$hostname.key /etc/openvpn/client/$hostname/
+	cd /etc/openvpn/client/
+
+cat > $hostname/client.conf << EOF
+client
+dev tun1
+proto tcp
+remote <Server_Ip> 1192
+resolv-retry infinite
+nobind
+
+persist-key
+persist-tun
+ping-timer-rem
+
+tls-client
+ca /etc/openvpn/certs/ca.crt
+cert /etc/openvpn/certs/$hostname.crt
+key /etc/openvpn/certs/$hostname.key
+#dh /etc/openvpn/certs/dh2048.pem
+
+comp-lzo
+ping 15
+script-security 3 system
+log /var/log/openvpn.log
+EOF
+
+	tar czvf $hostname.tar.gz $hostname
+	rm -rf $hostname
+}
+
+revoke_client(){
+	cd $EASY_RSA_PATH
+	./easyrsa revoke $hostname
+	./easyrsa gen-crl
+	cp -f pki/crl.pem $CERTS_OPENVPN_PATH
+}
+
+clear_all(){
+	echo "Todos os certificados seram removidos"
+	echo "Tecle Y para apagar tudo"
+	read control
+	if [ "$control" = "Y" ]
+	then
+		rm -rf $CERTS_OPENVPN_PATH/*
+		rm -rf $EASY_RSA_PATH
+		rm -rf /etc/openvpn/client/*
+	else
+		echo "Os Cerificados nao foram removidos"
+	fi
 }
 
 mensagem(){
 	echo -e "\n        gerencia de certificados openvpn"
-	echo "-s hostname.domain cria o certificado do servidor"
-	echo "-c hostneme.domain cria o certificado do cliente"
-	echo "-b cria unidade certificadora"
+	echo "-s ->                 hostname.domain cria o certificado do servidor"
+	echo "-c ->                 hostname.domain cria o certificado do cliente"
+	echo "-b ->                 cria unidade certificadora"
+	echo "-r ->                 hostname.client revoga acesso"
+	echo "--clear-all ->        remove tudo"
+	echo "--create-structure -> cria estrutura (incluso em -c)"
 	echo -e "\n             ..... Exemplo ....."
 	echo -e "        $0 -c cliente1.domain\n"
 }
@@ -41,6 +143,9 @@ mensagem(){
 case $1 in
 	'-s') server_cert ;;
 	'-c') client_cert ;;
-	'-b') gen_certificadora ;;
+	'-r') revoke_client ;;
+	'-b') create_sctructure ; gen_certificadora ;;
+	'--create-structure') create_sctructure ;;
+	'--clear-all') clear_all ;;
 	*) mensagem ;;
 esac

@@ -1,7 +1,7 @@
 #bin/bash
-source functions/determine_so
+source ../functions/determine_so
 
-files="example-confs/server_server.conf example-confs/ccd gen_certs easy-rsa"
+files="example-confs/server_server.conf example-confs/ccd gen_certs"
 opvpn_dir="/etc/openvpn"
 
 centos(){
@@ -17,6 +17,8 @@ deploy(){
     cd $opvpn_dir
     bash gen_certs -b
     bash gen_certs -s "$(hostname)"
+    bash gen_certs -c revoke.host.teste
+    bash gen_certs -r revoke.host.teste
 }
 
 conf_server(){
