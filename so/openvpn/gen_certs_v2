@@ -1,0 +1,100 @@
+#!/bin/bash
+EASY_RSA_PATH='/etc/openvpn/easy-rsa/'
+CERTS_OPENVPN_PATH='/etc/openvpn/certs_server/'
+
+export hostname=$2
+
+create_sctructure(){
+	rpm -qa | grep -q easy-rsa || \
+		yum install -y easy-rsa || {
+			echo "Instale o epel-release"
+			echo "instale o pacote easy-rsa"
+			exit 1
+		}
+
+	cp -r /usr/share/easy-rsa /etc/openvpn/
+	mv $EASY_RSA_PATH/3/* $EASY_RSA_PATH/
+	rm -rf $EASY_RSA_PATH/3*
+
+cat > $EASY_RSA_PATH/vars << EOF
+set_var EASYRSA                 "\$PWD"
+set_var EASYRSA_PKI             "\$EASYRSA/pki"
+set_var EASYRSA_DN              "cn_only"
+set_var EASYRSA_REQ_COUNTRY     "SP"
+set_var EASYRSA_REQ_PROVINCE    "SaoPaulo"
+set_var EASYRSA_REQ_CITY        "SaoPaulo"
+set_var EASYRSA_REQ_ORG         "Home STC"
+set_var EASYRSA_REQ_EMAIL       "narigacdo@gmail.com"
+set_var EASYRSA_REQ_OU          "HOME STC"
+set_var EASYRSA_KEY_SIZE        2048
+set_var EASYRSA_ALGO            rsa
+set_var EASYRSA_CA_EXPIRE       7500
+set_var EASYRSA_CERT_EXPIRE     730
+set_var EASYRSA_NS_SUPPORT      "no"
+set_var EASYRSA_NS_COMMENT      "HOME_STC CERTIFICATE AUTHORITY"
+set_var EASYRSA_EXT_DIR         "\$EASYRSA/x509-types"
+set_var EASYRSA_SSL_CONF        "\$EASYRSA/openssl-1.0.cnf"
+set_var EASYRSA_DIGEST          "sha256"
+EOF
+	chmod +x $EASY_RSA_PATH/vars
+}
+
+gen_certificadora(){
+	cd $EASY_RSA_PATH
+	echo "Executando init-pki"
+	./easyrsa init-pki
+	echo "Executando build-ca"
+	./easyrsa build-ca nopass
+	echo "Executando gen-dh"
+	./easyrsa gen-dh
+
+	cp pki/ca.crt $CERTS_OPENVPN_PATH
+	cp pki/dh.pem $CERTS_OPENVPN_PATH
+	cp pki/crl.pem $CERTS_OPENVPN_PATH
+
+}
+
+server_cert(){
+	cd $EASY_RSA_PATH
+	echo "easyrsa gen-req $hostname nopass"
+	./easyrsa gen-req $hostname nopass
+	./easyrsa sign-req server $hostname
+
+	cp pki/issued/$hostname.crt $CERTS_OPENVPN_PATH
+	cp pki/private/$hostname.key $CERTS_OPENVPN_PATH
+}
+
+client_cert(){
+	cd $EASY_RSA_PATH
+	./easyrsa gen-req $hostname nopass
+	./easyrsa sign-req client $hostname
+
+	cp pki/ca.crt /etc/openvpn/client/
+	cp pki/issued/client01.crt /etc/openvpn/client/
+	cp pki/private/client01.key /etc/openvpn/client/
+}
+
+clear_all(){
+	rm -rf $CERTS_OPENVPN_PATH/*
+	rm -rf $EASY_RSA_PATH
+}
+
+mensagem(){
+	echo -e "\n        gerencia de certificados openvpn"
+	echo "-s hostname.domain cria o certificado do servidor"
+	echo "-c hostneme.domain cria o certificado do cliente"
+	echo "-b cria unidade certificadora"
+	echo "--clear-all remove tudo"
+	echo "--create-structure cria estrutura (incluso em -c)"
+	echo -e "\n             ..... Exemplo ....."
+	echo -e "        $0 -c cliente1.domain\n"
+}
+
+case $1 in
+	'-s') server_cert ;;
+	'-c') client_cert ;;
+	'-b') create_sctructure ; gen_certificadora ;;
+	'--create-structure') create_sctructure ;;
+	'--clear-all') clear_all ;;
+	*) mensagem ;;
+esac
