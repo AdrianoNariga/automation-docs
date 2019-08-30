@@ -35,6 +35,7 @@ conf_client(){
     sed -i.bak "s/katello.cloud/$(hostname)/g" $opvpn_dir/client.conf
     sed -i.bak "s/192.168.111.254/$ip_eth0/g" $opvpn_dir/client.conf
     [ -f $opvpn_dir ] || rm -rf $opvpn_dir/server_server.conf.bak
+    [ -d /var/log/openvpn/ ] || mkdir /var/log/openvpn/
     systemctl enable openvpn@server_server
     systemctl start openvpn@server_server
 }
