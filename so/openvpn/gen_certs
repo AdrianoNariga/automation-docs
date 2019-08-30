@@ -83,7 +83,7 @@ cat > $hostname/client.conf << EOF
 client
 dev tun1
 proto tcp
-remote <Server_Ip> 1192
+remote cloud.home.stc 443
 resolv-retry infinite
 nobind
 
@@ -95,12 +95,10 @@ tls-client
 ca /etc/openvpn/certs/ca.crt
 cert /etc/openvpn/certs/$hostname.crt
 key /etc/openvpn/certs/$hostname.key
-#dh /etc/openvpn/certs/dh2048.pem
 
 comp-lzo
 ping 15
-script-security 3 system
-log /var/log/openvpn.log
+log /var/log/openvpn/client.log
 EOF
 
 	tar czvf $hostname.tar.gz $hostname
