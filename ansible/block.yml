@@ -1,0 +1,42 @@
+---
+# https://docs.ansible.com/ansible/latest/user_guide/playbooks_blocks.html
+  tasks:
+  - name: Bloco para instalacao e configuracao do apache
+    block:
+    - name: Instalando apache e memcached
+      yum:
+        name:
+        - httpd
+        - memcached
+        state: present
+
+    - name: Aplicando template
+      template: src=templates/src.j2 dest=/etc/foo.conf
+
+    - name: Iniciando bar
+      service: name=bar starte=started enable=true
+
+    when: ansible_facts['distribution'] == 'CentOS'
+    ignore_errors: true
+
+---
+  tasks:
+  - name: Bloco para tratamento de erro
+    block:
+    - debug: msg="Sera executado"
+
+    - name: Forcando um erro
+      command: /bin/false
+
+    rescue:
+    - debug: msg="Caso ocarra um erro em block o rescue sera executado"
+
+    always:
+    - debug: msg="always sempre sera executado"
+
+---
+  tasks:
+  - name: 
+
+  handlers:
+
