@@ -1,0 +1,40 @@
+# Lista repositorios
+flatpak remotes
+
+# Adiciona repositorio
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+# Remove repositorio
+flatpak remote-delete flathub
+
+# Procura aplicativo
+flatpak search gimp
+
+# Instala aplicativo
+flatpak install flathub org.gimp.GIMP
+flatpak install https://flathub.org/repo/appstream/org.gimp.GIMP.flatpakref
+flatpak install gimp
+
+# Executa aplicativo
+flatpak run org.gimp.GIMP
+
+# Atualiza aplicativos
+flatpak update
+
+# Lista aplicativos instalados
+flatpak list
+
+# Lista aplicativos em execução
+flatpak list --app
+
+# Remove aplicativo
+flatpak uninstall --unused
+
+# Repara aplicativos
+flatpak repair
+
+# Reseta permissoes
+flatpak permission-reset org.gimp.GIMP
+
+# Historico de uso
+flatpak history
