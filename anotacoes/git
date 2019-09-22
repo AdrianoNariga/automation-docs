@@ -1,0 +1,37 @@
+
+git remote (mostra remotes disponivers)
+git remote -v (mostra remotes disponiveis com URL)
+
+## Adiciona remote
+## git remote add <remote_short_name> URL
+git remote add gitlab.home.stc git@gitlab.home.stc:shared/underckoud_deploy.git
+
+## Remove remote
+## git remote remove <remote_short_name>
+git remote remove undercloud_deploy
+
+## Adiciona remote para uso
+git fetch <remote_short_name>
+
+## Empurra commits para o remote
+## git push <remote_short_name> branch
+git push gitlab.home.stc master
+
+## Empurra commits para todos remotes
+git push
+
+## Atualiza repositorio
+## git pull <remote_short_name> branch
+git pull gitlab.home.stc master
+
+## Verifica informações
+## Syncronização
+## Branch's
+## URL
+## git remote show <remote_short_name>
+git remote show gitlab.home.stc
+
+## Renomeia remote
+## git remote rename <remote_short_name> <new_short_name>
+git remote rename origin gitlab.uol
+git remote rename gitlab.home.stc gitlab.home
