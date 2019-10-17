@@ -5,3 +5,6 @@ ip_destino=$(echo $1 | cut -d : -f 1)
 port_destino=$(echo $1 | cut -d : -f 2)
 port_local=$2
 ssh -L $port_local:$ip_destino:$port_destino root@$ip_destino
+
+## cygwin
+## ssh -x -2 -L 2224:localhost:2224 lab.controller3
