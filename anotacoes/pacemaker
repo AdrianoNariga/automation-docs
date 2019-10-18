@@ -1,0 +1,36 @@
+### instalar pacemaker e pcs
+yum install -y pacemaker pcs
+
+### iniciar servico
+systemctl start pcsd
+systemctl enable pcsd
+
+### definir senha do usuario que gerencia o cluster
+passwd hacluster
+
+### autenticar pacemaker nos nodes
+pcs cluster auth pacemaker1 pacemaker2
+
+
+### criar cluster
+pcs cluster setup --name cluster1 pacemaker1 pacemaker2
+
+
+### inicializar cluster
+pcs cluster start --all pacemaker1 pacemaker2
+
+### desabilitando stonith
+pcs property set stonith-enabled=false
+
+
+### criar vip
+pcs resource create cluster_ip ocf:heartbeat:IPaddr2 ip=10.0.1.50 cidr_netmask=24 op monitor interval=30s
+
+### adicionar processo apache
+pcs resource create apache ocf:heartbeat:apache configfile=/etc/httpd/conf/httpd.conf statusurl="http://localhost/server-status" op monitor interval=1min
+
+### criar constraint colocation
+pcs constraint colocation add apache with cluster_ip INFINITY
+
+### criar contraint order
+pcs constraint order cluster_ip then apache
