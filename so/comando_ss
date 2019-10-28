@@ -1,0 +1,17 @@
+# portas escutando
+ss -l
+
+# portas tcp sem resolver nomes
+ss -ltn
+
+# portas udp
+ss -lu
+
+# fechar conexoes
+nc -v 192.168.25.145 2178
+
+# abrir conexoes
+nc -lv
+
+# abrir conexoes com executaveis
+nc -lve /bin/bash
