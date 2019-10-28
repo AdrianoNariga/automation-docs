@@ -1,0 +1,14 @@
+# cat ~/.ssh/config
+
+## usando gateway ssh para inicio zone1.
+## o host gateway.ssh tem que resolver os nomes zone1.
+Host zone1.*
+ProxyCommand ssh -W %h:%p user@gateway.ssh
+
+Host lab.* 172.16.*
+ProxyCommand ssh -W %h:%p 10.12.12.254
+
+## desabilita o check de knowhosts
+Host *
+   StrictHostKeyChecking no
+   UserKnownHostsFile=/dev/null
