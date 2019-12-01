@@ -1,0 +1,3 @@
+ansible-vault encrypt file
+ansible-vault view file
+ansible-vault edit file
