@@ -56,7 +56,8 @@ ubuntu18(){
 	apt install libsasl2-dev libldap2-dev libssl-dev \
 		python-dev build-essential python3-venv \
 		libffi-dev python3-pip libssl-dev sshpass \
-		python-requests python3-requests -y
+		python-requests python3-requests \
+		python-pyvmomi python3-pyvmomi-y
 	pip3 install --upgrade pip
 	pip3 install --upgrade pyvmomi
 }
