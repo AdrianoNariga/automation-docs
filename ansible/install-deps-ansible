@@ -57,9 +57,10 @@ ubuntu18(){
 		python-dev build-essential python3-venv \
 		libffi-dev python3-pip libssl-dev sshpass \
 		python-requests python3-requests \
-		python-pyvmomi python3-pyvmomi-y
+		python-pyvmomi python3-pyvmomi -y
 	pip3 install --upgrade pip
 	pip3 install --upgrade pyvmomi
+	install_pip
 }
 
 centos(){
