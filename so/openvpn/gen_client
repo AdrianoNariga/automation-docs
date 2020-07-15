@@ -4,6 +4,7 @@ hostname=$1
 cd /etc/openvpn/easy-rsa/
 ./easyrsa build-client-full $hostname nopass
 mkdir -p /etc/openvpn/client/$hostname/certs/
+mkdir /var/log/openvpn/
 
 cp pki/ca.crt /etc/openvpn/client/$hostname/certs/
 cp pki/issued/$hostname.crt /etc/openvpn/client/$hostname/certs/
