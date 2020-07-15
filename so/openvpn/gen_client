@@ -3,15 +3,13 @@ hostname=$1
 
 cd /etc/openvpn/easy-rsa/
 ./easyrsa build-client-full $hostname nopass
+mkdir -p /etc/openvpn/client/$hostname/certs/
 
-mkdir /etc/openvpn/client/$hostname/
-cp pki/ca.crt /etc/openvpn/client/$hostname/
-cp pki/issued/$hostname.crt /etc/openvpn/client/$hostname/
-cp pki/private/$hostname.key /etc/openvpn/client/$hostname/
+cp pki/ca.crt /etc/openvpn/client/$hostname/certs/
+cp pki/issued/$hostname.crt /etc/openvpn/client/$hostname/certs/
+cp pki/private/$hostname.key /etc/openvpn/client/$hostname/certs/
 
-cd /etc/openvpn/client/
-
-cat > $hostname/client.conf << EOF
+cat > /etc/openvpn/client/$hostname/client.conf << EOF
 client
 dev tun1
 proto tcp
@@ -30,5 +28,6 @@ ping 15
 log /var/log/openvpn/client.log
 EOF
 
+cd /etc/openvpn/client/
 tar czvf $hostname.tar.gz $hostname
 rm -rf $hostname
