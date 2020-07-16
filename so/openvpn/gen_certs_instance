@@ -1,0 +1,68 @@
+#!/bin/bash
+cat > /etc/openvpn/easy-rsa/vars << EOF
+set_var EASYRSA_REQ_COUNTRY     "SP"
+set_var EASYRSA_REQ_PROVINCE    "SaoPaulo"
+set_var EASYRSA_REQ_CITY        "SaoPaulo"
+set_var EASYRSA_REQ_ORG         "Openstack Cloud VPN"
+set_var EASYRSA_REQ_EMAIL       "me@openstack.cloud"
+set_var EASYRSA_REQ_OU          "My Openstack VPN"
+EOF
+
+cd /etc/openvpn/easy-rsa
+
+###########################################################
+echo "Criando certificadora"
+./easyrsa init-pki
+
+echo "Criando unidade certificadora..... OpenStackVPN"
+(echo "OpenStackVPN") | ./easyrsa build-ca nopass
+cp pki/ca.crt /etc/openvpn/certs_server/
+
+echo "Criando DH file"
+./easyrsa gen-dh
+cp pki/dh.pem /etc/openvpn/certs_server/
+###########################################################
+echo "Criando cert server para $HOSTNAME"
+(echo -en "\n") | ./easyrsa gen-req $HOSTNAME nopass
+cp pki/private/$HOSTNAME.key /etc/openvpn/certs_server/
+
+echo "Assinando cert para $HOSTNAME"
+( echo -en 'yes') | ./easyrsa sign-req server $HOSTNAME
+cp pki/issued/$HOSTNAME.crt /etc/openvpn/certs_server/
+###########################################################
+echo "Criando arquivo para revogar certificado"
+#./easyrsa revoke cert-name
+./easyrsa gen-crl
+cp -f pki/crl.pem /etc/openvpn/certs_server/
+
+cat > /etc/openvpn/server_server.conf << EOF
+proto tcp
+local $(ip a s eth0 | grep 'inet ' | awk '{print $2}' | cut -d \/ -f 1)
+port 1194
+dev tun0
+
+ca /etc/openvpn/certs_server/ca.crt
+cert /etc/openvpn/certs_server/$HOSTNAME.crt
+key /etc/openvpn/certs_server/$HOSTNAME.key
+dh /etc/openvpn/certs_server/dh.pem
+crl-verify /etc/openvpn/certs_server/crl.pem
+
+keepalive 10 120
+persist-key
+persist-tun
+comp-lzo
+verb 3
+max-clients 35
+
+server 192.168.22.0 255.255.255.240
+
+# Rota aplicada no client
+push "route $(ip r s | grep $(ip a s eth0 | grep "inet " | awk '{print $2}' | cut -d \/ -f 1) | awk '{print $1}' | cut -d \/ -f 1) $(ifconfig eth0 | grep netmask | awk '{print $4}')"
+
+log /var/log/openvpn/server_server.log
+
+client-config-dir /etc/openvpn/ccd
+
+# Rota sera enviada no server
+route 192.168.111.0 255.255.255.0
+EOF
