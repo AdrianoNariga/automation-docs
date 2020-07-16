@@ -107,9 +107,13 @@ rmdir /etc/openvpn/client1/ && \ <br>
 systemctl restart openvpn@client
 </p>
 
+<h4>Obs: Talvez $(curl ifconfig.me) nao seja o ip externo da sua instancia,<br>
+Entao substitua no comando acima</h4>
+
 <h3>Por seguranca, apos o download do certificado pare o apache dentro da instancia</h3>
 systemctl stop apache2 <br>
 systemctl disable apache2
 EOF
 
 systemctl restart openvpn@server_server
+iptables-restore < /etc/iptables/rules.v4
