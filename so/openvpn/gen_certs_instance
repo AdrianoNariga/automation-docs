@@ -110,6 +110,16 @@ systemctl restart openvpn@client
 <h4>Obs: Talvez $(curl ifconfig.me) nao seja o ip externo da sua instancia,<br>
 Entao substitua no comando acima</h4>
 
+<h4>Use o nome do certificado para definir configuracoes da rede cliente do lado do servidor.<br>
+Dentro da instancia em /etc/openvpn/ccd/client1 segue exemplo de configuracoes...</h4>
+-> $ cat /etc/openvpn/ccd/client1<br>
+# define ip da vpn entregue para o cliente<br>
+# sendo o primeiro ip para o cliente e o segundo atribuido ao servidor<br>
+ifconfig-push 192.168.22.8 192.168.22.7<br>
+<p>
+# define a rede interna do lado do cliente<br>
+iroute 192.168.111.0 255.255.255.0<br>
+
 <h3>Por seguranca, apos o download do certificado pare o apache dentro da instancia</h3>
 systemctl stop apache2 <br>
 systemctl disable apache2
