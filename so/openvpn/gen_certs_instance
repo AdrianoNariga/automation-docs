@@ -127,3 +127,5 @@ EOF
 
 systemctl restart openvpn@server_server
 iptables-restore < /etc/iptables/rules.v4
+
+rm -f /var/lib/cloud/scripts/per-once/00-create-server-certs
