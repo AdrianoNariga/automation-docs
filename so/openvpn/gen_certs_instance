@@ -64,5 +64,52 @@ log /var/log/openvpn/server_server.log
 client-config-dir /etc/openvpn/ccd
 
 # Rota sera enviada no server
-route 192.168.111.0 255.255.255.0
+#route 192.168.111.0 255.255.255.0
 EOF
+
+systemctl daemon-reload
+systemctl enable openvpn@server_server
+
+gen_client client1
+cp /etc/openvpn/client/client1.tar.gz /var/www/html/
+
+cat > /etc/iptables/rules.v4 << EOF
+*nat
+:PREROUTING ACCEPT [3:188]
+:INPUT ACCEPT [3:188]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [1:76]
+-A POSTROUTING -d $(ip r s | grep $(ip a s eth0 | grep "inet " | awk '{print $2}' | cut -d \/ -f 1) | awk '{print $1}') -o eth0 -j MASQUERADE
+COMMIT
+*filter
+:INPUT ACCEPT [178:14686]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [175:19383]
+COMMIT
+EOF
+
+cat > /var/www/html/index.html << EOF
+<p>
+<h4>Instale o openvpn</h4>
+apt install -y openvpn <br>
+yum install -y openvpn <br>
+</p>
+<h4>Faca download do arquivo de configuracao e dos certificados</h4>
+grep openstack.cloud.vpn /etc/hosts && \ <br>
+sed -i '/ openstack.cloud.vpn/d' /etc/hosts ; \ <br>
+echo "$(curl ifconfig.me) openstack.cloud.vpn" >> /etc/hosts ; \ <br>
+rm -rf /root/client1.tar.gz ; \ <br>
+wget -O /root/client1.tar.gz http://$(curl ifconfig.me)/client1.tar.gz && \ <br>
+rm -rf /etc/openvpn/client* /etc/openvpn/certs/ && \ <br>
+tar xzvf /root/client1.tar.gz -C /etc/openvpn/ &&\ <br>
+mv /etc/openvpn/client1/* /etc/openvpn/ && \ <br>
+rmdir /etc/openvpn/client1/ && \ <br>
+systemctl restart openvpn@client
+</p>
+
+<h3>Por seguranca, apos o download do certificado pare o apache dentro da instancia</h3>
+systemctl stop apache2 <br>
+systemctl disable apache2
+EOF
+
+systemctl restart openvpn@server_server
