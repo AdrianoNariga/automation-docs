@@ -1,0 +1,34 @@
+#!/bin/bash
+hostname=$1
+
+cd /etc/openvpn/easy-rsa/
+./easyrsa build-client-full $hostname nopass
+mkdir -p /etc/openvpn/client/$hostname/certs/
+mkdir /var/log/openvpn/
+
+cp pki/ca.crt /etc/openvpn/client/$hostname/certs/
+cp pki/issued/$hostname.crt /etc/openvpn/client/$hostname/certs/
+cp pki/private/$hostname.key /etc/openvpn/client/$hostname/certs/
+
+cat > /etc/openvpn/client/$hostname/client.conf << EOF
+client
+dev tun1
+proto tcp
+remote openstack.cloud.vpn 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+ping-timer-rem
+tls-client
+ca /etc/openvpn/certs/ca.crt
+cert /etc/openvpn/certs/$hostname.crt
+key /etc/openvpn/certs/$hostname.key
+comp-lzo
+ping 15
+log /var/log/openvpn/client.log
+EOF
+
+cd /etc/openvpn/client/
+tar czvf $hostname.tar.gz $hostname
+rm -rf $hostname

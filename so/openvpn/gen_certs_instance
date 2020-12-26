@@ -1,0 +1,131 @@
+#!/bin/bash
+cat > /etc/openvpn/easy-rsa/vars << EOF
+set_var EASYRSA_REQ_COUNTRY     "SP"
+set_var EASYRSA_REQ_PROVINCE    "SaoPaulo"
+set_var EASYRSA_REQ_CITY        "SaoPaulo"
+set_var EASYRSA_REQ_ORG         "Openstack Cloud VPN"
+set_var EASYRSA_REQ_EMAIL       "me@openstack.cloud"
+set_var EASYRSA_REQ_OU          "My Openstack VPN"
+EOF
+
+cd /etc/openvpn/easy-rsa
+
+###########################################################
+echo "Criando certificadora"
+./easyrsa init-pki
+
+echo "Criando unidade certificadora..... OpenStackVPN"
+(echo "OpenStackVPN") | ./easyrsa build-ca nopass
+cp pki/ca.crt /etc/openvpn/certs_server/
+
+echo "Criando DH file"
+./easyrsa gen-dh
+cp pki/dh.pem /etc/openvpn/certs_server/
+###########################################################
+echo "Criando cert server para $HOSTNAME"
+(echo -en "\n") | ./easyrsa gen-req $HOSTNAME nopass
+cp pki/private/$HOSTNAME.key /etc/openvpn/certs_server/
+
+echo "Assinando cert para $HOSTNAME"
+( echo -en 'yes') | ./easyrsa sign-req server $HOSTNAME
+cp pki/issued/$HOSTNAME.crt /etc/openvpn/certs_server/
+###########################################################
+echo "Criando arquivo para revogar certificado"
+#./easyrsa revoke cert-name
+./easyrsa gen-crl
+cp -f pki/crl.pem /etc/openvpn/certs_server/
+
+cat > /etc/openvpn/server_server.conf << EOF
+proto tcp
+local $(ip a s eth0 | grep 'inet ' | awk '{print $2}' | cut -d \/ -f 1)
+port 1194
+dev tun0
+
+ca /etc/openvpn/certs_server/ca.crt
+cert /etc/openvpn/certs_server/$HOSTNAME.crt
+key /etc/openvpn/certs_server/$HOSTNAME.key
+dh /etc/openvpn/certs_server/dh.pem
+crl-verify /etc/openvpn/certs_server/crl.pem
+
+keepalive 10 120
+persist-key
+persist-tun
+comp-lzo
+verb 3
+max-clients 35
+
+server 192.168.22.0 255.255.255.240
+
+# Rota aplicada no client
+push "route $(ip r s | grep $(ip a s eth0 | grep "inet " | awk '{print $2}' | cut -d \/ -f 1) | awk '{print $1}' | cut -d \/ -f 1) $(ifconfig eth0 | grep netmask | awk '{print $4}')"
+
+log /var/log/openvpn/server_server.log
+
+client-config-dir /etc/openvpn/ccd
+
+# Rota sera enviada no server
+#route 192.168.111.0 255.255.255.0
+EOF
+
+systemctl daemon-reload
+systemctl enable openvpn@server_server
+
+gen_client client1
+cp /etc/openvpn/client/client1.tar.gz /var/www/html/
+
+cat > /etc/iptables/rules.v4 << EOF
+*nat
+:PREROUTING ACCEPT [3:188]
+:INPUT ACCEPT [3:188]
+:POSTROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [1:76]
+-A POSTROUTING -d $(ip r s | grep $(ip a s eth0 | grep "inet " | awk '{print $2}' | cut -d \/ -f 1) | awk '{print $1}') -o eth0 -j MASQUERADE
+COMMIT
+*filter
+:INPUT ACCEPT [178:14686]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [175:19383]
+COMMIT
+EOF
+
+cat > /var/www/html/index.html << EOF
+<p>
+<h4>Instale o openvpn</h4>
+apt install -y openvpn <br>
+yum install -y openvpn <br>
+</p>
+<h4>Faca download do arquivo de configuracao e dos certificados</h4>
+grep openstack.cloud.vpn /etc/hosts && \ <br>
+sed -i '/ openstack.cloud.vpn/d' /etc/hosts ; \ <br>
+echo "$(curl ifconfig.me) openstack.cloud.vpn" >> /etc/hosts ; \ <br>
+rm -rf /root/client1.tar.gz ; \ <br>
+wget -O /root/client1.tar.gz http://$(curl ifconfig.me)/client1.tar.gz && \ <br>
+rm -rf /etc/openvpn/client* /etc/openvpn/certs/ && \ <br>
+tar xzvf /root/client1.tar.gz -C /etc/openvpn/ &&\ <br>
+mv /etc/openvpn/client1/* /etc/openvpn/ && \ <br>
+rmdir /etc/openvpn/client1/ && \ <br>
+systemctl restart openvpn@client
+</p>
+
+<h4>Obs: Talvez $(curl ifconfig.me) nao seja o ip externo da sua instancia,<br>
+Entao substitua no comando acima</h4>
+
+<h4>Use o nome do certificado para definir configuracoes da rede cliente do lado do servidor.<br>
+Dentro da instancia em /etc/openvpn/ccd/client1 segue exemplo de configuracoes...</h4>
+-> $ cat /etc/openvpn/ccd/client1<br>
+# define ip da vpn entregue para o cliente<br>
+# sendo o primeiro ip para o cliente e o segundo atribuido ao servidor<br>
+ifconfig-push 192.168.22.8 192.168.22.7<br>
+<p>
+# define a rede interna do lado do cliente<br>
+iroute 192.168.111.0 255.255.255.0<br>
+
+<h3>Por seguranca, apos o download do certificado pare o apache dentro da instancia</h3>
+systemctl stop apache2 <br>
+systemctl disable apache2
+EOF
+
+systemctl restart openvpn@server_server
+iptables-restore < /etc/iptables/rules.v4
+
+rm -f /var/lib/cloud/scripts/per-once/00-create-server-certs
