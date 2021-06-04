@@ -3,6 +3,7 @@ apt update
 pacotes="flatpak docker.io git vim htop openssh-server linux-headers-$(uname -r) 
 gnome-tweak-tool guake barrier vlc apt-transport-https curl ca-certificates 
 gnupg nmap curl tmux screen wget telnet tcpdump add-apt-repository 
+libsasl2-dev libldap2-dev libssl-dev libffi-dev python3-pip libssl-dev sshpass
 python3-cinderclient python3-glanceclient python3-neutronclient 
 python3-novaclient python3-openstackclient"
 
