@@ -16,16 +16,8 @@ systemctl disable firewalld.service cups.path cups.service cups.socket
 systemctl start sshd.service
 systemctl enable sshd.service
 
-dnf install cabextract lzip p7zip p7zip-plugins \
-	unrar libdvdcss vlc kodi amrnb amrwb faad2 \
-	flac ffmpeg gpac-libs lame libfc14audiodecoder \
-	mencoder mplayer x264 x265 gstreamer-plugins-espeak \
-	gstreamer-plugins-bad gstreamer-plugins-bad-nonfree \
-	gstreamer-plugins-ugly gstreamer-ffmpeg gstreamer1-plugins-base \
-	gstreamer1-libav gstreamer1-plugins-bad-free-extras \
-	gstreamer1-plugins-bad-freeworld gstreamer1-plugins-base-tools \
-	gstreamer1-plugins-good-extras gstreamer1-plugins-ugly \
-	gstreamer1-plugins-bad-free gstreamer1-plugins-good -y
+dnf install cabextract lzip p7zip p7zip-plugins htop \
+	unrar libdvdcss vlc kodi -y
 
 useradd -s /bin/bash -c "Adriano Nariga" -g users -m -u 1001 nariga
 usermod -p '$1$3janKNz4$OcQVkwwnDGPvTVEGWDE0V1' nariga
@@ -38,3 +30,19 @@ flatpak update
 flatpak install -y nuvola eu.tiliado.Nuvola
 flatpak install -y nuvola eu.tiliado.NuvolaAppYoutube
 flatpak install -y nuvola eu.tiliado.NuvolaAppYoutubeMusic
+
+localectl set-locale LANG=en_US.UTF-8
+localectl set-x11-keymap br
+
+dnf install @kde-desktop -y
+#dnf install amrnb amrwb faad2 \
+#	flac ffmpeg gpac-libs lame libfc14audiodecoder \
+#	mencoder mplayer x264 x265 gstreamer-plugins-espeak \
+#	gstreamer-plugins-bad gstreamer-plugins-bad-nonfree \
+#	gstreamer-plugins-ugly gstreamer-ffmpeg gstreamer1-plugins-base \
+#	gstreamer1-libav gstreamer1-plugins-bad-free-extras \
+#	gstreamer1-plugins-bad-freeworld gstreamer1-plugins-base-tools \
+#	gstreamer1-plugins-good-extras gstreamer1-plugins-ugly \
+#	gstreamer1-plugins-bad-free gstreamer1-plugins-good -y
+
+dnf upgrade -y
