@@ -10,14 +10,14 @@ dnf install deltarpm -y
 echo deltarpm=1 >> /etc/dnf/dnf.conf
 
 dnf install gnome-tweaks chrome-gnome-shell openssh-server \
-	tmux kernel-devel system-config-language -y
+	tmux kernel-devel system-config-language vim -y
 
 systemctl disable firewalld.service cups.path cups.service cups.socket
 systemctl start sshd.service
 systemctl enable sshd.service
 
 dnf install cabextract lzip p7zip p7zip-plugins htop \
-	unrar libdvdcss vlc kodi -y
+	unrar vlc kodi -y
 
 useradd -s /bin/bash -c "Adriano Nariga" -g users -m -u 1001 nariga
 usermod -p '$1$3janKNz4$OcQVkwwnDGPvTVEGWDE0V1' nariga
@@ -36,7 +36,7 @@ localectl set-x11-keymap br
 
 dnf install @kde-desktop -y
 #dnf install amrnb amrwb faad2 \
-#	flac ffmpeg gpac-libs lame libfc14audiodecoder \
+#	flac ffmpeg gpac-libs lame libfc14audiodecoder libdvdaccess \
 #	mencoder mplayer x264 x265 gstreamer-plugins-espeak \
 #	gstreamer-plugins-bad gstreamer-plugins-bad-nonfree \
 #	gstreamer-plugins-ugly gstreamer-ffmpeg gstreamer1-plugins-base \
