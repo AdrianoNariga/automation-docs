@@ -1,7 +1,14 @@
 #!/bin/bash
-apt install -y samba
+apt install -y samba smbclient cifs-utils
+
+mkdir -p /home/public
+chmod 2777 /home/public
+chgrp sambashare /home/public
+
 mkdir -p /home/share
-chmod 0777 /home/share
+chmod 2770 /home/share
+chgrp sambashare /home/share
+chown nariga:sambashare /home/share/
 
 cat > /etc/samba/smb.conf << EOF
 [global]
@@ -9,47 +16,32 @@ cat > /etc/samba/smb.conf << EOF
   workgroup = WORKGROUP
   bind interfaces only = yes
 
-[Docs]
-  path = /home/share
+[public]
+  path = /home/public/
   writable = yes
   guest ok = yes
   guest only = yes
   create mode = 0777
   directory mode = 0777
+
+[share]
+  path = /home/share/
+  read only = no
+  browseable = yes
+  force create mode = 0660
+  force directory mode = 2770
+  valid users = @nariga @sambashare
+
+[nariga]
+  path = /home/nariga/
+  read only = no
+  browseable = no
+  force create mode = 0660
+  force directory mode = 2770
+  valid users = @nariga @sambashare
 EOF
-
-chgrp sambashare /home/share
-useradd -M -d /home/share/user1 -s /usr/sbin/nologin -G sambashare user1
-mkdir /home/share/user1
-chown user1:sambashare /home/share/user1
-chmod 2770 /home/share/user1
-
-smbpasswd -a user1
-smbpasswd -e user1
-
-useradd -M -d /home/share/smbadmin -s /usr/sbin/nologin -G sambashare smbadmin
-mkdir /home/share/smbadmin
-smbpasswd -a smbadmin
-smbpasswd -e smbadmin
-chown smbadmin:sambashare /home/share/smbadmin
-chmod 2770 /home/share/smbadmin
-
-cat > /etc/samba/smb.conf <<EOF
-  [user1]
-      path = /home/share/user1
-      read only = no
-      browseable = no
-      force create mode = 0660
-      force directory mode = 2770
-      valid users = @user1 @sambashare
-  [smbadmin]
-      path = /home/share/smbadmin
-      read only = no
-      browseable = yes
-      force create mode = 0660
-      force directory mode = 2770
-      valid users = @sambashare @smbadmin
-EOF
-
 systemctl restart smbd nmbd
-apt -y install smbclient cifs-utils
+
+pass=123
+(echo "$pass"; echo "$pass") | smbpasswd -s -a nariga
+smbpasswd -e nariga
