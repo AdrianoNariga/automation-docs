@@ -45,3 +45,4 @@ systemctl restart smbd nmbd
 pass=123
 (echo "$pass"; echo "$pass") | smbpasswd -s -a nariga
 smbpasswd -e nariga
+gpasswd -a nariga sambashare
