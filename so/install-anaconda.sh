@@ -1,7 +1,12 @@
 #!/bin/bash
 apt update
-apt install curl -y
-cd /tmp
+apt install curl wget -y
 
-curl –O https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
-bash Anaconda3-2021.11-Linux-x86_64.sh
+wget https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh \
+	-O /tmp/anaconda.sh
+bash /tmp/anaconda.sh -b -p /opt/anaconda
+
+group add anaconda
+chgrp -R anaconda /opt/anaconda
+chmod 770 -R /opt/anaconda
+adduser nariga anaconda
