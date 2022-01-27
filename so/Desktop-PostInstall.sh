@@ -2,10 +2,8 @@
 apt update
 pacotes="flatpak docker.io git vim htop openssh-server linux-headers-$(uname -r) 
 gnome-tweak-tool guake barrier vlc apt-transport-https curl ca-certificates 
-gnupg nmap curl tmux screen wget telnet tcpdump add-apt-repository 
-libsasl2-dev libldap2-dev libssl-dev libffi-dev python3-pip libssl-dev sshpass
-python3-cinderclient python3-glanceclient python3-neutronclient 
-python3-novaclient python3-openstackclient"
+gnupg nmap curl tmux screen wget telnet tcpdump add-apt-repository gdebi-core
+libsasl2-dev libldap2-dev libssl-dev libffi-dev python3-pip libssl-dev sshpass"
 
 for i in $pacotes
 do
@@ -36,13 +34,13 @@ done
 
 echo 'nariga  ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/nariga
 
+wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | apt-key add -
+wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
 add-apt-repository ppa:linrunner/tlp
 apt update
 apt install -y tlp tlp-rdw tp-smapi-dkms acpi-call-dkms google-cloud-sdk azure-cli
 
 grep vmx /proc/cpuinfo && {
-	wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | apt-key add -
-	wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | apt-key add -
 	apt update
 	apt install -y virtualbox-6.1
 }
@@ -55,4 +53,10 @@ flatpak update
 flatpak install -y nuvola eu.tiliado.Nuvola
 flatpak install -y nuvola eu.tiliado.NuvolaAppYoutube
 flatpak install -y nuvola eu.tiliado.NuvolaAppYoutubeMusic
+
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+gdebi google-chrome-stable_current_amd64.deb
+dpkg -i google-chrome-stable_current_amd64.deb -y
+apt -f install -y
+
 apt autoremove -y
