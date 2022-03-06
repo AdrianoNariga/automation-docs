@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cat > /etc/apt/sources.list < EOF
+cat > /etc/apt/sources.list << EOF
 deb http://archive.ubuntu.com/ubuntu/ impish main restricted multiverse universe
 deb http://security.ubuntu.com/ubuntu/ impish-security main restricted multiverse universe
 deb http://archive.ubuntu.com/ubuntu/ impish-updates main restricted multiverse universe
